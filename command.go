@@ -11,16 +11,36 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
+type StringArray []string
+
 type DoshCommand struct {
-	HelpText     string   `yaml:"help_text"`
-	Run          string   `yaml:"run"`
-	Environments []string `yaml:"environments"`
+	HelpText     string      `yaml:"help_text"`
+	Run          StringArray `yaml:"run"`
+	Environments []string    `yaml:"environments"`
 }
 
 type DoshConfig struct {
 	Environments []string               `yaml:"environments"`
 	Aliases      map[string]string      `yaml:"aliases"`
 	Commands     map[string]DoshCommand `yaml:"commands"`
+}
+
+// UnmarshalYAML - A quick solution to allow some fields in multiple types.
+// https://github.com/go-yaml/yaml/issues/100#issuecomment-324964723
+func (a *StringArray) UnmarshalYAML(unmarshal func(interface{}) error) error {
+	var multi []string
+	err := unmarshal(&multi)
+	if err != nil {
+		var single string
+		err := unmarshal(&single)
+		if err != nil {
+			return err
+		}
+		*a = []string{single}
+	} else {
+		*a = multi
+	}
+	return nil
 }
 
 func getUsage(conf string) string {

@@ -33,16 +33,22 @@ Environment: DEV
     Command: docker-compose -p dosh -f docker-compose.yml -f docker-compose.dev.yml start
 ```
 
+## Commands
+
+- MKDIR
+- PRINT
+- RUN
+
 ## Build
 
 ```shell
-go build -ldflags "-s -w" -o ./tmp/dosh ./cmd/dosh
-go build -ldflags "-s -w" -o ./tmp/dosh-cli ./cmd/cli
+dosh build
+dosh start dosh-cli
 ```
 
 ## Test
 
 ```shell
-go test -coverprofile="coverage.out"
-go tool cover -html="coverage.out"
+dosh runtests
+dosh coverage
 ```

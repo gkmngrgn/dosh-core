@@ -25,7 +25,7 @@ commands:
     initdb:
         environments:
             - DEV
-        help: Load fixtures for development environment
+        help_text: Load fixtures for development environment
         run: ${docker} run --rm backend-shell python manage.py initdb
 `
 

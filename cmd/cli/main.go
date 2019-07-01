@@ -4,6 +4,9 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"syscall"
+
+	sequences "github.com/konsorten/go-windows-terminal-sequences"
 
 	"dosh"
 )
@@ -15,6 +18,8 @@ var (
 )
 
 func init() {
+	sequences.EnableVirtualTerminalProcessing(syscall.Stdout, true)
+
 	// Param: Initialize
 	cmdInit = flag.NewFlagSet("initialize", flag.ExitOnError)
 	flagInitConf = cmdInit.String("config", dosh.DefaultConf, getText("flag-conf-desc"))

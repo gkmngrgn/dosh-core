@@ -8,6 +8,7 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/logrusorgru/aurora"
 	"gopkg.in/yaml.v2"
 )
 
@@ -70,10 +71,10 @@ func getUsage(conf string) string {
 	sort.Strings(textCommands)
 
 	helpOutput := []string{
-		"Available Environments",
+		fmt.Sprint(aurora.Cyan("Available Environments")),
 		strings.Join(textEnvironments, "\n"),
 		"",
-		"Available Commands",
+		fmt.Sprint(aurora.Cyan("Available Commands")),
 		strings.Join(textCommands, "\n"),
 	}
 	// return fmt.Sprintf("--- t:\n%v\n\n", doshConfig)

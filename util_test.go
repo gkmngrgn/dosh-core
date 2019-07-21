@@ -17,6 +17,7 @@ var (
 		{"command 1", "command 1           "},
 		{"bla-bla-bla-bla-bla", "bla-bla-bla-bla-bla "},
 		{"foo", "foo                 "},
+		{"what if I write a too long command?", "what if I write a too long command?"},
 	}
 )
 

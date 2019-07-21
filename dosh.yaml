@@ -1,3 +1,5 @@
+dosh:
+    verbosity: 0  # {QUIET: -1, NORMAL: 0, DEBUG: 1}
 environments:
     - DEV
     - PROD
@@ -13,9 +15,9 @@ commands:
         run:
             - MKDIR ./tmp/
             - RUN ${gobuild} -o ./tmp/dosh.exe ./cmd/dosh
-            - PRINT "dosh is ready."
+            - PRINT dosh is ready.
             - RUN ${gobuild} -o ./tmp/dosh-cli.exe ./cmd/cli
-            - PRINT "dosh-cli is ready."
+            - PRINT dosh-cli is ready.
     runtests:
         environments:
             - DEV

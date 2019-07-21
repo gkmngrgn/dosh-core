@@ -52,3 +52,9 @@ dosh start dosh-cli
 dosh runtests
 dosh coverage
 ```
+
+# License
+See the [LICENSE](LICENSE.md) file for license rights and limitations (MIT).
+
+# To Do
+[ ] Parse commands and write unit tests for each command.

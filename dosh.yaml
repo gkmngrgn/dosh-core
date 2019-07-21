@@ -1,4 +1,5 @@
-dosh:
+settings:
+    version: 1.0.0
     verbosity: 0  # {QUIET: -1, NORMAL: 0, DEBUG: 1}
 environments:
     - DEV

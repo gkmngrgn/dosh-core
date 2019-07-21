@@ -11,21 +11,30 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-var (
-	doshConfig = DoshConfig{}
+const (
+	actionMKDIR = "MKDIR"
+	actionPRINT = "PRINT"
+	actionRUN   = "RUN"
 )
 
+var doshConfig = Config{}
+
 type (
+	// StringArray can be just a string or a string array.
 	StringArray []string
-	DoshCommand struct {
+
+	// SubCommand structure includes a sub-command info that specified by the user.
+	SubCommand struct {
 		HelpText     string      `yaml:"help_text"`
 		Run          StringArray `yaml:"run"`
 		Environments []string    `yaml:"environments"`
 	}
-	DoshConfig struct {
-		Environments []string               `yaml:"environments"`
-		Aliases      map[string]string      `yaml:"aliases"`
-		Commands     map[string]DoshCommand `yaml:"commands"`
+
+	// Config structure is for parsing the user configuration file.
+	Config struct {
+		Environments []string              `yaml:"environments"`
+		Aliases      map[string]string     `yaml:"aliases"`
+		Commands     map[string]SubCommand `yaml:"commands"`
 	}
 )
 
@@ -47,6 +56,7 @@ func (a *StringArray) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	return nil
 }
 
+// CheckConfigFile is an initial function to check the file existence and parsing as well.
 func CheckConfigFile(conf string) error {
 	data, err := ioutil.ReadFile(conf)
 	if err != nil {
@@ -91,6 +101,8 @@ func getUsage(conf string) string {
 // RunCommand func allows you to run commands from the yaml configuration without generating any
 // shell script.
 func RunCommand(conf string, args []string) {
+	var l Logger = Log{} // we will use log module later.
+
 	if err := CheckConfigFile(conf); err != nil {
 		fmt.Println(aurora.Red(err.Error()))
 		return
@@ -101,5 +113,62 @@ func RunCommand(conf string, args []string) {
 		os.Exit(0)
 	}
 
-	fmt.Printf("Test for runCommand. Args: %s", strings.Join(args, ", "))
+	var success bool
+
+	for index, subCmd := range doshConfig.Commands[args[0]].Run {
+		parsed := strings.SplitN(subCmd, " ", 2)
+		action := parsed[0]
+		params := parsed[1]
+
+		switch action {
+		case actionMKDIR:
+			l.info(VerbosityDEBUG, "%d. MKDIR", index+1)
+			success = RunActionMkdir(l, params)
+			break
+		case actionPRINT:
+			l.info(VerbosityDEBUG, "%d. PRINT", index+1)
+			success = RunActionPrint(l, params)
+			break
+		case actionRUN:
+			l.info(VerbosityDEBUG, "%d. RUN", index+1)
+			success = RunActionRun(l, params)
+			break
+		default:
+			l.error(VerbosityNORMAL, "Unknown action: %s", subCmd)
+			success = false
+			break
+		}
+
+		// do not continue if you get an error. all steps should be done successfully.
+		if success == false {
+			l.error(VerbosityDEBUG, "the last command was not success. it's stopped.")
+			os.Exit(1)
+		}
+	}
+
+	os.Exit(0)
+}
+
+func RunActionMkdir(l Logger, params string) bool {
+	stat, err := os.Stat(params)
+	if err != nil {
+		err = os.Mkdir(params, 0700)
+		return true
+	}
+
+	if !stat.IsDir() {
+		l.error(VerbosityNORMAL, "There's a file with the same name.")
+		return false
+	}
+
+	return true
+}
+
+func RunActionPrint(l Logger, params string) bool {
+	fmt.Println(params)
+	return true
+}
+
+func RunActionRun(l Logger, params string) bool {
+	return true
 }

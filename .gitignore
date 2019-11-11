@@ -1,9 +1,6 @@
-*.exe
-*.exe~
-*.dll
-*.so
-*.dylib
-*.test
-*.out
-vendor/
-tmp/
+#Added by cargo
+#
+#already existing elements are commented out
+
+/target
+**/*.rs.bk

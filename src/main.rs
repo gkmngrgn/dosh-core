@@ -1,3 +1,6 @@
+mod cli;
+
 fn main() {
-    println!("Hello, world!");
+    let app = cli::CLI::new();
+    app.run();
 }

@@ -1,10 +1,10 @@
 [package]
 name = "dosh"
-version = "0.1.0"
+version = "0.0.1"
 authors = ["Gökmen Görgen <gkmngrgn@gmail.com>"]
 edition = "2018"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+description = "A CLI app to manage your favorite commands"
+license = "MIT"
 
 [dependencies]
 clap = "2.33.0"

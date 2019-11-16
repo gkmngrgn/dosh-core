@@ -73,10 +73,12 @@ impl<'a> CLI<'a> {
                 Err(e) => println!("{:?}", e),
                 _ => println!("Done."),
             }
+        } else {
+            self.print_usage();
         }
-        if let Some(command) = self.arg_matches.values_of("command") {
-            println!("Command: {:?}", command);
-        }
+        // if let Some(command) = self.arg_matches.values_of("command") {
+        //     println!("Command: {:?}", command);
+        // }
     }
 
     fn init_file(&self) -> std::io::Result<()> {
@@ -87,5 +89,9 @@ impl<'a> CLI<'a> {
         let mut config_file = File::create(CONFIG_FILE_NAME)?;
         config_file.write_all(CONFIG_DEFAULT_CONTENT.as_bytes())?;
         Ok(())
+    }
+
+    fn print_usage(&self) {
+        println!("Not ready yet.");
     }
 }

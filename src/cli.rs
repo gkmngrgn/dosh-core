@@ -1,41 +1,10 @@
-extern crate clap;
+use crate::config;
+use crate::utils;
 use clap::{App, Arg, ArgMatches};
+use config::Config;
 use std::fs::File;
 use std::io::prelude::*;
 use std::path::Path;
-
-const CONFIG_FILE_NAME: &str = "dosh.yaml";
-const CONFIG_DEFAULT_CONTENT: &str = "\
-settings:
-    version: {version}
-    verbosity: 0  # {QUIET: -1, NORMAL: 0, DEBUG: 1}
-environments:
-    - PROD
-    - TEST
-aliases:
-    hugo:
-        win: hugo.exe
-        others: hugo  # {available OSes: win, linux, mac, bsd}
-commands:
-    start:
-        help_text: run the development server
-        run: ${hugo} server -D
-    build:
-        help_text: generate static files to the public folder
-        run: ${hugo}
-    deploy:
-        environments:
-            - PROD
-        help_text: deploy to the production server
-        run:
-            - CMD build
-            - CD public
-            - RUN git add .
-            - RUN git commit -m \"publish changes.\"
-            - RUN git push origin master
-            - CD ..
-            - PRINT \"DONE.\"
-";
 
 pub struct CLI<'a> {
     arg_matches: ArgMatches<'a>,
@@ -44,8 +13,8 @@ pub struct CLI<'a> {
 impl<'a> CLI<'a> {
     pub fn new() -> CLI<'a> {
         let arg_matches = App::new("Just do it, shh!")
-            .version("0.1.0")
-            .author("Gökmen Görgen")
+            .version(crate_version!())
+            .author(crate_authors!())
             .arg(
                 Arg::with_name("init")
                     .short("i")
@@ -74,7 +43,10 @@ impl<'a> CLI<'a> {
                 _ => println!("Done."),
             }
         } else {
-            self.print_usage();
+            match utils::get_config() {
+                Ok(config) => config.print_usage(),
+                Err(msg) => eprintln!("{}", msg),
+            }
         }
         // if let Some(command) = self.arg_matches.values_of("command") {
         //     println!("Command: {:?}", command);
@@ -82,16 +54,13 @@ impl<'a> CLI<'a> {
     }
 
     fn init_file(&self) -> std::io::Result<()> {
-        if Path::new(CONFIG_FILE_NAME).exists() {
-            let error_msg = format!("The file {} already exists.", CONFIG_FILE_NAME);
+        if Path::new(config::FILE_NAME).exists() {
+            let error_msg = format!("The file {} already exists.", config::FILE_NAME);
             return Err(std::io::Error::new(std::io::ErrorKind::Other, error_msg));
         }
-        let mut config_file = File::create(CONFIG_FILE_NAME)?;
-        config_file.write_all(CONFIG_DEFAULT_CONTENT.as_bytes())?;
+        let config_default = serde_yaml::to_string(&Config::new()).unwrap();
+        let mut config_file = File::create(config::FILE_NAME)?;
+        config_file.write_all(config_default.as_bytes())?;
         Ok(())
-    }
-
-    fn print_usage(&self) {
-        println!("Not ready yet.");
     }
 }

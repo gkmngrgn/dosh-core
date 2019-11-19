@@ -1,6 +1,8 @@
 use serde::{Deserialize, Serialize};
 use serde_yaml::{Mapping, Number, Value};
 use std::collections::HashMap;
+extern crate term;
+use std::io::prelude::*;
 
 pub static FILE_NAME: &str = "dosh.yaml";
 
@@ -80,20 +82,31 @@ impl Config {
     }
 
     pub fn print_usage(self) {
-        println!("Environments");
-        for environment in self.environments {
-            println!("  - {}", environment);
-        }
-        println!();
+        let mut t = term::stdout().unwrap();
 
-        println!("Commands");
+        t.fg(term::color::CYAN).unwrap();
+        writeln!(t, "Environments").unwrap();
+        t.reset().unwrap();
+
+        for environment in self.environments {
+            writeln!(t, "  - {}", environment).unwrap();
+        }
+        writeln!(t, "").unwrap();
+
+        t.fg(term::color::CYAN).unwrap();
+        writeln!(t, "Commands").unwrap();
+        t.reset().unwrap();
+
         for (name, command) in self.commands {
-            println!(
+            writeln!(
+                t,
                 "  > {name:20} {help_text}",
                 name = name,
                 help_text = command.help_text
-            );
+            )
+            .unwrap();
         }
+        t.reset().unwrap();
     }
 }
 

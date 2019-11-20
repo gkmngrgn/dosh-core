@@ -1,4 +1,5 @@
 use crate::config;
+use crate::terminal;
 use crate::utils;
 use clap::{App, Arg, ArgMatches};
 use config::Config;
@@ -37,15 +38,16 @@ impl<'a> CLI<'a> {
     }
 
     pub fn run(&self) {
+        let mut t = terminal::Terminal::new();
         if self.arg_matches.is_present("init") {
             match self.init_file() {
-                Err(e) => println!("{:?}", e),
-                _ => println!("Done."),
+                Err(e) => t.error(&format!("{}", e)),
+                _ => t.line("Done."),
             }
         } else {
             match utils::get_config() {
                 Ok(config) => config.print_usage(),
-                Err(msg) => eprintln!("{}", msg),
+                Err(msg) => t.error(&msg),
             }
         }
         // if let Some(command) = self.arg_matches.values_of("command") {

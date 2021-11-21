@@ -4,6 +4,6 @@ version = "0.1.0"
 authors = ["Gökmen Görgen <gkmngrgn@gmail.com>"]
 edition = "2018"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
 [dependencies]
+starlark = { git = "https://github.com/facebookexperimental/starlark-rust", branch = "main" }
+structopt = "0.3.25"

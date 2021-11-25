@@ -1,9 +1,10 @@
 use std::process::exit;
 
+use structopt::StructOpt;
+
 use dosh::command::Command;
 use dosh::config::Config;
 use dosh::help::Help;
-use structopt::StructOpt;
 
 #[derive(StructOpt, Debug)]
 #[structopt(name = "dosh")]
@@ -11,17 +12,20 @@ struct Opt {
     #[structopt()]
     command: Option<String>,
 
+    /// Create a new dosh config folder in an existing directory
     #[structopt(long)]
     init: bool,
 
+    /// Verbose mode (-v, -vv, -vvv, etc.)
     #[structopt(short, long, parse(from_occurrences))]
     verbose: u8,
 }
 
 fn main() {
     let opt = Opt::from_args();
+    let config = Config::new();
+
     if opt.init {
-        let config = Config::new();
         match config.initialize() {
             Ok(msg) => {
                 println!("{}", msg);
@@ -34,15 +38,21 @@ fn main() {
         }
     }
 
-    match &opt.command {
+    let is_worked = match &opt.command {
         Some(name) => {
-            let cmd = Command::new(&name);
-            cmd.run();
+            if name == "help" {
+                false
+            } else {
+                let cmd = Command::new(&name, "description: foo");
+                cmd.run();
+                true
+            }
         }
-        None => {
-            let help = Help::new();
-            help.print();
-        }
+        None => true,
+    };
+
+    if !is_worked {
+        let help = Help::new(config);
+        help.print();
     }
-    dbg!(opt);
 }

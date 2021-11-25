@@ -64,3 +64,5 @@ commands with `--help` or `-h`:
 ## TODO
 
 - [-] First starlark implementation.
+- [ ] Add `help.bzl` with initialize. So devs can use that file as a
+      sample.

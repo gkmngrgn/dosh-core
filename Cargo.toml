@@ -6,5 +6,5 @@ edition = "2018"
 
 [dependencies]
 console = "0.15.0"
-starlark = { git = "https://github.com/facebookexperimental/starlark-rust", branch = "main" }
+starlark = "0.6.0"
 structopt = "0.3.25"

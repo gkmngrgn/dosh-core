@@ -958,8 +958,9 @@ checksum = "f67ad224767faa3c7d8b6d91985b78e70a1324408abcb1cfcc2be4c06bc06043"
 
 [[package]]
 name = "starlark"
-version = "0.5.0"
-source = "git+https://github.com/facebookexperimental/starlark-rust?branch=main#4fc26687df9a975eeb26f6b3d6f995d188fd00ba"
+version = "0.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "80312f7d70f03cde4505d7b2700da812056d8d3eebbf1689f76d16e16e8d1edb"
 dependencies = [
  "annotate-snippets",
  "anyhow",
@@ -999,8 +1000,9 @@ dependencies = [
 
 [[package]]
 name = "starlark_derive"
-version = "0.5.0"
-source = "git+https://github.com/facebookexperimental/starlark-rust?branch=main#4fc26687df9a975eeb26f6b3d6f995d188fd00ba"
+version = "0.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "bcc89ecc26b5695f64d0bffdf05d5020de7e06e355d9f51c939a1e4fdd5f5230"
 dependencies = [
  "gazebo 0.2.2",
  "proc-macro2",

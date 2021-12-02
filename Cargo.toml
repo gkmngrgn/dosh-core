@@ -6,5 +6,8 @@ edition = "2018"
 
 [dependencies]
 console = "0.15.0"
+serde = "1.0.130"
+serde_derive = "1.0.130"
+serde_json = "1.0.72"
 starlark = "0.6.0"
 structopt = "0.3.25"

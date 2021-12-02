@@ -3,7 +3,7 @@ use std::io::Write;
 use std::path::PathBuf;
 
 use crate::command::Command;
-use crate::constants::{DOSH_CONF_NAME, DOSH_FOLDER_NAME};
+use crate::constants::{DOSH_BUILD_DIR, DOSH_CONF_DIR, DOSH_CONF_NAME};
 
 #[derive(Clone)]
 pub struct Config {
@@ -12,7 +12,7 @@ pub struct Config {
 
 impl Config {
     pub fn new() -> Self {
-        let config_dir = PathBuf::from(DOSH_FOLDER_NAME);
+        let config_dir = PathBuf::from(DOSH_CONF_DIR);
         Self { config_dir }
     }
 
@@ -35,7 +35,7 @@ impl Config {
 
     pub fn initialize(self) -> Result<&'static str, &'static str> {
         if !self.config_dir.exists() {
-            match create_dir_all(DOSH_FOLDER_NAME) {
+            match create_dir_all(DOSH_CONF_DIR) {
                 Err(e) => {
                     dbg!(e);
                     return Err("error 1.");

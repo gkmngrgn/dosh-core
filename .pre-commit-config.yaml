@@ -15,6 +15,11 @@ repos:
       - id: forbid-crlf
       - id: remove-crlf
 
+  - repo: https://github.com/pycqa/pydocstyle
+    rev: 6.1.1
+    hooks:
+      - id: pydocstyle
+
   - repo: https://github.com/pycqa/isort
     rev: 5.10.1
     hooks:

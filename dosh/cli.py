@@ -2,41 +2,23 @@
 
 import sys
 from argparse import ArgumentParser, Namespace
-from pathlib import Path
+from typing import Final
 
 from dosh.help import generate_help
+from dosh.parser import get_config_parser
 
-CONFIG_FILENAME = "dosh.bzl"
-RESERVED_COMMANDS = ["help", "init"]
-
-
-def parse_command() -> None:
-    print(sys.argv)
-    print("parse command")
-
-
-def parse_help() -> None:
-    output = generate_help()
-    print(output)
-
-
-def parse_init() -> None:
-    print("parse init")
+RESERVED_COMMANDS: Final = ["help", "init"]
 
 
 class CLI:
+    """DOSH command line interface."""
+
     def __init__(self) -> None:
-        self.config_file = self.__find_config_file()
-
-    def __find_config_file(self) -> Path:
-        """
-        Return file path of dosh script.
-
-        TODO: Improve this function to find the file in a different folder.
-        """
-        return Path.cwd() / CONFIG_FILENAME
+        """Initialize cli with config parser."""
+        self.config_parser = get_config_parser()
 
     def parse_arguments(self) -> Namespace:
+        """Parse sub commands and generate help output."""
         parser = ArgumentParser(
             prog=__package__,
             description="Shell-independent command manager.",
@@ -45,39 +27,49 @@ class CLI:
 
         # help command
         parser_help = subparsers.add_parser("help")
-        parser_help.set_defaults(func=parse_help)
+        parser_help.set_defaults(func=self.parse_help)
 
         # init command
         parser_init = subparsers.add_parser("init")
-        parser_init.set_defaults(func=parse_init)
+        parser_init.set_defaults(func=self.parse_init)
 
         return parser.parse_args()
 
+    def parse_command(self) -> None:
+        """Parse user-defined commands."""
+        print(sys.argv)
+        print("parse command")
+
+    def parse_help(self) -> None:
+        """Print help output."""
+        commands = self.config_parser.get_commands()
+        output = generate_help(commands)
+        print(output)
+
+    def parse_init(self) -> None:
+        """Initialize a new dosh configuration."""
+        print("parse init")
+
     def config_exists(self) -> bool:
-        return self.config_file.exists()
+        """Return dosh configuration file existency."""
+        return self.config_parser.content is not None
 
     def run(self) -> None:
+        """Run cli reading the arguments."""
         if len(sys.argv) == 1:
-            parse_help()
+            self.parse_help()
         else:
             cmd = sys.argv[1]
 
             if cmd not in RESERVED_COMMANDS and not cmd.startswith("-"):
-                parse_command()
+                self.parse_command()
             else:
                 parsed_args = self.parse_arguments()
                 parsed_args.func()
 
 
-def validate_config_file() -> None:
-    pass
-
-
-def eval_config_file() -> None:
-    pass
-
-
 def run() -> None:
+    """Run command line interface app."""
     cli = CLI()
 
     if cli.config_exists():

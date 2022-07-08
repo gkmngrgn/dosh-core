@@ -5,27 +5,14 @@ from contextlib import redirect_stdout
 from dataclasses import dataclass
 from io import StringIO
 from pathlib import Path
-from typing import Any, Dict, Final, Optional
+from typing import Any, Dict, Final, List, Optional
+
+from dosh.commands import inject_print_commands, run
 
 CONFIG_FILENAME: Final = "dosh.star"
-
-
-def inject_print_commands(locals: Dict[str, Any]) -> None:
-    """Inject a function to parse commands in user-defined dosh configuration."""
-    from inspect import isfunction
-
-    prefix = "cmd_"
-    commands = filter(
-        lambda k: k.startswith(prefix) and isfunction(locals.get(k)), locals.keys()
-    )
-    output = {}
-
-    for cmd_func in commands:
-        cmd_name = cmd_func[len(prefix) :]
-        cmd_help = locals.get(cmd_func).__doc__
-        output[cmd_name] = cmd_help
-
-    print(json.dumps(output))
+COMMANDS = {
+    "run": run,
+}
 
 
 @dataclass
@@ -36,17 +23,33 @@ class ConfigParser:
 
     def get_commands(self) -> Dict[str, str]:
         """Parse commands from dosh configuration."""
-        f = StringIO()
+        output = self.run_script(
+            commands=[
+                "locals = locals().copy()",
+                "print_commands(locals)",
+            ],
+            locals={
+                "print_commands": inject_print_commands,
+            },
+        )
 
-        content = self.content or ""
-        content += "\n".join(["locals = locals().copy()", "print_commands(locals)"])
-
-        with redirect_stdout(f):
-            exec(content, {"print_commands": inject_print_commands})
-
-        output = f.getvalue()
         data: Dict[str, str] = json.loads(output)
         return data
+
+    def run_script(self, commands: List[str], locals: Dict[str, Any] = {}) -> str:
+        """Run dosh script manipulating the content."""
+        output = StringIO()
+        content = (self.content or "") + "\n".join(commands)
+        locals.update(COMMANDS)
+
+        with redirect_stdout(output):
+            exec(content, locals)
+
+        return output.getvalue()
+
+    def run_command(self, command: str) -> str:
+        """Run command if the command exists or return error."""
+        return self.run_script([f"cmd_{command}()"])
 
 
 def find_config_file() -> Path:

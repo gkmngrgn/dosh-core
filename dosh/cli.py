@@ -37,8 +37,7 @@ class CLI:
 
     def parse_command(self) -> None:
         """Parse user-defined commands."""
-        print(sys.argv)
-        print("parse command")
+        self.config_parser.run_command(sys.argv[1])
 
     def parse_help(self) -> None:
         """Print help output."""

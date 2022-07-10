@@ -13,14 +13,14 @@ jobs:
       - run:
           name: "Download pyoxidizer"
           command: |
-            curl -L -o ./pyoxidizer.tar.gz $GITHUB_URL/$VERSION/pyoxidizer-$VERSION-x86_64-unknown-linux-musl.tar.gz
-            tar -xf pyoxidizer.tar.gz
-            chmod +x pyoxidizer
+            curl -OL $URL
+            tar -xf $NAME.tar.gz
             mkdir -p /tmp/bin
-            mv pyoxidizer /tmp/bin
+            mv $NAME/pyoxidizer /tmp/bin
           environment:
             VERSION: 0.22.0
-            GITHUB_URL: https://github.com/indygreg/PyOxidizer/releases/download/pyoxidizer
+            NAME: pyoxidizer-$VERSION-x86_64-unknown-linux-musl
+            URL: https://github.com/indygreg/PyOxidizer/releases/download/pyoxidizer/$VERSION/$NAME.tar.gz
       - run:
           name: "Say hello"
           command: "echo Hello, Ubuntu!"

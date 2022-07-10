@@ -29,6 +29,52 @@ commands with `help`:
     $ dosh update_translations -- langs=en,de,tr fuzzy=false
     ...
 
+## EXAMPLE CONFIGURATION
+
+```python
+CONFIG_DIR = home_dir(".config")
+BIN_DIR = home_dir(".local/bin")
+
+
+def cmd_install():
+    """Install config files."""
+
+    copy("./config/*", CONFIG_DIR)
+    copy("./home/.*", HOME)
+
+    if SHELL == "zsh":
+        if not exists(home_dir(".oh-my-zsh")):
+            eval("https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh", type="shell", fetch=True)
+
+        if exists("conda", type="command"):
+            eval("conda init zsh")
+
+    tpm_folder = home_dir(".tmux/plugins/tpm")
+    if not exists(tpm_folder):
+        clone("https://github.com/tmux-plugins/tpm", directory=tpm_folder)
+    else:
+        print("update tpm repository...")
+        sync(tpm_folder)
+
+    if not exists("nvm", type="command"):
+        eval("https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh", type="shell", fetch=True)
+
+
+def cmd_install_cli_apps():
+    """Install required packages."""
+
+    brew_install("helix", tap="helix-editor/helix")
+
+    brew_install([
+        "MisterTea/et/et", "bat", "clojure", "cmake", "deno", "exa", "exercism", "fd",
+        "git-delta", "git-lfs", "golang", "htop", "hugo", "jq", "llvm",
+        "multimarkdown", "openssl", "pass", "pre-commit", "ripgrep", "rustup-init",
+        "rust-analyzer", "shellcheck", "tmux"])
+
+    if OSTYPE == "darwin":
+        brew_install(["font-ibm-plex", "miktex-console", "miniconda"])
+```
+
 
 ## ENVIRONMENT VARIABLES
 

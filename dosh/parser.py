@@ -7,11 +7,12 @@ from io import StringIO
 from pathlib import Path
 from typing import Any, Dict, Final, List, Optional
 
-from dosh.commands import inject_print_commands, run
+from dosh.commands import env, inject_print_commands, eval
 
 CONFIG_FILENAME: Final = "dosh.star"
 COMMANDS = {
-    "run": run,
+    "env": env,
+    "eval": eval,
 }
 
 

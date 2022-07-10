@@ -32,6 +32,8 @@ commands with `help`:
 ## EXAMPLE CONFIGURATION
 
 ```python
+# dosh.star
+
 CONFIG_DIR = home_dir(".config")
 BIN_DIR = home_dir(".local/bin")
 
@@ -93,6 +95,8 @@ def cmd_install_cli_apps():
 ### `brew_install`
 
 ### `copy`
+
+### `env`
 
 ### `eval`
 

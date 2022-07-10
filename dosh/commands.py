@@ -1,11 +1,17 @@
 """Available commands for `dosh.star`."""
 
 import json
+import os
 import subprocess
 from typing import Any, Dict
 
 
-def run(command: str) -> None:
+def env(key: str) -> str:
+    """Return an OS environment."""
+    return os.getenv(key) or ""
+
+
+def eval(command: str) -> None:
     """Run a shell command using subprocess."""
     subprocess.run(command.split(), shell=True)
 

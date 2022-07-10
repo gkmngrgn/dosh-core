@@ -1,0 +1,41 @@
+[tool.poetry]
+name = "dosh"
+version = "0.1.0"
+description = "Shell-independent command manager."
+authors = ["Gökmen Görgen <gkmngrgn@gmail.com>"]
+license = "MIT"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+# DO NOT ADD ANY DEPENDENCY. WE USE PYOXIDIZER.
+
+[tool.poetry.dev-dependencies]
+pytest = "^7.1.2"
+pyoxidizer = "^0.22.0"
+poethepoet = "^0.15.0"
+
+[tool.poe.tasks.dosh]
+script = "dosh.cli:run()"
+help = "Run dosh without oxidizing"
+
+[tool.poe.tasks.build]
+cmd = "pyoxidizer build"
+help = "Build dosh"
+
+[tool.poe.tasks.lint]
+cmd = "pre-commit run --all-files"
+help = "Check code quality"
+
+[tool.poe.tasks.test]
+cmd = "pytest -sk $name"
+help = "Run tests"
+
+[[tool.poe.tasks.test.args]]
+name = "name"
+positional = true
+default = "test"
+help = "Filter tests by $name"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

@@ -75,7 +75,3 @@ def run() -> None:
         cli.run()
     else:
         print("Config file doesn't exist.")
-
-
-if __name__ == "__main__":
-    run()

@@ -11,8 +11,18 @@ jobs:
     steps:
       - checkout
       - run:
+          name: "Download pyoxidizer"
+          command: |
+            curl -o pyoxidizer.tar.gz https://github.com/indygreg/PyOxidizer/releases/download/pyoxidizer%2F0.22.0/pyoxidizer-0.22.0-x86_64-unknown-linux-musl.tar.gz
+            tar -xf pyoxidizer.tar.gz
+            chmod +x pyoxidizer
+            mkdir -p /tmp/bin
+            mv pyoxidizer /tmp/bin
+      - run:
           name: "Say hello"
           command: "echo Hello, Ubuntu!"
+      - store_artifacts:
+          path: /tmp/bin/pyoxidizer
 
   build-macos-amd64:
     macos:
@@ -37,5 +47,5 @@ workflows:
   build-all:
     jobs:
       - build-linux-amd64
-      - build-macos-amd64
-      - build-windows-amd64
+      # - build-macos-amd64
+      # - build-windows-amd64

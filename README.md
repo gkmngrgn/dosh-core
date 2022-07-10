@@ -5,26 +5,9 @@ Shell-independent command manager. Create your bazel scripts in
 environments. Dosh will generate a script for your favorite shell.
 
 
-    ┌──────────────────────────────────────────────────────────────┐
-    │  DOSH SCRIPTS                                                │
-    │  Folder: /.dosh/                                             │
-    ├──────────────────────────────────────────────────────────────┤
-    │  ┌───────────────────┐          ┌─────────────────────────┐  │
-    │  │  BUILD            ◄──────┬───┤  COMMON FUNCTIONS &     │  │
-    │  │  Run: dosh build  │      │   │  ENVIRONMENT VARIABLES  │  │
-    │  │  File: build.bzl  │      │   │  File: dosh.bzl         │  │
-    │  └───────────────────┘      │   └─────────────────────────┘  │
-    │  ┌──────────────────────┐   │                                │
-    │  │  SHELL (for Docker)  ◄───┘                                │
-    │  │  Run: dosh shell     │                                    │
-    │  │  File: shell.bzl     │                                    │
-    │  └──────────────────────┘                                    │
-    └──────────────────────────────────────────────────────────────┘
-
-
 ## GENERATION OVERVIEW
 
-1. Write your commands in Bazel.
+1. Write your commands in Starlark.
 2. DOSH generates a JSON file for handling all commands.
 3. DOSH can generate also a BASH or PWSH script.
 
@@ -42,25 +25,37 @@ commands with `help`:
 
 
     $ dosh build
-    ...
 
     $ dosh update_translations -- langs=en,de,tr fuzzy=false
     ...
 
 
-## PRE-DEFINED FUNCTIONS
+## ENVIRONMENT VARIABLES
 
-- [ ] eval
-- [ ] mkdir
-- [ ] copy
+### `HOME`
+
+### `OSTYPE`
+
+### `SHELL`
 
 
-## TODO
+## FUNCTIONS
 
-- [-] First starlark implementation.
-- [ ] Read commands from a JSON file.
-- [ ] Use MessagePack instead of JSON for (de)serialization process.
-- [ ] Add `help.bzl` with initialize. So devs can use that file as a
-      sample.
-- [ ] Generate BASH script from TOML.
-- [ ] Generate PWSH script from .
+### `brew_install`
+
+### `copy`
+
+### `eval`
+
+### `exists`
+
+Parameters:
+
+- `file_or_directory` (default)
+- `command`
+
+### `home_dir`
+
+### `print`
+
+### `sync`

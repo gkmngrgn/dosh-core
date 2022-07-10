@@ -1,17 +1,42 @@
 version: 2.1
 
+orbs:
+  windows: circleci/windows@4.1.1
+
 jobs:
-  say-hello:
-    docker:
-      - image: cimg/base:stable
+  build-linux-amd64:
+    machine:
+      image: ubuntu-2204:2022.04.2
 
     steps:
       - checkout
       - run:
           name: "Say hello"
-          command: "echo Hello, World!"
+          command: "echo Hello, Ubuntu!"
+
+  build-macos-amd64:
+    macos:
+      xcode: 12.5.1
+
+    steps:
+      - checkout
+      - run:
+          name: "Say hello"
+          command: "echo Hello, MacOS!"
+
+  build-windows-amd64:
+    build:
+      executor: win/server-2022
+
+    steps:
+      - checkout
+      - run:
+          name: "Say hello"
+          command: "echo Hello, Windows!"
 
 workflows:
-  say-hello-workflow:
+  build-all:
     jobs:
-      - say-hello
+      - build-linux-amd64
+      - build-macos-amd64
+      - build-windows-amd64

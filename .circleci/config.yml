@@ -17,12 +17,13 @@ jobs:
             tar -xf pyoxidizer-$VERSION-x86_64-unknown-linux-musl.tar.gz
             mkdir -p /tmp/bin
             mv pyoxidizer-$VERSION-x86_64-unknown-linux-musl/pyoxidizer /tmp/bin
+            export PATH=/tmp/bin:$PATH
           environment:
             VERSION: 0.22.0
             URL: https://github.com/indygreg/PyOxidizer/releases/download/pyoxidizer
       - run:
-          name: "Say hello"
-          command: "echo Hello, Ubuntu!"
+          name: "Build dosh"
+          command: "pyoxidizer build"
       - store_artifacts:
           path: /tmp/bin/pyoxidizer
 

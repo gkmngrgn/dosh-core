@@ -44,20 +44,23 @@ def cmd_install():
 
     if SHELL == "zsh":
         if not exists(home_dir(".oh-my-zsh")):
-            eval("https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh", type="shell", fetch=True)
+            url = "https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh"
+            eval(url, type="shell", fetch=True)
 
         if exists("conda", type="command"):
             eval("conda init zsh")
 
     tpm_folder = home_dir(".tmux/plugins/tpm")
-    if not exists(tpm_folder):
-        clone("https://github.com/tmux-plugins/tpm", directory=tpm_folder)
-    else:
+    if exists(tpm_folder):
         print("update tpm repository...")
         sync(tpm_folder)
+    else:
+        url = "https://github.com/tmux-plugins/tpm"
+        clone(url, directory=tpm_folder)
 
     if not exists("nvm", type="command"):
-        eval("https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh", type="shell", fetch=True)
+        url = "https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh"
+        eval(url, type="shell", fetch=True)
 
 
 def cmd_install_cli_apps():

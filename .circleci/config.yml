@@ -25,8 +25,7 @@ jobs:
           command: "echo Hello, MacOS!"
 
   build-windows-amd64:
-    build:
-      executor: win/server-2022
+    executor: windows/server-2022
 
     steps:
       - checkout

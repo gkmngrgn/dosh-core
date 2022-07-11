@@ -1,33 +1,31 @@
 # DOSH
 
-Shell-independent command manager. Create your bazel scripts in
-`./.dosh/` folder file and define your custom commands, alias,
-environments. Dosh will generate a script for your favorite shell.
-
-
-## GENERATION OVERVIEW
-
-1. Write your commands in Starlark.
-2. DOSH generates a JSON file for handling all commands.
-3. DOSH can generate also a BASH or PWSH script.
+Shell-independent command manager. Create your `dosh.star` file in the
+project folder and define your tasks, aliases, environments. Dosh will
+work like a CLI app reading your config.
 
 
 ## USAGE
 
-After you created your .bzl scripts, you can see all available
-commands with `help`:
+After you created your `dosh.star` file, you can see all available
+tasks with the command `dosh` or `dosh help`:
 
-    $ dosh help
+```shell
+$ dosh help
 
-    Available commands:
-      > build             build your project.
-      > shell             log in to docker shell.
+Tasks:
+  > build                  build your project.
+  > shell                  log in to docker shell.
+  > update_translations    update django translation files.
+    params: langs=str(en|de|tr)
+            fuzzy=bool
 
+$ dosh build
 
-    $ dosh build
+$ dosh update_translations -- langs=en,de,tr fuzzy=false
+...
+```
 
-    $ dosh update_translations -- langs=en,de,tr fuzzy=false
-    ...
 
 ## EXAMPLE CONFIGURATION
 
@@ -83,32 +81,27 @@ def cmd_install_cli_apps():
 
 ## ENVIRONMENT VARIABLES
 
-### `HOME`
+- `HOME`
 
-### `OSTYPE`
+- `OSTYPE`
 
-### `SHELL`
+- `SHELL`
 
 
 ## FUNCTIONS
 
-### `brew_install`
+- `brew_install`
 
-### `copy`
+- `copy`
 
-### `env`
+- `env`
 
-### `eval`
+- `eval`
 
-### `exists`
+- `exists, type={file_or_directory(default),command}`
 
-Parameters:
+- `home_dir`
 
-- `file_or_directory` (default)
-- `command`
+- `print`
 
-### `home_dir`
-
-### `print`
-
-### `sync`
+- `sync`

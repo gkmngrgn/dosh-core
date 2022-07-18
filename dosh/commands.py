@@ -3,6 +3,7 @@
 import json
 import os
 import subprocess
+from subprocess import CompletedProcess
 from typing import Any, Dict
 
 
@@ -11,9 +12,9 @@ def env(key: str) -> str:
     return os.getenv(key) or ""
 
 
-def eval(command: str) -> None:
+def eval(command: str) -> CompletedProcess[bytes]:
     """Run a shell command using subprocess."""
-    subprocess.run(command.split(), shell=True)
+    return subprocess.run(command.split(), capture_output=True)
 
 
 def inject_print_commands(locals: Dict[str, Any]) -> None:

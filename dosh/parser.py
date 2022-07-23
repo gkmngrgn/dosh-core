@@ -8,11 +8,17 @@ from pathlib import Path
 from typing import Any, Dict, Final, List, Optional
 
 from dosh.commands import env, eval, inject_print_commands
+from dosh.environments import HOME, OSTYPE, SHELL
 
 CONFIG_FILENAME: Final = "dosh.star"
-COMMANDS = {
+COMMANDS: Final = {
     "env": env,
     "eval": eval,
+}
+ENVIRONMENTS: Final = {
+    "HOME": HOME,
+    "OSTYPE": OSTYPE,
+    "SHELL": SHELL,
 }
 
 
@@ -42,6 +48,7 @@ class ConfigParser:
         output = StringIO()
         content = (self.content or "") + "\n".join(commands)
         locals.update(COMMANDS)
+        locals.update(ENVIRONMENTS)
 
         with redirect_stdout(output):
             exec(content, locals)

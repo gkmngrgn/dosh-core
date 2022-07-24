@@ -7,18 +7,25 @@ from io import StringIO
 from pathlib import Path
 from typing import Any, Dict, Final, List, Optional
 
-from dosh.commands import env, eval, inject_print_commands
-from dosh.environments import HOME, OSTYPE, SHELL
+from dosh import commands as cmd
+from dosh import environments as env
 
 CONFIG_FILENAME: Final = "dosh.star"
+GLOBALS: Final = {
+    "__builtins__": None,
+}
 COMMANDS: Final = {
-    "env": env,
-    "eval": eval,
+    "env": cmd.env,
+    "eval": cmd.eval,
+    "copy": cmd.copy,
 }
 ENVIRONMENTS: Final = {
-    "HOME": HOME,
-    "OSTYPE": OSTYPE,
-    "SHELL": SHELL,
+    "IS_ZSH": env.SHELL == "zsh",
+    "IS_BASH": env.SHELL == "bash",
+    "IS_PWSH": env.SHELL == "pwsh",
+    "IS_MACOS": env.OSTYPE.startswith("darwin"),
+    "IS_LINUX": env.OSTYPE == "linux",
+    "IS_WINDOWS": env.OSTYPE == "msys",
 }
 
 
@@ -36,7 +43,7 @@ class ConfigParser:
                 "print_commands(locals)",
             ],
             locals={
-                "print_commands": inject_print_commands,
+                "print_commands": cmd.inject_print_commands,
             },
         )
 
@@ -51,7 +58,7 @@ class ConfigParser:
         locals.update(ENVIRONMENTS)
 
         with redirect_stdout(output):
-            exec(content, locals)
+            exec(content, GLOBALS, locals)
 
         return output.getvalue()
 

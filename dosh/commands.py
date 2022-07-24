@@ -57,7 +57,7 @@ def eval_url(url: str) -> CompletedProcess[bytes]:
 
 def exists(path: str) -> bool:
     """Check if the path exists in the file system."""
-    # FIXME: not ready yet.
+    return Path(path).exists()
 
 
 def exists_command(command: str) -> bool:

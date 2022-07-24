@@ -30,6 +30,19 @@ def test_eval():
     assert result.stdout == b"Hello, World!\n"
 
 
+def test_exists(tmp_path):
+    src_path1 = tmp_path / "this-file-does-not-exist.txt"
+    assert not cmd.exists(str(src_path1))
+
+    src_path2 = tmp_path / "this-file-exists.txt"
+    src_path2.touch()
+    assert cmd.exists(str(src_path2))
+
+    src_path3 = tmp_path / "this" / "folder" / "exists"
+    src_path3.mkdir(parents=True)
+    assert cmd.exists(str(src_path3))
+
+
 def test_home_dir():
     # I want to run tests on my locale so there's no common solution to define home
     # statically. However, I can be sure that the home is not empty.

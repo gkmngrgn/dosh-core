@@ -1,30 +1,43 @@
 """Available commands for `dosh.star`."""
 import json
 import os
+import shutil
 import subprocess
 from pathlib import Path
 from subprocess import CompletedProcess
-from typing import Any, Dict, List
+from typing import Any, Dict
 
 
-def brew_install(*packages: List[str]) -> None:
+def brew_install(*packages: str) -> None:
+    """Install packages with brew."""
     # FIXME: not ready yet.
-    pass
 
 
-def brew_tap(*repos: List[str]) -> None:
+def brew_tap(*repos: str) -> None:
+    """Install additional repositories of brew."""
     # FIXME: not ready yet.
-    pass
 
 
 def copy(source: str, destination: str) -> None:
-    # FIXME: not ready yet.
-    pass
+    """Copy files from source to destination. It works like `cp` command."""
+    src_folder, src_path = source.split("/", 1)
+    dst_path = Path(destination)
+
+    # TODO: but what if a source is a file, not folder...
+    dst_path.mkdir(parents=True, exist_ok=True)
+
+    for path in Path(src_folder or "/").glob(src_path):
+        path_dst = dst_path / path.name
+
+        if path.is_dir():
+            shutil.copytree(path, path_dst)
+        else:
+            shutil.copy(path, path_dst)
 
 
 def clone(url: str, folder: str = ".", sync: bool = False) -> None:
+    """Clone repository from VCS."""
     # FIXME: not ready yet.
-    pass
 
 
 def env(key: str) -> str:
@@ -38,18 +51,18 @@ def eval(command: str) -> CompletedProcess[bytes]:
 
 
 def eval_url(url: str) -> CompletedProcess[bytes]:
+    """Run a remote shell script directly."""
     # FIXME: not ready yet.
-    pass
 
 
 def exists(path: str) -> bool:
+    """Check if the path exists in the file system."""
     # FIXME: not ready yet.
-    pass
 
 
 def exists_command(command: str) -> bool:
+    """Check if the command exists."""
     # FIXME: not ready yet.
-    pass
 
 
 def home_dir(path: str = ".") -> str:
@@ -76,5 +89,5 @@ def inject_print_commands(locals: Dict[str, Any]) -> None:
 
 
 def log(message: str, level: int) -> None:
+    """Print the messages to the stdout."""
     # FIXME: not ready yet.
-    pass

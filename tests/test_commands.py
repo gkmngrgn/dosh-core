@@ -3,6 +3,19 @@ import os
 from dosh import commands as cmd
 
 
+def test_copy(tmp_path):
+    (tmp_path / "foo" / "bar" / "baz").mkdir(parents=True)
+    (tmp_path / "foo" / "bar" / "meow.py").touch()
+    (tmp_path / "foo" / "bar" / "baz" / "hell.txt").touch()
+
+    src = str(tmp_path / "foo" / "*")
+    dst = str(tmp_path / "dst")
+    cmd.copy(src, dst)
+
+    assert (tmp_path / "dst" / "bar" / "meow.py").exists()
+    assert (tmp_path / "dst" / "bar" / "baz" / "hell.txt").exists()
+
+
 def test_env():
     key_ = "DOSH_ENV"
     os.environ[key_] = "production"

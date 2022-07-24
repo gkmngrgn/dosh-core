@@ -105,3 +105,12 @@ def cmd_install_cli_apps():
 - `print`
 
 - `sync`
+
+
+## QUESTIONS
+
+### WHY DOESN'T DOSH HAVE ANY REMOVE COMMAND?
+
+Because it's too dangerous! Even the authors and contributors of this
+project don't guarantee anything. If you really need a remove command,
+you can run it with `eval`.

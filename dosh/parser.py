@@ -1,5 +1,6 @@
 """DOSH config parser."""
 
+import builtins
 import json
 from contextlib import redirect_stdout
 from dataclasses import dataclass
@@ -12,12 +13,14 @@ from dosh import environments as env
 
 CONFIG_FILENAME: Final = "dosh.star"
 GLOBALS: Final = {
-    "__builtins__": None,
+    "__builtins__": builtins,  # TODO: remove unused builtins here.
 }
 COMMANDS: Final = {
     "env": cmd.env,
     "eval": cmd.eval,
+    "exists": cmd.exists,
     "copy": cmd.copy,
+    "home_dir": cmd.home_dir,
 }
 ENVIRONMENTS: Final = {
     "IS_ZSH": env.SHELL == "zsh",
@@ -54,6 +57,7 @@ class ConfigParser:
         """Run dosh script manipulating the content."""
         output = StringIO()
         content = (self.content or "") + "\n".join(commands)
+
         locals.update(COMMANDS)
         locals.update(ENVIRONMENTS)
 

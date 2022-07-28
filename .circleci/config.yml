@@ -6,7 +6,9 @@ orbs:
 
 jobs:
   build-linux-amd64:
-    executor: python/default
+    executor:
+      name: python/default
+      tag: 3.9
 
     steps:
       - checkout

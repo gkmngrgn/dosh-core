@@ -1,4 +1,5 @@
 import os
+import urllib.request
 
 from dosh import commands as cmd
 
@@ -28,6 +29,22 @@ def test_env():
 def test_eval():
     result = cmd.eval("echo Hello, World!")
     assert result.stdout == b"Hello, World!\n"
+
+
+def test_eval_url(httpserver):
+    sh_content = 'echo "Hello, World!"'
+    httpserver.expect_request("/hello.sh").respond_with_data(
+        sh_content, content_type="text/plain"
+    )
+    url = httpserver.url_for("/hello.sh")
+
+    with urllib.request.urlopen(url) as response:
+        content = response.read()
+
+    assert content.decode("utf-8") == sh_content
+
+    result = cmd.eval_url(url)
+    assert result.stdout.decode("utf-8") == "Hello, World!\n"
 
 
 def test_exists(tmp_path):

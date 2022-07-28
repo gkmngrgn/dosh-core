@@ -42,40 +42,40 @@ def cmd_install():
     copy("./config/*", CONFIG_DIR)
     copy("./home/.*", HOME)
 
-    if SHELL == "zsh":
+    if IS_ZSH:
         if not exists(home_dir(".oh-my-zsh")):
-            url = "https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh"
-            eval(url, type="shell", fetch=True)
+            eval_url("https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh")
 
-        if exists("conda", type="command"):
+        if exists_command("conda"):
             eval("conda init zsh")
 
-    tpm_folder = home_dir(".tmux/plugins/tpm")
-    if exists(tpm_folder):
-        print("update tpm repository...")
-        sync(tpm_folder)
-    else:
-        url = "https://github.com/tmux-plugins/tpm"
-        clone(url, directory=tpm_folder)
+    clone(
+        url="https://github.com/tmux-plugins/tpm",
+        folder=home_dir(".tmux/plugins/tpm"),
+        sync=True,
+    )
 
-    if not exists("nvm", type="command"):
-        url = "https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh"
-        eval(url, type="shell", fetch=True)
+    if not exists_command("nvm"):
+        eval_url("https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh")
 
 
 def cmd_install_cli_apps():
     """Install required packages."""
 
-    brew_install("helix", tap="helix-editor/helix")
+    if IS_WINDOWS:
+        winget_install("git", "git-delta", "git-lfs", "golang", "helix", "hugo", "ripgrep")
+        return
 
-    brew_install([
+    if IS_MACOS:
+        brew_install("font-ibm-plex", "miktex-console", "miniconda")
+
+    brew_tap("helix-editor/helix")
+
+    brew_install(
         "MisterTea/et/et", "bat", "clojure", "cmake", "deno", "exa", "exercism", "fd",
-        "git-delta", "git-lfs", "golang", "htop", "hugo", "jq", "llvm",
+        "git-delta", "git-lfs", "golang", "helix", "htop", "hugo", "jq", "llvm",
         "multimarkdown", "openssl", "pass", "pre-commit", "ripgrep", "rustup-init",
-        "rust-analyzer", "shellcheck", "tmux"])
-
-    if OSTYPE == "darwin":
-        brew_install(["font-ibm-plex", "miktex-console", "miniconda"])
+        "rust-analyzer", "shellcheck", "tmux")
 ```
 
 

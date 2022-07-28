@@ -239,6 +239,22 @@ tomli = ">=1.0.0"
 testing = ["argcomplete", "hypothesis (>=3.56)", "mock", "nose", "pygments (>=2.7.2)", "requests", "xmlschema"]
 
 [[package]]
+name = "pytest-httpserver"
+version = "1.0.4"
+description = "pytest-httpserver is a httpserver for pytest"
+category = "dev"
+optional = false
+python-versions = ">=3.6,<4.0"
+
+[package.dependencies]
+Werkzeug = ">=2.0.0"
+
+[package.extras]
+dev = ["types-requests", "sphinx-rtd-theme", "sphinx", "requests", "reno", "pytest", "pytest-cov", "mypy", "ipdb", "flake8 (>4.0.0)", "coverage", "autopep8"]
+test = ["types-requests", "requests", "pytest", "pytest-cov", "mypy", "flake8 (>4.0.0)", "coverage"]
+doc = ["sphinx-rtd-theme", "sphinx", "reno"]
+
+[[package]]
 name = "python-dateutil"
 version = "2.8.2"
 description = "Extensions to the standard Python datetime module"
@@ -296,6 +312,20 @@ python-versions = ">=3.6"
 watchmedo = ["PyYAML (>=3.10)"]
 
 [[package]]
+name = "werkzeug"
+version = "2.2.0"
+description = "The comprehensive WSGI web application library."
+category = "dev"
+optional = false
+python-versions = ">=3.7"
+
+[package.dependencies]
+MarkupSafe = ">=2.1.1"
+
+[package.extras]
+watchdog = ["watchdog"]
+
+[[package]]
 name = "zipp"
 version = "3.8.0"
 description = "Backport of pathlib-compatible object wrapper for zip files"
@@ -310,7 +340,7 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "b4123493d3689674787aea807d108ee8e384403aed874ba2dc11463e50e6fc6c"
+content-hash = "d27a4f170002b263cf3edf2c33ed42eb1ef8e1b466f2705e2e94b23003279ca1"
 
 [metadata.files]
 atomicwrites = []
@@ -348,6 +378,7 @@ py = [
 pyoxidizer = []
 pyparsing = []
 pytest = []
+pytest-httpserver = []
 python-dateutil = []
 pyyaml = [
     {file = "PyYAML-6.0-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:d4db7c7aef085872ef65a8fd7d6d09a14ae91f691dec3e87ee5ee0539d516f53"},
@@ -394,4 +425,5 @@ tomli = [
     {file = "tomli-2.0.1.tar.gz", hash = "sha256:de526c12914f0c550d15924c62d72abc48d6fe7364aa87328337a31007fe8a4f"},
 ]
 watchdog = []
+werkzeug = []
 zipp = []

@@ -3,6 +3,7 @@ import json
 import os
 import shutil
 import subprocess
+import urllib.request
 from pathlib import Path
 from subprocess import CompletedProcess
 from typing import Any, Dict
@@ -52,7 +53,11 @@ def eval(command: str) -> CompletedProcess[bytes]:
 
 def eval_url(url: str) -> CompletedProcess[bytes]:
     """Run a remote shell script directly."""
-    # FIXME: not ready yet.
+    # TODO: validate URL first.
+    with urllib.request.urlopen(url) as response:
+        content = response.read()
+
+    return subprocess.run(content, capture_output=True, shell=True)
 
 
 def exists(path: str) -> bool:

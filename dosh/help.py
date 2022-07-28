@@ -1,6 +1,4 @@
 """Help output generator."""
-
-
 from typing import Dict
 
 

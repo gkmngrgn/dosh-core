@@ -26,66 +26,15 @@ $ dosh update_translations -- langs=en,de,tr fuzzy=false
 ...
 ```
 
-
-## EXAMPLE CONFIGURATION
-
-```python
-# dosh.star
-
-CONFIG_DIR = home_dir(".config")
-BIN_DIR = home_dir(".local/bin")
-
-
-def cmd_install():
-    """Install config files."""
-
-    copy("./config/*", CONFIG_DIR)
-    copy("./home/.*", HOME)
-
-    if IS_ZSH:
-        if not exists(home_dir(".oh-my-zsh")):
-            eval_url("https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh")
-
-        if exists_command("conda"):
-            eval("conda init zsh")
-
-    clone(
-        url="https://github.com/tmux-plugins/tpm",
-        folder=home_dir(".tmux/plugins/tpm"),
-        sync=True,
-    )
-
-    if not exists_command("nvm"):
-        eval_url("https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh")
-
-
-def cmd_install_cli_apps():
-    """Install required packages."""
-
-    if IS_WINDOWS:
-        winget_install("git", "git-delta", "git-lfs", "golang", "helix", "hugo", "ripgrep")
-        return
-
-    if IS_MACOS:
-        brew_install("font-ibm-plex", "miktex-console", "miniconda")
-
-    brew_tap("helix-editor/helix")
-
-    brew_install(
-        "MisterTea/et/et", "bat", "clojure", "cmake", "deno", "exa", "exercism", "fd",
-        "git-delta", "git-lfs", "golang", "helix", "htop", "hugo", "jq", "llvm",
-        "multimarkdown", "openssl", "pass", "pre-commit", "ripgrep", "rustup-init",
-        "rust-analyzer", "shellcheck", "tmux")
-```
-
-
 ## ENVIRONMENT VARIABLES
 
-- `HOME`
+#### `IS_LINUX` - `IS_MACOS` - `IS_WINDOWS`
 
-- `OSTYPE`
+OS type variables to detect your current operating system.
 
-- `SHELL`
+#### `IS_BASH` - `IS_PWSH` - `IS_ZSH`
+
+Your current shell.
 
 
 ## FUNCTIONS
@@ -105,6 +54,45 @@ def cmd_install_cli_apps():
 - `print`
 
 - `sync`
+
+
+## EXAMPLE CONFIGURATION
+
+```python
+# dosh.star
+
+def cmd_setup_my_os():
+    """Place my config files."""
+
+    clone(url="https://github.com/gkmngrgn/config", folder=home_dir("tmp"))
+    copy(home_dir("tmp/config/*"), home_dir(".config"))
+    copy(home_dir("tmp/home/.*"), home_dir())
+
+    if IS_ZSH and not exists(home_dir(".oh-my-zsh")):
+        eval_url("https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh")
+
+    clone(
+        url="https://github.com/tmux-plugins/tpm",
+        folder=home_dir(".tmux/plugins/tpm"),
+        sync=True,
+    )
+
+
+def cmd_install_cli_apps():
+    """Install my favorite apps."""
+
+    if IS_MACOS:
+        brew_install("git", "ripgrep", "bat", "exa")
+
+    elif IS_LINUX:
+        apt_install("git", "ripgrep", "bat", "exa")
+
+    elif IS_WINDOWS:
+        winget_install("git", "ripgrep", "bat", "exa")
+
+    else:
+        print("What the hell are you using??")
+```
 
 
 ## QUESTIONS

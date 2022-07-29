@@ -60,6 +60,11 @@ def test_exists(tmp_path):
     assert cmd.exists(str(src_path3))
 
 
+def test_exists_command(tmp_path):
+    assert cmd.exists_command("bash")
+    assert not cmd.exists_command("dosh")
+
+
 def test_home_dir():
     # I want to run tests on my locale so there's no common solution to define home
     # statically. However, I can be sure that the home is not empty.

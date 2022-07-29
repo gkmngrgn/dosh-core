@@ -67,7 +67,7 @@ def exists(path: str) -> bool:
 
 def exists_command(command: str) -> bool:
     """Check if the command exists."""
-    # FIXME: not ready yet.
+    return shutil.which(command) is not None
 
 
 def home_dir(path: str = ".") -> str:

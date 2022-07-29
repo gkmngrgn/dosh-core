@@ -1,52 +1,10 @@
-# This file defines how PyOxidizer application building and packaging is
-# performed. See PyOxidizer's documentation at
-# https://pyoxidizer.readthedocs.io/en/stable/ for details of this
-# configuration file format.
+VERSION = "0.1.0"
 
-# Configuration files consist of functions which define build "targets."
-# This function creates a Python executable and installs it in a destination
-# directory.
+
 def make_exe():
     dist = default_python_distribution()
-
-    # This function creates a `PythonPackagingPolicy` instance, which
-    # influences how executables are built and how resources are added to
-    # the executable. You can customize the default behavior by assigning
-    # to attributes and calling functions.
     policy = dist.make_python_packaging_policy()
-
-    # Enable support for non-classified "file" resources to be added to
-    # resource collections.
-    # policy.allow_files = True
-
-    # Control support for loading Python extensions and other shared libraries
-    # from memory. This is only supported on Windows and is ignored on other
-    # platforms.
-    # policy.allow_in_memory_shared_library_loading = True
-
-    # Control whether to generate Python bytecode at various optimization
-    # levels. The default optimization level used by Python is 0.
-    # policy.bytecode_optimize_level_zero = True
-    # policy.bytecode_optimize_level_one = True
-    # policy.bytecode_optimize_level_two = True
-
-    # Package all available Python extensions in the distribution.
-    # policy.extension_module_filter = "all"
-
-    # Package the minimum set of Python extensions in the distribution needed
-    # to run a Python interpreter. Various functionality from the Python
-    # standard library won't work with this setting! But it can be used to
-    # reduce the size of generated executables by omitting unused extensions.
-    # policy.extension_module_filter = "minimal"
-
-    # Package Python extensions in the distribution not having additional
-    # library dependencies. This will exclude working support for SSL,
-    # compression formats, and other functionality.
-    # policy.extension_module_filter = "no-libraries"
-
-    # Package Python extensions in the distribution not having a dependency on
-    # copyleft licensed software like GPL.
-    # policy.extension_module_filter = "no-copyleft"
+    policy.extension_module_filter = "no-copyleft"
 
     # Controls whether the file scanner attempts to classify files and emit
     # resource-specific values.
@@ -74,8 +32,7 @@ def make_exe():
     # the standard library.
     # policy.include_non_distribution_sources = True
 
-    # Toggle whether files associated with tests are included.
-    # policy.include_test = False
+    policy.include_test = False
 
     # Resources are loaded from "in-memory" or "filesystem-relative" paths.
     # The locations to attempt to add resources to are defined by the
@@ -125,18 +82,7 @@ def make_exe():
     # a value, it will be expanded to the directory of the built executable.
     # python_config.module_search_paths = ["$ORIGIN/lib"]
 
-    # Use jemalloc as Python's memory allocator.
-    # python_config.allocator_backend = "jemalloc"
-
-    # Use mimalloc as Python's memory allocator.
-    # python_config.allocator_backend = "mimalloc"
-
-    # Use snmalloc as Python's memory allocator.
-    # python_config.allocator_backend = "snmalloc"
-
-    # Let Python choose which memory allocator to use. (This will likely
-    # use the malloc()/free() linked into the program.
-    # python_config.allocator_backend = "default"
+    python_config.allocator_backend = "jemalloc"
 
     # Enable the use of a custom allocator backend with the "raw" memory domain.
     # python_config.allocator_raw = True
@@ -150,9 +96,6 @@ def make_exe():
     # Enable the use of a custom allocator backend with pymalloc's arena
     # allocator.
     # python_config.allocator_pymalloc_arena = True
-
-    # Enable Python memory allocator debug hooks.
-    # python_config.allocator_debug = True
 
     # Automatically calls `multiprocessing.set_start_method()` with an
     # appropriate value when OxidizedFinder imports the `multiprocessing`
@@ -186,26 +129,11 @@ def make_exe():
     # by the given environment variable.
     # python_config.write_modules_directory_env = "/tmp/oxidized/loaded_modules"
 
-    # Evaluate a string as Python code when the interpreter starts.
     python_config.run_command = "from dosh import cli; cli.run()"
 
-    # Run a Python module as __main__ when the interpreter starts.
-    # python_config.run_module = "dosh.cli"
-
-    # Run a Python file when the interpreter starts.
-    # python_config.run_filename = "/path/to/file"
-
-    # Produce a PythonExecutable from a Python distribution, embedded
-    # resources, and other options. The returned object represents the
-    # standalone executable that will be built.
     exe = dist.to_python_executable(
         name="dosh",
-
-        # If no argument passed, the default `PythonPackagingPolicy` for the
-        # distribution is used.
         packaging_policy=policy,
-
-        # If no argument passed, the default `PythonInterpreterConfig` is used.
         config=python_config,
     )
 
@@ -269,38 +197,22 @@ def make_exe():
     # referenced by other consumers of this target.
     return exe
 
+
 def make_embedded_resources(exe):
     return exe.to_embedded_resources()
 
+
 def make_install(exe):
-    # Create an object that represents our installed application file layout.
     files = FileManifest()
-
-    # Add the generated executable to our install layout in the root directory.
     files.add_python_resource(".", exe)
-
     return files
 
+
 def make_msi(exe):
-    # See the full docs for more. But this will convert your Python executable
-    # into a `WiXMSIBuilder` Starlark type, which will be converted to a Windows
-    # .msi installer when it is built.
-    return exe.to_wix_msi_builder(
-        # Simple identifier of your app.
-        "myapp",
-        # The name of your application.
-        "My Application",
-        # The version of your application.
-        "1.0",
-        # The author/manufacturer of your application.
-        "Alice Jones"
-    )
+    return exe.to_wix_msi_builder("dosh", "DOSH", VERSION, "Gökmen Görgen")
 
 
-# Dynamically enable automatic code signing.
 def register_code_signers():
-    # You will need to run with `pyoxidizer build --var ENABLE_CODE_SIGNING 1` for
-    # this if block to be evaluated.
     if not VARS.get("ENABLE_CODE_SIGNING"):
         return
 
@@ -329,15 +241,11 @@ def register_code_signers():
     # signer.activate()
 
 
-# Call our function to set up automatic code signers.
 register_code_signers()
 
-# Tell PyOxidizer about the build targets defined above.
 register_target("exe", make_exe)
 register_target("resources", make_embedded_resources, depends=["exe"], default_build_script=True)
 register_target("install", make_install, depends=["exe"], default=True)
 register_target("msi_installer", make_msi, depends=["exe"])
 
-# Resolve whatever targets the invoker of this configuration file is requesting
-# be resolved.
 resolve_targets()

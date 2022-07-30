@@ -5,47 +5,29 @@ project folder and define your tasks, aliases, environments. Dosh will
 work like a CLI app reading your config.
 
 
-## USAGE
-
-After you created your `dosh.star` file, you can see all available
-tasks with the command `dosh` or `dosh help`:
-
-```shell
-$ dosh help
-
-Tasks:
-  > build                  build your project.
-  > shell                  log in to docker shell.
-  > update_translations    update django translation files.
-    params: langs=str(en|de|tr)
-            fuzzy=bool
-
-$ dosh build
-
-$ dosh update_translations -- langs=en,de,tr fuzzy=false
-...
-```
-
 ## ENVIRONMENT VARIABLES
 
-#### `IS_LINUX` - `IS_MACOS` - `IS_WINDOWS`
+#### OPERATING SYSTEM TYPE CHECKING: `IS_LINUX` - `IS_MACOS` - `IS_WINDOWS`
 
 OS type variables to detect your current operating system.
 
-#### `IS_BASH` - `IS_PWSH` - `IS_ZSH`
+
+#### SHELL TYPE CHECKING: `IS_BASH` - `IS_PWSH` - `IS_ZSH`
 
 Your current shell.
 
 
 ## FUNCTIONS
 
-- `brew_install`
-
 - `clone`
 
 - `copy`
 
 - `home_dir`
+
+#### INSTALLATION: `brew_install`, `apt_install`, `winget_install`
+
+TODO...
 
 
 #### FILE, FOLDER, COMMAND EXISTENCY: `exists` - `exists_command`
@@ -101,11 +83,45 @@ def cmd_install_cli_apps():
         print("What the hell are you using??")
 ```
 
+## WHAT IF YOU TRY TO USE THIS CONFIG...
+
+After you created your `dosh.star` file, you can see all available
+tasks with the command `dosh` or `dosh help`:
+
+```shell
+$ dosh help
+
+Tasks:
+  > setup_my_os            place my config files.
+  > install_cli_apps       install my favorite apps.
+  > update_translations    update django translation files.
+    params: langs=str(en|de|tr)
+            fuzzy=bool
+
+$ dosh build
+
+$ dosh update_translations -- langs=en,de,tr fuzzy=false
+...
+```
+
 
 ## QUESTIONS
 
+### CAN I TRUST THIS PROJECT?
+
+No. Don't trust any project. The source code is open, trust yourself
+and read the code.
+
+
+### BUT DO YOU USE THIS PROJECT YOURSELF?
+
+Yes, I use multiple operating systems with different shells, and I'm
+too tired to write my scripts in multiple languages.
+
+
 ### WHY DOESN'T DOSH HAVE ANY REMOVE COMMAND?
 
-Because it's too dangerous! Even the authors and contributors of this
-project don't guarantee anything. If you really need a remove command,
-you can run it with `eval`.
+Because it's too dangerous! I don't use any remove command in my
+scripts indeed. If you really need a remove command, you can run it
+with `eval`. But remember, contributors of this project don't
+guarantee anything.

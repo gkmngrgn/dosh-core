@@ -2,6 +2,7 @@
 
 import builtins
 import json
+import logging
 from contextlib import redirect_stdout
 from dataclasses import dataclass
 from io import StringIO
@@ -20,7 +21,15 @@ COMMANDS: Final = {
     "eval": cmd.eval,
     "exists": cmd.exists,
     "copy": cmd.copy,
+    "eval": cmd.eval,
+    "eval_url": cmd.eval_url,
+    "exists": cmd.exists,
+    "exists_command": cmd.exists_command,
     "home_dir": cmd.home_dir,
+    "debug": lambda m: cmd.logger.log(logging.DEBUG, m),
+    "info": lambda m: cmd.logger.log(logging.INFO, m),
+    "warning": lambda m: cmd.logger.log(logging.WARNING, m),
+    "error": lambda m: cmd.logger.log(logging.ERROR, m),
 }
 ENVIRONMENTS: Final = {
     "IS_ZSH": env.SHELL == "zsh",

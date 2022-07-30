@@ -41,19 +41,26 @@ Your current shell.
 
 - `brew_install`
 
+- `clone`
+
 - `copy`
-
-- `env`
-
-- `eval`
-
-- `exists, type={file_or_directory(default),command}`
 
 - `home_dir`
 
-- `print`
 
-- `sync`
+#### FILE, FOLDER, COMMAND EXISTENCY: `exists` - `exists_command`
+
+TODO...
+
+
+#### EVALUATION: `eval` - `eval_url`
+
+TODO...
+
+
+#### LOGGING: `debug` - `info` - `warning` - `error`
+
+TODO...
 
 
 ## EXAMPLE CONFIGURATION

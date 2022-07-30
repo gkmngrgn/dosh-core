@@ -1,5 +1,6 @@
 """Available commands for `dosh.star`."""
 import json
+import logging
 import os
 import shutil
 import subprocess
@@ -7,6 +8,8 @@ import urllib.request
 from pathlib import Path
 from subprocess import CompletedProcess
 from typing import Any, Dict
+
+logger = logging.getLogger("dosh")
 
 
 def brew_install(*packages: str) -> None:
@@ -91,8 +94,3 @@ def inject_print_commands(locals: Dict[str, Any]) -> None:
         output[cmd_name] = cmd_help
 
     print(json.dumps(output))
-
-
-def log(message: str, level: int) -> None:
-    """Print the messages to the stdout."""
-    # FIXME: not ready yet.

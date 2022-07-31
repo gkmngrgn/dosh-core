@@ -21,8 +21,21 @@ Your current shell.
 
 #### GENERAL PURPOSE: `clone`, `eval` - `eval_url`
 
-TODO...
+The main purpose of dosh to write one script that works on multiple
+operating systems and shells. But it has to have a limit and it's
+nonsense to define functions for each command. So if you want to run a
+cli app (like `exa`, `bat`, `helix`, etc.), then you can use `eval`
+for it:
 
+```python
+eval("helix")
+
+if IS_MACOS or IS_LINUX:
+    eval_url("https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh")
+
+if IS_WINDOWS:
+    clone("https://github.com/coreybutler/nvm-windows.git")
+```
 
 #### FILE SYSTEM OPERATIONS: `path`, `path_home`, `copy`
 
@@ -104,7 +117,7 @@ def cmd_sync_repos(repo_path):
 ## WHAT IF YOU TRY TO USE THIS CONFIG...
 
 After you created your `dosh.star` file, you can see all available
-tasks with the command `dosh` or `dosh help`:
+tasks with the command `dosh help`:
 
 ```shell
 $ dosh help  # or just dosh

@@ -39,7 +39,7 @@ def copy(source: str, destination: str) -> None:
             shutil.copy(path, path_dst)
 
 
-def clone(url: str, folder: str = ".", sync: bool = False) -> None:
+def clone(url: str, target: str = ".", sync: bool = False) -> None:
     """Clone repository from VCS."""
     # FIXME: not ready yet.
 

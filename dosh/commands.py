@@ -73,24 +73,7 @@ def exists_command(command: str) -> bool:
     return shutil.which(command) is not None
 
 
-def home_dir(path: str = ".") -> str:
+def path(path: str = ".") -> str:
     """Return absolute path."""
-    return Path.home().joinpath(*path.split("/")).as_posix()
-
-
-def inject_print_commands(locals: Dict[str, Any]) -> None:
-    """Inject a function to parse commands in user-defined dosh configuration."""
-    from inspect import isfunction
-
-    prefix = "cmd_"
-    commands = filter(
-        lambda k: k.startswith(prefix) and isfunction(locals.get(k)), locals.keys()
-    )
-    output = {}
-
-    for cmd_func in commands:
-        cmd_name = cmd_func[len(prefix) :]
-        cmd_help = locals.get(cmd_func).__doc__
-        output[cmd_name] = cmd_help
-
-    print(json.dumps(output))
+    root = "/" if path.startswith("/") else "."
+    return Path(root).joinpath(*path.split("/")).as_posix()

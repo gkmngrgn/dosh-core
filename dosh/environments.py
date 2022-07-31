@@ -20,7 +20,7 @@ class Environment(Enum):
         return cls.development
 
 
-HOME: Final = os.getenv("HOME")
+HOME: Final = os.getenv("HOME") or ""
 ENV: Final = Environment.get_current_environment()
 
 SHELL: Final = os.getenv("SHELL")

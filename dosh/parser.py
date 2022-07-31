@@ -1,5 +1,4 @@
 """DOSH config parser."""
-
 import builtins
 import json
 import logging
@@ -11,30 +10,33 @@ from typing import Any, Dict, Final, List, Optional
 
 from dosh import commands as cmd
 from dosh import environments as env
+from dosh import injections as injects
 
 CONFIG_FILENAME: Final = "dosh.star"
 GLOBALS: Final = {
     "__builtins__": builtins,  # TODO: remove unused builtins here.
 }
 COMMANDS: Final = {
-    "env": cmd.env,
-    "eval": cmd.eval,
-    "exists": cmd.exists,
-    "copy": cmd.copy,
     "eval": cmd.eval,
     "eval_url": cmd.eval_url,
+    # file system
+    "copy": cmd.copy,
     "exists": cmd.exists,
     "exists_command": cmd.exists_command,
-    "home_dir": cmd.home_dir,
+    "path": cmd.path,
+    "path_home": lambda p: cmd.path(f"{env.HOME}/{p}"),
+    # logging
     "debug": lambda m: cmd.logger.log(logging.DEBUG, m),
     "info": lambda m: cmd.logger.log(logging.INFO, m),
     "warning": lambda m: cmd.logger.log(logging.WARNING, m),
     "error": lambda m: cmd.logger.log(logging.ERROR, m),
 }
 ENVIRONMENTS: Final = {
+    # shell type
     "IS_ZSH": env.SHELL == "zsh",
     "IS_BASH": env.SHELL == "bash",
     "IS_PWSH": env.SHELL == "pwsh",
+    # os type
     "IS_MACOS": env.OSTYPE.startswith("darwin"),
     "IS_LINUX": env.OSTYPE == "linux",
     "IS_WINDOWS": env.OSTYPE == "msys",
@@ -55,7 +57,7 @@ class ConfigParser:
                 "print_commands(locals)",
             ],
             locals={
-                "print_commands": cmd.inject_print_commands,
+                "print_commands": injects.print_commands,
             },
         )
 

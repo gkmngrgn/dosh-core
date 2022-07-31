@@ -2,6 +2,7 @@ import os
 import urllib.request
 
 from dosh import commands as cmd
+from dosh import environments as env
 
 
 def test_copy(tmp_path):
@@ -60,18 +61,15 @@ def test_exists(tmp_path):
     assert cmd.exists(str(src_path3))
 
 
-def test_exists_command(tmp_path):
+def test_exists_command():
     assert cmd.exists_command("bash")
     assert not cmd.exists_command("dosh")
 
 
-def test_home_dir():
-    # I want to run tests on my locale so there's no common solution to define home
-    # statically. However, I can be sure that the home is not empty.
+def test_path():
     home = os.getenv("HOME")
     assert isinstance(home, str)
     assert len(home) > 0
 
-    # FIXME: separator will be a problem on Windows.
-    assert cmd.home_dir() == home
-    assert cmd.home_dir("foo/bar/baz") == f"{home}/foo/bar/baz"
+    assert cmd.path(env.HOME) == home
+    assert cmd.path("foo/bar/baz") == "foo/bar/baz"

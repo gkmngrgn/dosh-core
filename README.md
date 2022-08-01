@@ -9,12 +9,15 @@ work like a CLI app reading your config file.
 
 #### OPERATING SYSTEM TYPE CHECKING: `IS_LINUX` - `IS_MACOS` - `IS_WINDOWS`
 
-OS type variables to detect your current operating system.
+OS type variables to detect your current operating system. All
+variables return `True` or `False`. You can find many examples of use
+of these variables in the documentation.
 
 
 #### SHELL TYPE CHECKING: `IS_BASH` - `IS_PWSH` - `IS_ZSH`
 
-Your current shell.
+Your current shell. All these variables return `True` or `False`. It's
+useful if you use shell-specific package like `ohmyzsh`.
 
 
 ## FUNCTIONS
@@ -164,5 +167,4 @@ guarantee anything.
 Open your `dosh.star` file in your favorite editor with Python -
 Bazel - Starlark mode and just write your f*cking script now.  Or take
 a look at this link:
-
 https://github.com/bazelbuild/starlark/blob/master/users.md

@@ -34,45 +34,6 @@ def make_exe():
 
     policy.include_test = False
 
-    # Resources are loaded from "in-memory" or "filesystem-relative" paths.
-    # The locations to attempt to add resources to are defined by the
-    # `resources_location` and `resources_location_fallback` attributes.
-    # The former is the first/primary location to try and the latter is
-    # an optional fallback.
-
-    # Use in-memory location for adding resources by default.
-    # policy.resources_location = "in-memory"
-
-    # Use filesystem-relative location for adding resources by default.
-    # policy.resources_location = "filesystem-relative:prefix"
-
-    # Attempt to add resources relative to the built binary when
-    # `resources_location` fails.
-    # policy.resources_location_fallback = "filesystem-relative:prefix"
-
-    # Clear out a fallback resource location.
-    # policy.resources_location_fallback = None
-
-    # Define a preferred Python extension module variant in the Python distribution
-    # to use.
-    # policy.set_preferred_extension_module_variant("foo", "bar")
-
-    # Configure policy values to classify files as typed resources.
-    # (This is the default.)
-    # policy.set_resource_handling_mode("classify")
-
-    # Configure policy values to handle files as files and not attempt
-    # to classify files as specific types.
-    # policy.set_resource_handling_mode("files")
-
-    # This variable defines the configuration of the embedded Python
-    # interpreter. By default, the interpreter will run a Python REPL
-    # using settings that are appropriate for an "isolated" run-time
-    # environment.
-    #
-    # The configuration of the embedded Python interpreter can be modified
-    # by setting attributes on the instance. Some of these are
-    # documented below.
     python_config = dist.make_python_interpreter_config()
 
     # Make the embedded interpreter behave like a `python` process.
@@ -151,50 +112,8 @@ def make_exe():
     # Copy Windows runtime DLLs next to the build executable and error if this
     # cannot be done.
     # exe.windows_runtime_dlls_mode = "always"
-
-    # Make the executable a console application on Windows.
-    # exe.windows_subsystem = "console"
-
-    # Make the executable a non-console application on Windows.
-    # exe.windows_subsystem = "windows"
-
-    # Invoke `pip download` to install a single package using wheel archives
-    # obtained via `pip download`. `pip_download()` returns objects representing
-    # collected files inside Python wheels. `add_python_resources()` adds these
-    # objects to the binary, with a load location as defined by the packaging
-    # policy's resource location attributes.
-    #exe.add_python_resources(exe.pip_download(["pyflakes==2.2.0"]))
-
-    # Invoke `pip install` with our Python distribution to install a single package.
-    # `pip_install()` returns objects representing installed files.
-    # `add_python_resources()` adds these objects to the binary, with a load
-    # location as defined by the packaging policy's resource location
-    # attributes.
-    #exe.add_python_resources(exe.pip_install(["appdirs"]))
-
-    # Invoke `pip install` using a requirements file and add the collected resources
-    # to our binary.
-    #exe.add_python_resources(exe.pip_install(["-r", "requirements.txt"]))
-
-
-    # Read Python files from a local directory and add them to our embedded
-    # context, taking just the resources belonging to the `foo` and `bar`
-    # Python packages.
-    exe.add_python_resources(exe.read_package_root(
-       path=".",
-       packages=["dosh"],
-    ))
-
-    # Discover Python files from a virtualenv and add them to our embedded
-    # context.
-    #exe.add_python_resources(exe.read_virtualenv(path="/path/to/venv"))
-
-    # Filter all resources collected so far through a filter of names
-    # in a file.
-    #exe.filter_resources_from_files(files=["/path/to/filter-file"])
-
-    # Return our `PythonExecutable` instance so it can be built and
-    # referenced by other consumers of this target.
+    exe.windows_subsystem = "console"
+    exe.add_python_resources(exe.read_package_root(path=".", packages=["dosh"]))
     return exe
 
 

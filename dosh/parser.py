@@ -13,9 +13,6 @@ from dosh import environments as env
 from dosh import injections as injects
 
 CONFIG_FILENAME: Final = "dosh.star"
-GLOBALS: Final = {
-    "__builtins__": builtins,  # TODO: remove unused builtins here.
-}
 COMMANDS: Final = {
     # general purpose
     "eval": cmd.eval,
@@ -81,7 +78,7 @@ class ConfigParser:
         locals.update(ENVIRONMENTS)
 
         with redirect_stdout(output):
-            exec(content, GLOBALS, locals)
+            exec(content, locals)
 
         return output.getvalue()
 

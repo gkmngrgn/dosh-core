@@ -192,3 +192,17 @@ Open your `dosh.star` file in your favorite editor with Python -
 Bazel - Starlark mode and just write your f*cking script now.  Or take
 a look at this link:
 https://github.com/bazelbuild/starlark/blob/master/users.md
+
+
+## CONTRIBUTION
+
+Install [poetry](https://python-poetry.org/) and
+[pre-commit](https://pre-commit.com/) first, then:
+
+```shell
+$ poetry install
+$ poetry run poe lint   # run pre-commit hooks manually.
+$ poetry run poe test   # run unit tests.
+$ poetry run poe dosh   # run dosh without instaling.
+$ poetry run poe build  # build and generate self-executable file.
+```

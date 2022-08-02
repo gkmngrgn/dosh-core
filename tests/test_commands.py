@@ -63,7 +63,7 @@ def test_exists(tmp_path):
 
 def test_exists_command():
     assert cmd.exists_command("bash")
-    assert not cmd.exists_command("dosh")
+    assert not cmd.exists_command("hsab")
 
 
 def test_path():

@@ -53,10 +53,26 @@ if path_home() == path("/Users/goedev"):
 ```
 
 
-#### INSTALLATION: `brew_install`, `apt_install`, `winget_install`
+#### PACKAGE MANAGERS
 
-TODO...
+There are many package managers and I'm not sure if we need to
+implement all of them. But at least I'm using these three of them
+mostly:
 
+- `brew_install` (For MacOS and Linux)
+  - `packages`: list of strings, required.
+  - `cask`: boolean, default is `false`.
+  - `taps`: list of strings, optional.
+
+- `apt_install` (For Debian based Linux distros)
+  - `packages`: list of strings, required.
+
+- `winget_install` (For Windows)
+  - `packages`: list of strings, required.
+
+```python
+brew_install(["emacs", "helix"], cask=True, taps=["helix-editor/helix"])
+```
 
 #### FILE, FOLDER, COMMAND EXISTENCY: `exists`, `exists_command`
 

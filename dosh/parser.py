@@ -17,6 +17,7 @@ GLOBALS: Final = {
     "__builtins__": builtins,  # TODO: remove unused builtins here.
 }
 COMMANDS: Final = {
+    # general purpose
     "eval": cmd.eval,
     "eval_url": cmd.eval_url,
     # package managers
@@ -44,6 +45,9 @@ ENVIRONMENTS: Final = {
     "IS_MACOS": env.OSTYPE.startswith("darwin"),
     "IS_LINUX": env.OSTYPE == "linux",
     "IS_WINDOWS": env.OSTYPE == "msys",
+    # command statuses
+    "STATUS_OK": cmd.CommandStatus.OK,
+    "STATUS_ERROR": cmd.CommandStatus.ERROR,
 }
 
 

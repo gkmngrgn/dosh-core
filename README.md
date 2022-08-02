@@ -72,15 +72,15 @@ TODO...
 
 ```python
 REPOS_DIR = path_home("Workspace/goedev")
-CONFIG_REPO_DIR = path(REPOS_DIR, "config")
+CONFIG_REPO_DIR = path(REPOS_DIR + "/config")
 
 
 def cmd_setup_my_os():
     """place my config files."""
 
     info("replace my config folder and home files.")
-    copy(path(CONFIG_REPO_DIR, "config/*"), path_home(".config"))
-    copy(path(CONFIG_REPO_DIR, "tmp/home/.*"), path_home())
+    copy(path(CONFIG_REPO_DIR + "/config/*"), path_home(".config"))
+    copy(path(CONFIG_REPO_DIR + "/tmp/home/.*"), path_home())
 
     if IS_ZSH and not exists(path_home(".oh-my-zsh")):
         debug("ohmyzsh is not installed yet.")
@@ -93,13 +93,16 @@ def cmd_install_cli_apps():
     """install my favorite apps."""
 
     if IS_MACOS:
-        brew_install("git", "ripgrep", "bat", "exa", "miniconda", "emacs")
+        packages = ["git", "ripgrep", "bat", "exa", "miniconda", "emacs"]
+        brew_install(packages, cask=True)
 
     elif IS_LINUX:
-        apt_install("git", "ripgrep", "bat", "exa", "alacritty")
+        packages = ["git", "ripgrep", "bat", "exa", "alacritty"]
+        apt_install(packages)
 
     elif IS_WINDOWS:
-        winget_install("Git.Git", "Microsoft.WindowsTerminal", "Microsoft.VisualStudioCode")
+        packages = ["Git.Git", "Microsoft.WindowsTerminal", "Microsoft.VisualStudioCode"]
+        winget_install(packages)
 
     else:
         error("What the hell are you using??")
@@ -117,12 +120,9 @@ def cmd_sync_repos(repo_path):
         repo_dirs = get_folders(REPOS_DIR)
 
     for repo_dir in repo_dirs:
-        status, message = sync(repo_dir)
-
-        if status == STATUS_OK:
-            info(message)
-        else:
-            error(message)
+        result = sync(repo_dir)
+        if result.status != STATUS_OK:
+            error(result.message)
 ```
 
 ## WHAT IF YOU TRY TO USE THIS CONFIG...

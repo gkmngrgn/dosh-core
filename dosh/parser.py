@@ -19,6 +19,10 @@ GLOBALS: Final = {
 COMMANDS: Final = {
     "eval": cmd.eval,
     "eval_url": cmd.eval_url,
+    # package managers
+    "apt_install": cmd.apt_install,
+    "brew_install": cmd.brew_install,
+    "winget_install": cmd.winget_install,
     # file system
     "copy": cmd.copy,
     "exists": cmd.exists,

@@ -1,5 +1,4 @@
 """DOSH CLI app."""
-
 import sys
 from argparse import ArgumentParser, Namespace
 from typing import Final

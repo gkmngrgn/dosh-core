@@ -1,25 +1,85 @@
 """Available commands for `dosh.star`."""
-import json
 import logging
 import os
 import shutil
 import subprocess
 import urllib.request
+from dataclasses import dataclass
+from enum import Enum
 from pathlib import Path
 from subprocess import CompletedProcess
-from typing import Any, Dict
+from typing import Generic, List, Optional, TypeVar
 
 logger = logging.getLogger("dosh")
 
 
-def brew_install(*packages: str) -> None:
+T = TypeVar("T")
+
+
+class CommandStatus(Enum):
+    """Command status for handling the results."""
+
+    OK = "ok"
+    ERROR = "error"
+
+
+@dataclass
+class CommandResult(Generic[T]):
+    """Return type of command functions."""
+
+    status: CommandStatus
+    message: Optional[str] = None
+    result: Optional[T] = None
+
+    def __bool__(self) -> bool:
+        """Return false if command status is not ok."""
+        return self.status == CommandStatus.OK
+
+
+def apt_install(packages: List[str]) -> CommandResult[None]:
+    """Install packages with apt."""
+    result = exists_command("apt")
+    if result.status != CommandStatus.OK:
+        return CommandResult(CommandStatus.ERROR, message=result.message)
+
+    command = "apt install"
+
+    eval(f"{command} {' '.join(packages)}")
+    return CommandResult(CommandStatus.OK)
+
+
+def brew_install(
+    packages: List[str],
+    cask: bool = False,
+    taps: Optional[List[str]] = None,
+) -> CommandResult[None]:
     """Install packages with brew."""
-    # FIXME: not ready yet.
+    result = exists_command("brew")
+    if result.status != CommandStatus.OK:
+        return CommandResult(CommandStatus.ERROR, message=result.message)
+
+    if taps is not None:
+        for tap_path in taps:
+            eval(f"brew tap {tap_path}")
+
+    command = "brew install"
+    if cask is True:
+        command = f"{command} --cask"
+
+    eval(f"{command} {' '.join(packages)}")
+    return CommandResult(CommandStatus.OK)
 
 
-def brew_tap(*repos: str) -> None:
-    """Install additional repositories of brew."""
-    # FIXME: not ready yet.
+def winget_install(packages: List[str]) -> CommandResult[None]:
+    """Install packages with winget."""
+    result = exists_command("winget")
+    if result.status != CommandStatus.OK:
+        return CommandResult(CommandStatus.ERROR, message=result.message)
+
+    command = "winget install -e --id"
+
+    eval(f"{command} {' '.join(packages)}")
+    return CommandResult(CommandStatus.OK)
 
 
 def copy(source: str, destination: str) -> None:
@@ -63,14 +123,20 @@ def eval_url(url: str) -> CompletedProcess[bytes]:
     return subprocess.run(content, capture_output=True, shell=True)
 
 
-def exists(path: str) -> bool:
+def exists(path: str) -> CommandResult[bool]:
     """Check if the path exists in the file system."""
-    return Path(path).exists()
+    if not Path(path).exists():
+        message = f"The path `{path}` doesn't exist in this system."
+        return CommandResult(CommandStatus.ERROR, message=message, result=False)
+    return CommandResult(CommandStatus.OK, result=True)
 
 
-def exists_command(command: str) -> bool:
+def exists_command(command: str) -> CommandResult[bool]:
     """Check if the command exists."""
-    return shutil.which(command) is not None
+    if shutil.which(command) is None:
+        message = f"The command `{command}` doesn't exist in this system."
+        return CommandResult(CommandStatus.ERROR, message=message, result=False)
+    return CommandResult(CommandStatus.OK, result=True)
 
 
 def path(path: str = ".") -> str:

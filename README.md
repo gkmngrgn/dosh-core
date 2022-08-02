@@ -42,7 +42,15 @@ if IS_WINDOWS:
 
 #### FILE SYSTEM OPERATIONS: `path`, `path_home`, `copy`
 
-TODO...
+There are some ready-made functions both to keep the code readable and
+to make it work the same in every operating system. You know Windows
+prefers backslash as a path separator. This code will work on all
+operating systems:
+
+```python
+if path_home() == path("/Users/goedev"):
+    copy(path_home("Workspace/goedev/emacs.d"), path_home(".emacs.d"))
+```
 
 
 #### INSTALLATION: `brew_install`, `apt_install`, `winget_install`

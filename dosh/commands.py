@@ -4,12 +4,11 @@ import logging
 import shutil
 import subprocess
 import urllib.request
-from collections.abc import Callable
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
 from subprocess import CompletedProcess
-from typing import Any, Generic, List, Optional, TypeVar
+from typing import Any, Callable, Generic, List, Optional, TypeVar
 
 logger = logging.getLogger("dosh")
 

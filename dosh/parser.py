@@ -26,7 +26,7 @@ COMMANDS: Final = {
     "exists": cmd.exists,
     "exists_command": cmd.exists_command,
     "path": cmd.path,
-    "path_home": lambda p: cmd.path(f"{env.HOME}/{p}"),
+    "path_home": lambda p="": cmd.path(f"{env.HOME}/{p}"),
     # logging
     "debug": lambda m: cmd.logger.log(logging.DEBUG, m),
     "info": lambda m: cmd.logger.log(logging.INFO, m),

@@ -21,15 +21,6 @@ def test_copy(tmp_path):
     cmd.copy(src, dst)
 
 
-def test_env():
-    key_ = "DOSH_ENV"
-    os.environ[key_] = "production"
-    assert cmd.env(key_) == "production"
-
-    del os.environ[key_]
-    assert cmd.env(key_) == ""
-
-
 def test_eval():
     result = cmd.eval("echo Hello, World!")
     assert result.stdout == b"Hello, World!\n"
@@ -74,5 +65,5 @@ def test_path():
     assert isinstance(home, str)
     assert len(home) > 0
 
-    assert cmd.path(env.HOME) == home
-    assert cmd.path("foo/bar/baz") == "foo/bar/baz"
+    assert str(cmd.path(env.HOME)) == home
+    assert str(cmd.path("foo/bar/baz")) == "foo/bar/baz"

@@ -1,5 +1,4 @@
 """DOSH config parser."""
-import builtins
 import json
 import logging
 from contextlib import redirect_stdout
@@ -15,6 +14,7 @@ from dosh import injections as injects
 CONFIG_FILENAME: Final = "dosh.star"
 COMMANDS: Final = {
     # general purpose
+    "clone": cmd.clone,
     "eval": cmd.eval,
     "eval_url": cmd.eval_url,
     # package managers

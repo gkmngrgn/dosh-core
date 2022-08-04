@@ -82,21 +82,20 @@ def winget_install(packages: List[str]) -> CommandResult[None]:
     return CommandResult(CommandStatus.OK)
 
 
-def copy(source: str, destination: str) -> None:
+def copy(source: str, destination: str) -> CommandResult[None]:
     """Copy files from source to destination. It works like `cp` command."""
     src_folder, src_path = source.split("/", 1)
     dst_path = Path(destination)
-
-    # TODO: but what if a source is a file, not folder...
-    dst_path.mkdir(parents=True, exist_ok=True)
 
     for path in Path(src_folder or "/").glob(src_path):
         path_dst = dst_path / path.name
 
         if path.is_dir():
-            shutil.copytree(path, path_dst)
+            shutil.copytree(path, path_dst, dirs_exist_ok=True)
         else:
             shutil.copy(path, path_dst)
+
+    return CommandResult(CommandStatus.OK)
 
 
 def clone(url: str, target: str = ".", sync: bool = False) -> None:

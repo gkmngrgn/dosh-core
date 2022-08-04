@@ -17,6 +17,9 @@ def test_copy(tmp_path):
     assert (tmp_path / "dst" / "bar" / "meow.py").exists()
     assert (tmp_path / "dst" / "bar" / "baz" / "hell.txt").exists()
 
+    # try overwrite
+    cmd.copy(src, dst)
+
 
 def test_env():
     key_ = "DOSH_ENV"

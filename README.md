@@ -87,58 +87,54 @@ TODO...
 ## EXAMPLE CONFIGURATION
 
 ```python
-REPOS_DIR = path_home("Workspace/goedev")
-CONFIG_REPO_DIR = path(REPOS_DIR + "/config")
+REPOS_DIR = HOME / "Workspace/goedev"
+CONFIG_REPO_DIR = REPOS_DIR / "config"
 
 
 def cmd_setup_my_os():
     """place my config files."""
 
     info("replace my config folder and home files.")
-    copy(path(CONFIG_REPO_DIR + "/config/*"), path_home(".config"))
-    copy(path(CONFIG_REPO_DIR + "/tmp/home/.*"), path_home())
+    copy(CONFIG_REPO_DIR / "config/*", HOME / ".config")
+    copy(CONFIG_REPO_DIR / "tmp/home/.*", HOME)
 
-    if IS_ZSH and not exists(path_home(".oh-my-zsh")):
+    if IS_ZSH and not exists(HOME / ".oh-my-zsh"):
         debug("ohmyzsh is not installed yet.")
         eval_url("https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh")
 
-    clone("https://github.com/tmux-plugins/tpm", target=path_home(".tmux/plugins/tpm"), fetch=True)
+    clone("https://github.com/tmux-plugins/tpm", target=HOME / ".tmux/plugins/tpm", fetch=True)
 
 
 def cmd_install_cli_apps():
     """install my favorite apps."""
 
     if IS_MACOS:
-        packages = ["git", "ripgrep", "bat", "exa", "miniconda", "emacs"]
-        brew_install(packages, cask=True)
+        brew_install(["git", "ripgrep", "bat", "exa", "miniconda", "emacs"])
 
     elif IS_LINUX:
-        packages = ["git", "ripgrep", "bat", "exa", "alacritty"]
-        apt_install(packages)
+        apt_install(["git", "ripgrep", "bat", "exa", "alacritty"])
 
     elif IS_WINDOWS:
-        packages = ["Git.Git", "Microsoft.WindowsTerminal", "Microsoft.VisualStudioCode"]
-        winget_install(packages)
+        winget_install(["Git.Git", "Microsoft.WindowsTerminal", "Microsoft.VisualStudioCode"])
 
     else:
         error("What the hell are you using??")
 
 
-def cmd_sync_repos(repo_path):
+def cmd_sync_repos(repos):
     """
     don't forget to push your changes before working on a different laptop.
 
-    repo_path: str, optional
+    - repos: path of repositories. List[str], optional
     """
-    if repo_path:
-        repo_dirs = [repo_path]
-    else:
-        repo_dirs = get_folders(REPOS_DIR)
+    repos = repos or get_folders(REPOS_DIR)
 
     for repo_dir in repo_dirs:
         result = sync(repo_dir)
-        if result.status != STATUS_OK:
-            error(result.message)
+        if result.status == STATUS_OK:
+            info(result.message)
+        else:
+            error(message)
 ```
 
 ## WHAT IF YOU TRY TO USE THIS CONFIG...

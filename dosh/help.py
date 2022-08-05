@@ -10,9 +10,15 @@ def generate_help(commands: Dict[str, str]) -> str:
     lines = ["Tasks:"]
 
     for name, desc in commands.items():
+        command_init = f"  > {name.ljust(max_len)}"
         desc_first, *desc_list = desc.split("\n")
+
+        if not desc_first:
+            lines.append(command_init)
+            continue
+
         line_first, *line_list = textwrap.wrap(desc_first, line_len - max_len)
-        lines.append(f"  > {name.ljust(max_len)}   {line_first}")
+        lines.append(f"{command_init}   {line_first}")
         lines.extend(map(lambda l: f"{' ' * (max_len + 7)}{l}", line_list))
 
         for desc in desc_list:

@@ -8,7 +8,9 @@ from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
 from subprocess import CompletedProcess
-from typing import Any, Callable, Generic, List, Optional, TypeVar
+from typing import Any, Callable, Final, Generic, List, Optional, TypeVar, Union
+
+__all__ = ["COMMANDS"]
 
 logger = logging.getLogger("dosh")
 
@@ -98,29 +100,40 @@ def winget_install(packages: List[str]) -> CommandResult[None]:
     return CommandResult(CommandStatus.OK)
 
 
-def copy(source: str, destination: str) -> CommandResult[None]:
+def copy(src: str, dst: str) -> CommandResult[None]:
     """Copy files from source to destination. It works like `cp` command."""
-    src_folder, src_path = source.split("/", 1)
-    dst_path = Path(destination)
+    dst_path = normalize_path(dst)
 
-    for path in Path(src_folder or "/").glob(src_path):
-        path_dst = dst_path / path.name
+    glob_index = -1
+    src_splitted = src.split("/")
+    for index, value in enumerate(src_splitted):
+        if "*" in value:
+            glob_index = index
+            break
 
-        if path.is_dir():
-            shutil.copytree(path, path_dst, dirs_exist_ok=True)
-        else:
-            shutil.copy(path, path_dst)
+    if glob_index >= 0:
+        src_path = normalize_path("/".join(src_splitted[:glob_index]))
+        for path in src_path.glob("/".join(src_splitted[glob_index:])):
+            path_dst = dst_path / path.name
+
+            if path.is_dir():
+                shutil.copytree(path, path_dst, dirs_exist_ok=True)
+            else:
+                shutil.copy(path, path_dst)
+    else:
+        src_path = normalize_path(src)
+        shutil.copy(src_path, dst_path / src_path.name)
 
     return CommandResult(CommandStatus.OK)
 
 
 @check_command("git")
-def clone(url: str, target: str = ".", sync: bool = False) -> CommandResult[None]:
+def clone(url: str, destination: str = "", fetch: bool = False) -> CommandResult[None]:
     """Clone repository from VCS."""
-    if sync is True and Path(target).exists():
-        command = f"git pull {target}"
+    if fetch is True and Path(destination).exists():
+        command = f"git pull {destination}".strip()
     else:
-        command = f"git clone {url} {target}"
+        command = f"git clone {url} {destination}".strip()
     eval(command)
     return CommandResult(CommandStatus.OK)
 
@@ -135,7 +148,6 @@ def eval_url(url: str) -> CompletedProcess[bytes]:
     # TODO: validate URL first.
     with urllib.request.urlopen(url) as response:
         content = response.read()
-
     return subprocess.run(content, capture_output=True, shell=True)
 
 
@@ -155,8 +167,32 @@ def exists_command(command: str) -> CommandResult[bool]:
     return CommandResult(CommandStatus.OK, result=True)
 
 
-def path(path: str = ".") -> CommandResult[str]:
-    """Return absolute path."""
-    root = "/" if path.startswith("/") else "."
-    result = Path(root).joinpath(*path.split("/")).as_posix()
-    return CommandResult(CommandStatus.OK, result=result)
+def normalize_path(file_path: str) -> Path:
+    """Convert file paths to absolute paths."""
+    path = Path(file_path)
+    if file_path.startswith("~"):
+        path = path.expanduser()
+    elif file_path.startswith("."):
+        path = path.absolute()
+    return path
+
+
+COMMANDS: Final = {
+    # general purpose
+    "clone": clone,
+    "eval": eval,
+    "eval_url": eval_url,
+    # package managers
+    "apt_install": apt_install,
+    "brew_install": brew_install,
+    "winget_install": winget_install,
+    # file system
+    "copy": copy,
+    "exists": exists,
+    "exists_command": exists_command,
+    # logging
+    "debug": lambda m: logger.log(logging.DEBUG, m),
+    "info": lambda m: logger.log(logging.INFO, m),
+    "warning": lambda m: logger.log(logging.WARNING, m),
+    "error": lambda m: logger.log(logging.ERROR, m),
+}

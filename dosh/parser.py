@@ -7,45 +7,11 @@ from io import StringIO
 from pathlib import Path
 from typing import Any, Dict, Final, List, Optional
 
-from dosh import commands as cmd
-from dosh import environments as env
 from dosh import injections as injects
+from dosh.commands import COMMANDS
+from dosh.environments import ENVIRONMENTS
 
 CONFIG_FILENAME: Final = "dosh.star"
-COMMANDS: Final = {
-    # general purpose
-    "clone": cmd.clone,
-    "eval": cmd.eval,
-    "eval_url": cmd.eval_url,
-    # package managers
-    "apt_install": cmd.apt_install,
-    "brew_install": cmd.brew_install,
-    "winget_install": cmd.winget_install,
-    # file system
-    "copy": cmd.copy,
-    "exists": cmd.exists,
-    "exists_command": cmd.exists_command,
-    "path": cmd.path,
-    "path_home": lambda p="": cmd.path(f"{env.HOME}/{p}"),
-    # logging
-    "debug": lambda m: cmd.logger.log(logging.DEBUG, m),
-    "info": lambda m: cmd.logger.log(logging.INFO, m),
-    "warning": lambda m: cmd.logger.log(logging.WARNING, m),
-    "error": lambda m: cmd.logger.log(logging.ERROR, m),
-}
-ENVIRONMENTS: Final = {
-    # shell type
-    "IS_ZSH": env.SHELL == "zsh",
-    "IS_BASH": env.SHELL == "bash",
-    "IS_PWSH": env.SHELL == "pwsh",
-    # os type
-    "IS_MACOS": env.OSTYPE.startswith("darwin"),
-    "IS_LINUX": env.OSTYPE == "linux",
-    "IS_WINDOWS": env.OSTYPE == "msys",
-    # command statuses
-    "STATUS_OK": cmd.CommandStatus.OK,
-    "STATUS_ERROR": cmd.CommandStatus.ERROR,
-}
 
 
 @dataclass

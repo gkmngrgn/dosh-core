@@ -58,12 +58,3 @@ def test_exists(tmp_path):
 def test_exists_command():
     assert cmd.exists_command("bash")
     assert not cmd.exists_command("hsab")
-
-
-def test_path():
-    home = os.getenv("HOME")
-    assert isinstance(home, str)
-    assert len(home) > 0
-
-    assert str(cmd.path(env.HOME)) == home
-    assert str(cmd.path("foo/bar/baz")) == "foo/bar/baz"

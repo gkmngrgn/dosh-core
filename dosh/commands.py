@@ -191,8 +191,8 @@ def normalize_path(file_path: str) -> Path:
 COMMANDS: Final = {
     # general purpose
     "clone": clone,
-    "eval": run,
-    "eval_url": run_url,
+    "run": run,
+    "run_url": run_url,
     # package managers
     "apt_install": apt_install,
     "brew_install": brew_install,

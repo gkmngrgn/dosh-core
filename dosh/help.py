@@ -1,13 +1,24 @@
 """Help output generator."""
 import textwrap
-from typing import Dict
+from typing import Dict, Optional
 
 
-def generate_help(commands: Dict[str, str]) -> str:
+def generate_help(
+    commands: Dict[str, str],
+    description: Optional[str] = None,
+    epilog: Optional[str] = None,
+) -> str:
     """Generate a help output looking at available commands."""
     line_len = 79
     max_len = min(max(map(len, commands.keys())), line_len)
-    lines = ["Tasks:"]
+    lines = []
+
+    # DESCRIPTION
+    if description is not None:
+        lines.extend([description.strip(), ""])
+
+    # TASKS
+    lines.append("Tasks:")
 
     for name, desc in commands.items():
         command_init = f"  > {name.ljust(max_len)}"
@@ -24,5 +35,9 @@ def generate_help(commands: Dict[str, str]) -> str:
         for desc in desc_list:
             line_list = textwrap.wrap(desc, line_len - max_len)
             lines.extend(map(lambda l: f"{' ' * (max_len + 7)}{l}", line_list))
+
+    # EPILOG
+    if epilog is not None:
+        lines.extend(["", epilog.strip()])
 
     return "\n".join(lines)

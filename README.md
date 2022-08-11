@@ -7,34 +7,54 @@ work like a CLI app reading your config file.
 
 ## ENVIRONMENT VARIABLES
 
-#### OPERATING SYSTEM TYPE CHECKING: `IS_LINUX` - `IS_MACOS` - `IS_WINDOWS`
+#### HELP OUTPUT
+
+Help outputs consist of three parts: description, tasks, epilog. The
+tasks are generated reading your config but you can edit the other
+parts defining these variables:
+
+- `HELP_DESCRIPTION`
+- `HELP_EPILOG`
+
+If you want to delete the description or epilog, define it as `None`.
+
+
+#### OPERATING SYSTEM TYPE CHECKING
 
 OS type variables to detect your current operating system. All
 variables return `True` or `False`. You can find many examples of use
 of these variables in the documentation.
 
+- `IS_LINUX`
+- `IS_MACOS`
+- `IS_WINDOWS`
 
-#### SHELL TYPE CHECKING: `IS_BASH` - `IS_PWSH` - `IS_ZSH`
+
+#### SHELL TYPE CHECKING
 
 Your current shell. All these variables return `True` or `False`. It's
 useful if you use shell-specific package like `ohmyzsh`.
 
+- `IS_BASH`
+- `IS_PWSH`
+- `IS_ZSH`
+
 
 ## FUNCTIONS
 
-#### GENERAL PURPOSE: `clone`, `eval` - `eval_url`
+#### GENERAL PURPOSE
 
 The main purpose of dosh to write one script that works on multiple
 operating systems and shells. But it has to have a limit and it's
 nonsense to define functions for each command. So if you want to run a
-cli app (like `exa`, `bat`, `helix`, etc.), then you can use `eval`
-for it:
+cli app (like `exa`, `bat`, `helix`, etc.), then you can use `run` for
+it:
 
 ```python
-eval("helix")
+run("echo 'hello, world!'")
 
 if IS_MACOS or IS_LINUX:
-    eval_url("https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh")
+    run_url("https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh")
 
 if IS_WINDOWS:
     clone("https://github.com/coreybutler/nvm-windows.git")
@@ -59,15 +79,15 @@ There are many package managers and I'm not sure if we need to
 implement all of them. But at least I'm using these three of them
 mostly:
 
-- `brew_install` (For MacOS and Linux)
+- `brew_install` (for MacOS and Linux)
   - `packages`: list of strings, required.
   - `cask`: boolean, default is `false`.
   - `taps`: list of strings, optional.
 
-- `apt_install` (For Debian based Linux distros)
+- `apt_install` (for Debian based Linux distros)
   - `packages`: list of strings, required.
 
-- `winget_install` (For Windows)
+- `winget_install` (for Windows)
   - `packages`: list of strings, required.
 
 ```python
@@ -100,7 +120,7 @@ def cmd_setup_my_os():
 
     if IS_ZSH and not exists(HOME / ".oh-my-zsh"):
         debug("ohmyzsh is not installed yet.")
-        eval_url("https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh")
+        run_url("https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh")
 
     clone("https://github.com/tmux-plugins/tpm", target=HOME / ".tmux/plugins/tpm", fetch=True)
 
@@ -178,7 +198,7 @@ created this project.
 
 Because it's too dangerous! I don't use any remove command in my
 scripts indeed. If you really need a remove command, you can run it
-with `eval`. But remember, contributors of this project don't
+with `run`. But remember, contributors of this project don't
 guarantee anything.
 
 

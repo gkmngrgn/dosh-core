@@ -9,11 +9,12 @@ from dosh.commands import CommandStatus
 
 __all__ = ["ENVIRONMENTS"]
 
-
 SHELL: Final = os.getenv("SHELL")
 OSTYPE: Final = os.getenv("OSTYPE") or ""
 ENVIRONMENTS: Final = {
     "USER": getpass.getuser(),
+    "HELP_DESCRIPTION": "dosh - shell-independent command manager",
+    "HELP_EPILOG": "To see dosh-specific parameters, type `dosh --help`.",
     # shell type
     "IS_ZSH": SHELL == "zsh",
     "IS_BASH": SHELL == "bash",

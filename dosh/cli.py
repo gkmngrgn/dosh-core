@@ -40,8 +40,11 @@ class CLI:
 
     def parse_help(self) -> None:
         """Print help output."""
-        commands = self.config_parser.get_commands()
-        output = generate_help(commands)
+        output = generate_help(
+            commands=self.config_parser.get_commands(),
+            description=self.config_parser.get_description(),
+            epilog=self.config_parser.get_epilog(),
+        )
         print(output)
 
     def parse_init(self) -> None:

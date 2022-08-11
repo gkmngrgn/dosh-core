@@ -34,6 +34,16 @@ class ConfigParser:
         data: Dict[str, str] = json.loads(output)
         return data
 
+    def get_description(self) -> str:
+        """Get help description."""
+        output = self.run_script(commands=["print(HELP_DESCRIPTION)"])
+        return output
+
+    def get_epilog(self) -> str:
+        """Get help epilog."""
+        output = self.run_script(commands=["print(HELP_EPILOG)"])
+        return output
+
     def run_script(
         self, commands: List[str], variables: Optional[Dict[str, Any]] = None
     ) -> str:

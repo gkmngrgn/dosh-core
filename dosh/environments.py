@@ -1,7 +1,8 @@
 """Pre-defined environment variables."""
+from __future__ import annotations
+
 import getpass
 import os
-from enum import Enum
 from typing import Final
 
 from dosh.commands import CommandStatus
@@ -9,23 +10,6 @@ from dosh.commands import CommandStatus
 __all__ = ["ENVIRONMENTS"]
 
 
-class Environment(Enum):
-    """Pre-defined environments."""
-
-    # FIXME: allow client to define it in `dosh.star`.
-    development = "dev"
-    test = "test"
-    staging = "stag"
-    production = "prod"
-
-    @classmethod
-    def get_current_environment(cls) -> "Environment":
-        """Return current environment."""
-        # FIXME: check env $ENV or dosh --env parameter here.
-        return cls.development
-
-
-ENV: Final = Environment.get_current_environment()
 SHELL: Final = os.getenv("SHELL")
 OSTYPE: Final = os.getenv("OSTYPE") or ""
 ENVIRONMENTS: Final = {

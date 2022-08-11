@@ -40,3 +40,13 @@ repos:
       - id: mypy
         args: ["--strict", "--ignore-missing-imports"]
         exclude: ^tests/
+
+  - repo: local
+    hooks:
+      - id: pylint
+        name: pylint
+        entry: poetry run pylint
+        language: system
+        types: [python]
+        require_serial: true
+        exclude: ^tests/

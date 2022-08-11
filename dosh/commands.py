@@ -8,7 +8,8 @@ from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
 from subprocess import CompletedProcess
-from typing import Any, Callable, Final, Generic, List, Optional, TypeVar, Union
+from typing import Any, Callable, Final, Generic, List, Optional, TypeVar
+from urllib.parse import urlparse
 
 __all__ = ["COMMANDS"]
 
@@ -31,11 +32,11 @@ class CommandResult(Generic[T]):
 
     status: CommandStatus
     message: Optional[str] = None
-    result: Optional[T] = None
+    response: Optional[T] = None
 
     def __repr__(self) -> str:
         """Return result as repr."""
-        return str(self.result)
+        return str(self.response)
 
     def __bool__(self) -> bool:
         """Return false if command status is not ok."""
@@ -63,12 +64,18 @@ def check_command(
     return decorator
 
 
+def is_url_valid(url: str) -> bool:
+    """Check if url is valid."""
+    result = urlparse(url)
+    return all([result.scheme, result.netloc])
+
+
 @check_command("apt")
 def apt_install(packages: List[str]) -> CommandResult[None]:
     """Install packages with apt."""
     command = "apt install"
 
-    eval(f"{command} {' '.join(packages)}")
+    run(f"{command} {' '.join(packages)}")
     return CommandResult(CommandStatus.OK)
 
 
@@ -81,13 +88,13 @@ def brew_install(
     """Install packages with brew."""
     if taps is not None:
         for tap_path in taps:
-            eval(f"brew tap {tap_path}")
+            run(f"brew tap {tap_path}")
 
     command = "brew install"
     if cask is True:
         command = f"{command} --cask"
 
-    eval(f"{command} {' '.join(packages)}")
+    run(f"{command} {' '.join(packages)}")
     return CommandResult(CommandStatus.OK)
 
 
@@ -96,7 +103,7 @@ def winget_install(packages: List[str]) -> CommandResult[None]:
     """Install packages with winget."""
     command = "winget install -e --id"
 
-    eval(f"{command} {' '.join(packages)}")
+    run(f"{command} {' '.join(packages)}")
     return CommandResult(CommandStatus.OK)
 
 
@@ -134,37 +141,41 @@ def clone(url: str, destination: str = "", fetch: bool = False) -> CommandResult
         command = f"git pull {destination}".strip()
     else:
         command = f"git clone {url} {destination}".strip()
-    eval(command)
+    run(command)
     return CommandResult(CommandStatus.OK)
 
 
-def eval(command: str) -> CompletedProcess[bytes]:
+def run(command: str) -> CommandResult[CompletedProcess[bytes]]:
     """Run a shell command using subprocess."""
-    return subprocess.run(command.split(), capture_output=True)
+    result = subprocess.run(command.split(), capture_output=True, check=True)
+    return CommandResult(CommandStatus.OK, response=result)
 
 
-def eval_url(url: str) -> CompletedProcess[bytes]:
+def run_url(url: str) -> CommandResult[CompletedProcess[bytes]]:
     """Run a remote shell script directly."""
-    # TODO: validate URL first.
+    if not is_url_valid(url):
+        message = f"URL is not valid: {url}"
+        return CommandResult(CommandStatus.ERROR, message=message)
     with urllib.request.urlopen(url) as response:
         content = response.read()
-    return subprocess.run(content, capture_output=True, shell=True)
+    result = subprocess.run(content, capture_output=True, shell=True, check=True)
+    return CommandResult(CommandStatus.OK, response=result)
 
 
 def exists(path: str) -> CommandResult[bool]:
     """Check if the path exists in the file system."""
     if not Path(path).exists():
         message = f"The path `{path}` doesn't exist in this system."
-        return CommandResult(CommandStatus.ERROR, message=message, result=False)
-    return CommandResult(CommandStatus.OK, result=True)
+        return CommandResult(CommandStatus.ERROR, message=message, response=False)
+    return CommandResult(CommandStatus.OK, response=True)
 
 
 def exists_command(command: str) -> CommandResult[bool]:
     """Check if the command exists."""
     if shutil.which(command) is None:
         message = f"The command `{command}` doesn't exist in this system."
-        return CommandResult(CommandStatus.ERROR, message=message, result=False)
-    return CommandResult(CommandStatus.OK, result=True)
+        return CommandResult(CommandStatus.ERROR, message=message, response=False)
+    return CommandResult(CommandStatus.OK, response=True)
 
 
 def normalize_path(file_path: str) -> Path:
@@ -180,8 +191,8 @@ def normalize_path(file_path: str) -> Path:
 COMMANDS: Final = {
     # general purpose
     "clone": clone,
-    "eval": eval,
-    "eval_url": eval_url,
+    "eval": run,
+    "eval_url": run_url,
     # package managers
     "apt_install": apt_install,
     "brew_install": brew_install,

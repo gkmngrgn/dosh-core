@@ -1,6 +1,5 @@
 """DOSH config parser."""
 import json
-import logging
 from contextlib import redirect_stdout
 from dataclasses import dataclass
 from io import StringIO
@@ -27,7 +26,7 @@ class ConfigParser:
                 "locals = locals().copy()",
                 "print_commands(locals)",
             ],
-            locals={
+            variables={
                 "print_commands": injects.print_commands,
             },
         )
@@ -35,16 +34,19 @@ class ConfigParser:
         data: Dict[str, str] = json.loads(output)
         return data
 
-    def run_script(self, commands: List[str], locals: Dict[str, Any] = {}) -> str:
+    def run_script(
+        self, commands: List[str], variables: Optional[Dict[str, Any]] = None
+    ) -> str:
         """Run dosh script manipulating the content."""
         output = StringIO()
         content = (self.content or "") + "\n".join(commands)
 
-        locals.update(COMMANDS)
-        locals.update(ENVIRONMENTS)
+        variables = variables or {}
+        variables.update(COMMANDS)
+        variables.update(ENVIRONMENTS)
 
         with redirect_stdout(output):
-            exec(content, locals)
+            exec(content, variables)  # pylint: disable=exec-used
 
         return output.getvalue()
 

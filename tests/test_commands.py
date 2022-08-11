@@ -21,12 +21,14 @@ def test_copy(tmp_path):
     cmd.copy(src, dst)
 
 
-def test_eval():
-    result = cmd.eval("echo Hello, World!")
-    assert result.stdout == b"Hello, World!\n"
+def test_run():
+    result = cmd.run("echo Hello, World!")
+    assert result.status == cmd.CommandStatus.OK
+    assert result.response is not None
+    assert result.response.stdout == b"Hello, World!\n"
 
 
-def test_eval_url(httpserver):
+def test_run_url(httpserver):
     sh_content = 'echo "Hello, World!"'
     httpserver.expect_request("/hello.sh").respond_with_data(
         sh_content, content_type="text/plain"
@@ -38,8 +40,10 @@ def test_eval_url(httpserver):
 
     assert content.decode("utf-8") == sh_content
 
-    result = cmd.eval_url(url)
-    assert result.stdout.decode("utf-8") == "Hello, World!\n"
+    result = cmd.run_url(url)
+    assert result.status == cmd.CommandStatus.OK
+    assert result.response is not None
+    assert result.response.stdout.decode("utf-8") == "Hello, World!\n"
 
 
 def test_exists(tmp_path):

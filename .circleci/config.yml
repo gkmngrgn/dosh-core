@@ -9,6 +9,7 @@ commands:
     steps:
       - python/install-packages:
           pkg-manager: poetry
+      - run: pip install pre-commit
       - run: poetry run poe lint
       - run: poetry run poe test
 

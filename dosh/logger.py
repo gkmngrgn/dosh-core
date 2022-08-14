@@ -1,24 +1,30 @@
 """Logging support."""
 
-import logging
+from logging import DEBUG, ERROR, INFO, WARNING, Logger, basicConfig, getLogger
+from typing import Optional
 
-__logger = logging.getLogger("dosh")
+__LOGGER: Optional[Logger] = None
 
 
-def get_logger() -> logging.Logger:
+def get_logger() -> Logger:
     """Get logger of dosh."""
-    return __logger
+    global __LOGGER  # pylint: disable=global-statement
+
+    if __LOGGER is None:
+        __LOGGER = getLogger("dosh")
+
+    return __LOGGER
 
 
 def set_verbosity(verbosity: int = 0) -> None:
     """Set verbosity level for logger."""
     if verbosity >= 3:
-        level = logging.DEBUG
+        level = DEBUG
     elif verbosity == 2:
-        level = logging.INFO
+        level = INFO
     elif verbosity == 1:
-        level = logging.ERROR
+        level = WARNING
     else:
-        level = logging.FATAL
+        level = ERROR
 
-    logging.basicConfig(level=level)
+    basicConfig(level=level, format="%(message)s")

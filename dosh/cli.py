@@ -19,8 +19,8 @@ class CLI:
         for arg in filter(lambda a: a.startswith("-v"), sys.argv):
             v_count = arg.count("v")
             if len(arg) == v_count + 1:
-                return v_count
-        return 1  # default verbosity level.
+                return v_count - 1
+        return 2  # default verbosity level.
 
     def get_arg_task(self) -> Optional[Tuple[str, List[str]]]:
         """Get task name with its parameters."""

@@ -42,5 +42,5 @@ workflows:
   lint-and-test-all:
     jobs:
       - lint-linux-amd64
-      - lint-macos-amd64
-      - lint-windows-amd64
+      # - lint-macos-amd64
+      # - lint-windows-amd64

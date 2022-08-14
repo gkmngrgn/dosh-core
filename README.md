@@ -231,8 +231,8 @@ Install [poetry](https://python-poetry.org/) and
 
 ```shell
 $ poetry install
+$ poetry run dosh       # run dosh without instaling.
 $ poetry run poe lint   # run pre-commit hooks manually.
 $ poetry run poe test   # run unit tests.
-$ poetry run poe dosh   # run dosh without instaling.
 $ poetry run poe build  # build and generate self-executable file.
 ```

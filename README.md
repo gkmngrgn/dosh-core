@@ -99,9 +99,23 @@ brew_install(["emacs", "helix"], cask=True, taps=["helix-editor/helix"])
 TODO...
 
 
-#### LOGGING: `debug` - `info` - `warning` - `error`
+#### LOGGING
 
-TODO...
+You can manage the command outputs by defining the verbosity
+level. It's still possible to use `print`, but if you want to hide the
+command outputs completely or print them by the verbosity level, you
+have to use these logging functions:
+
+- `debug`
+- `info`
+- `warning`
+- `error`
+
+```python
+info("if you don't want to see this message, you have to run dosh with the correct verbosity level.")
+```
+
+For more information about the verbosity parameter of dosh, type `dosh --help` (not `help`).
 
 
 ## EXAMPLE CONFIGURATION
@@ -217,8 +231,8 @@ Install [poetry](https://python-poetry.org/) and
 
 ```shell
 $ poetry install
+$ poetry run dosh       # run dosh without instaling.
 $ poetry run poe lint   # run pre-commit hooks manually.
 $ poetry run poe test   # run unit tests.
-$ poetry run poe dosh   # run dosh without instaling.
 $ poetry run poe build  # build and generate self-executable file.
 ```

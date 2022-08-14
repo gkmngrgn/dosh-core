@@ -1,12 +1,10 @@
 """DOSH CLI app."""
 import sys
-from argparse import ArgumentParser, Namespace
-from typing import Final
+from typing import List, Optional, Tuple
 
 from dosh.help import generate_help
+from dosh.logger import set_verbosity
 from dosh.parser import get_config_parser
-
-RESERVED_COMMANDS: Final = ["help", "init"]
 
 
 class CLI:
@@ -14,59 +12,50 @@ class CLI:
 
     def __init__(self) -> None:
         """Initialize cli with config parser."""
-        self.config_parser = get_config_parser()
+        self.conf_parser = get_config_parser()
 
-    def parse_arguments(self) -> Namespace:
-        """Parse sub commands and generate help output."""
-        parser = ArgumentParser(
-            prog=__package__,
-            description="Shell-independent command manager.",
-        )
-        subparsers = parser.add_subparsers()
+    def get_arg_verbosity(self) -> int:
+        """Get verbosity level."""
+        for arg in filter(lambda a: a.startswith("-v"), sys.argv):
+            v_count = arg.count("v")
+            if len(arg) == v_count + 1:
+                return v_count - 1
+        return 2  # default verbosity level.
 
-        # help command
-        parser_help = subparsers.add_parser("help")
-        parser_help.set_defaults(func=self.parse_help)
+    def get_arg_task(self) -> Optional[Tuple[str, List[str]]]:
+        """Get task name with its parameters."""
+        args = list(filter(lambda a: not a.startswith("-"), sys.argv))
 
-        # init command
-        parser_init = subparsers.add_parser("init")
-        parser_init.set_defaults(func=self.parse_init)
+        if len(args) <= 1:
+            return None
 
-        return parser.parse_args()
+        return args[1], args[2:]
 
-    def parse_command(self) -> None:
-        """Parse user-defined commands."""
-        self.config_parser.run_command(sys.argv[1])
-
-    def parse_help(self) -> None:
-        """Print help output."""
-        output = generate_help(
-            commands=self.config_parser.get_commands(),
-            description=self.config_parser.get_description(),
-            epilog=self.config_parser.get_epilog(),
-        )
-        print(output)
-
-    def parse_init(self) -> None:
-        """Initialize a new dosh configuration."""
-        print("parse init")
+    def run_task(self, task: str, params: List[str]) -> None:
+        """Run task that defined by client."""
+        self.conf_parser.run_script([f"cmd_{task}({', '.join(params)})"])
 
     def config_exists(self) -> bool:
         """Return dosh configuration file existency."""
-        return self.config_parser.content is not None
+        return self.conf_parser.content is not None
 
     def run(self) -> None:
         """Run cli reading the arguments."""
-        if len(sys.argv) == 1:
-            self.parse_help()
-        else:
-            cmd = sys.argv[1]
+        verbosity = self.get_arg_verbosity()
+        set_verbosity(verbosity=verbosity)
 
-            if cmd not in RESERVED_COMMANDS and not cmd.startswith("-"):
-                self.parse_command()
-            else:
-                parsed_args = self.parse_arguments()
-                parsed_args.func()
+        task = self.get_arg_task()
+        if task is None:
+            output = generate_help(
+                commands=self.conf_parser.get_commands(),
+                description=self.conf_parser.get_description(),
+                epilog=self.conf_parser.get_epilog(),
+            )
+            print(output)
+            return
+
+        task_name, task_params = task
+        self.run_task(task_name, task_params)
 
 
 def run() -> None:

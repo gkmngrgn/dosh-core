@@ -4,45 +4,43 @@ orbs:
   python: circleci/python@2.0.3
   windows: circleci/windows@4.1.1
 
+commands:
+  lint-and-test:
+    steps:
+      - python/install-packages:
+          pkg-manager: poetry
+      - run: pip install pre-commit
+      - run: poetry run poe lint
+      - run: poetry run poe test
+
 jobs:
-  build-linux-amd64:
+  lint-linux-amd64:
     executor:
       name: python/default
       tag: "3.9"
 
     steps:
       - checkout
-      - python/install-packages:
-          pkg-manager: poetry
-      - run:
-          name: Run tests
-          command: poetry run poe test
-      - run:
-          name: Build with pyoxidizer
-          command: poetry run poe build
+      - lint-and-test
 
-  build-macos-amd64:
+  lint-macos-amd64:
     macos:
       xcode: 12.5.1
 
     steps:
       - checkout
-      - run:
-          name: "Say hello"
-          command: "echo Hello, MacOS!"
+      - lint-and-test
 
-  build-windows-amd64:
+  lint-windows-amd64:
     executor: windows/server-2022
 
     steps:
       - checkout
-      - run:
-          name: "Say hello"
-          command: "echo Hello, Windows!"
+      - lint-and-test
 
 workflows:
-  build-all:
+  lint-and-test-all:
     jobs:
-      - build-linux-amd64
-      # - build-macos-amd64
-      # - build-windows-amd64
+      - lint-linux-amd64
+      # - lint-macos-amd64
+      # - lint-windows-amd64

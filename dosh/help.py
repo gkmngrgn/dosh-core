@@ -15,7 +15,7 @@ def generate_help(
 
     # DESCRIPTION
     if description is not None:
-        lines.extend([description.strip(), ""])
+        lines.extend([description, ""])
 
     # TASKS
     lines.append("Tasks:")
@@ -37,7 +37,7 @@ def generate_help(
             lines.extend(map(lambda l: f"{' ' * (max_len + 7)}{l}", line_list))
 
     # EPILOG
-    if epilog is not None:
-        lines.extend(["", epilog.strip()])
+    if epilog:
+        lines.extend(["", epilog])
 
     return "\n".join(lines)

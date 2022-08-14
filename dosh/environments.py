@@ -14,7 +14,7 @@ OSTYPE: Final = os.getenv("OSTYPE") or ""
 ENVIRONMENTS: Final = {
     "USER": getpass.getuser(),
     "HELP_DESCRIPTION": "dosh - shell-independent command manager",
-    "HELP_EPILOG": "To see dosh-specific parameters, type `dosh --help`.",
+    "HELP_EPILOG": "",
     # shell type
     "IS_ZSH": SHELL == "zsh",
     "IS_BASH": SHELL == "bash",

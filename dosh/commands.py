@@ -1,6 +1,5 @@
 """Available commands for `dosh.star`."""
 import functools
-import logging
 import shutil
 import subprocess
 import urllib.request
@@ -11,12 +10,12 @@ from subprocess import CompletedProcess
 from typing import Any, Callable, Final, Generic, List, Optional, TypeVar
 from urllib.parse import urlparse
 
+from dosh.logger import get_logger
+
 __all__ = ["COMMANDS"]
 
-logger = logging.getLogger("dosh")
-
-
 T = TypeVar("T")
+logger = get_logger()
 
 
 class CommandStatus(Enum):
@@ -202,8 +201,8 @@ COMMANDS: Final = {
     "exists": exists,
     "exists_command": exists_command,
     # logging
-    "debug": lambda m: logger.log(logging.DEBUG, m),
-    "info": lambda m: logger.log(logging.INFO, m),
-    "warning": lambda m: logger.log(logging.WARNING, m),
-    "error": lambda m: logger.log(logging.ERROR, m),
+    "debug": logger.debug,
+    "info": logger.info,
+    "warning": logger.warning,
+    "error": logger.error,
 }

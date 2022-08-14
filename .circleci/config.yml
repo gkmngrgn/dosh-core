@@ -38,8 +38,8 @@ jobs:
       - lint-and-test
 
 workflows:
-  lint-all:
+  lint-and-test-all:
     jobs:
-      - build-linux-amd64
-      - build-macos-amd64
-      - build-windows-amd64
+      - lint-linux-amd64
+      - lint-macos-amd64
+      - lint-windows-amd64

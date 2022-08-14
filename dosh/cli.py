@@ -1,12 +1,10 @@
 """DOSH CLI app."""
 import sys
-from argparse import SUPPRESS, ArgumentParser, RawTextHelpFormatter
-from typing import Final
+from typing import List, Optional, Tuple
 
+from dosh.help import generate_help
 from dosh.logger import set_verbosity
 from dosh.parser import get_config_parser
-
-RESERVED_COMMANDS: Final = ["help", "init"]
 
 
 class CLI:
@@ -15,44 +13,27 @@ class CLI:
     def __init__(self) -> None:
         """Initialize cli with config parser."""
         self.conf_parser = get_config_parser()
-        self.arg_parser = self.get_argument_parser()
 
-    def get_argument_parser(self) -> ArgumentParser:
-        """Create parser for parsing arguments."""
-        parser = ArgumentParser(
-            prog=__package__,
-            formatter_class=RawTextHelpFormatter,
-            description=self.conf_parser.get_description(),
-            epilog=self.conf_parser.get_epilog(),
-            usage=SUPPRESS,
-        )
-        parser.add_argument(
-            "-v",
-            "--verbose",
-            action="count",
-            default=0,
-            help="set verbosity for printing logs by level",
-        )
+    def get_arg_verbosity(self) -> int:
+        """Get verbosity level."""
+        for arg in filter(lambda a: a.startswith("-v"), sys.argv):
+            v_count = arg.count("v")
+            if len(arg) == v_count + 1:
+                return v_count
+        return 1  # default verbosity level.
 
-        subparsers = parser.add_subparsers()
+    def get_arg_task(self) -> Optional[Tuple[str, List[str]]]:
+        """Get task name with its parameters."""
+        args = list(filter(lambda a: not a.startswith("-"), sys.argv))
 
-        # init command
-        parser_init = subparsers.add_parser("init", help="initialize a new dosh config")
-        parser_init.set_defaults(func=self.parse_init)
+        if len(args) <= 1:
+            return None
 
-        commands = self.conf_parser.get_commands()
-        for cmd, help_text in commands.items():
-            subparsers.add_parser(cmd, help=help_text)
+        return args[1], args[2:]
 
-        return parser
-
-    def parse_command(self) -> None:
-        """Parse user-defined commands."""
-        self.conf_parser.run_command(sys.argv[1])
-
-    def parse_init(self) -> None:
-        """Initialize a new dosh configuration."""
-        print("parse init")
+    def run_task(self, task: str, params: List[str]) -> None:
+        """Run task that defined by client."""
+        self.conf_parser.run_script([f"cmd_{task}({', '.join(params)})"])
 
     def config_exists(self) -> bool:
         """Return dosh configuration file existency."""
@@ -60,14 +41,21 @@ class CLI:
 
     def run(self) -> None:
         """Run cli reading the arguments."""
-        args = self.arg_parser.parse_args()
-        set_verbosity(verbosity=args.verbose)
+        verbosity = self.get_arg_verbosity()
+        set_verbosity(verbosity=verbosity)
 
-        if not hasattr(args, "func"):
-            self.arg_parser.print_help()
+        task = self.get_arg_task()
+        if task is None:
+            output = generate_help(
+                commands=self.conf_parser.get_commands(),
+                description=self.conf_parser.get_description(),
+                epilog=self.conf_parser.get_epilog(),
+            )
+            print(output)
             return
 
-        args.func()
+        task_name, task_params = task
+        self.run_task(task_name, task_params)
 
 
 def run() -> None:

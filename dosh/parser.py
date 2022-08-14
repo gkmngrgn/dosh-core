@@ -37,12 +37,12 @@ class ConfigParser:
     def get_description(self) -> str:
         """Get help description."""
         output = self.run_script(commands=["print(HELP_DESCRIPTION)"])
-        return output
+        return output.strip()
 
     def get_epilog(self) -> str:
         """Get help epilog."""
         output = self.run_script(commands=["print(HELP_EPILOG)"])
-        return output
+        return output.strip()
 
     def run_script(
         self, commands: List[str], variables: Optional[Dict[str, Any]] = None
@@ -59,10 +59,6 @@ class ConfigParser:
             exec(content, variables)  # pylint: disable=exec-used
 
         return output.getvalue()
-
-    def run_command(self, command: str) -> str:
-        """Run command if the command exists or return error."""
-        return self.run_script([f"cmd_{command}()"])
 
 
 def find_config_file() -> Path:

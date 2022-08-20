@@ -31,13 +31,17 @@ class CLI:
 
         return args[1], args[2:]
 
-    def run_task(self, task: str, params: List[str]) -> None:
-        """Run task that defined by client."""
-        self.conf_parser.run_script([f"cmd_{task}({', '.join(params)})"])
-
     def config_exists(self) -> bool:
         """Return dosh configuration file existency."""
         return self.conf_parser.content is not None
+
+    def initialize_config(self) -> None:
+        """Create a simple dosh config for a new project."""
+        ...
+
+    def run_task(self, task: str, params: List[str]) -> None:
+        """Run task that defined by client."""
+        self.conf_parser.run_script([f"cmd_{task}({', '.join(params)})"])
 
     def run(self) -> None:
         """Run cli reading the arguments."""
@@ -55,6 +59,11 @@ class CLI:
             return
 
         task_name, task_params = task
+
+        if task_name == "init":
+            self.initialize_config()
+            return
+
         self.run_task(task_name, task_params)
 
 

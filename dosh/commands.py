@@ -11,6 +11,7 @@ from typing import Any, Callable, Final, Generic, List, Optional, TypeVar
 from urllib.parse import urlparse
 
 from dosh.logger import get_logger
+from dosh.parser import CONFIG_FILENAME
 
 __all__ = ["COMMANDS"]
 
@@ -67,6 +68,16 @@ def is_url_valid(url: str) -> bool:
     """Check if url is valid."""
     result = urlparse(url)
     return all([result.scheme, result.netloc])
+
+
+def normalize_path(file_path: str) -> Path:
+    """Convert file paths to absolute paths."""
+    path = Path(file_path)
+    if file_path.startswith("~"):
+        path = path.expanduser()
+    elif file_path.startswith("."):
+        path = path.absolute()
+    return path
 
 
 @check_command("apt")
@@ -177,14 +188,26 @@ def exists_command(command: str) -> CommandResult[bool]:
     return CommandResult(CommandStatus.OK, response=True)
 
 
-def normalize_path(file_path: str) -> Path:
-    """Convert file paths to absolute paths."""
-    path = Path(file_path)
-    if file_path.startswith("~"):
-        path = path.expanduser()
-    elif file_path.startswith("."):
-        path = path.absolute()
-    return path
+def init_config() -> CommandResult[bool]:
+    """Initialize dosh config in the current working directory."""
+    config_path = Path.cwd() / CONFIG_FILENAME
+
+    if config_path.exists():
+        message = (
+            f"The file {CONFIG_FILENAME} already exists in current working directory."
+        )
+        return CommandResult(CommandStatus.ERROR, message=message, response=False)
+
+    content = """
+    def cmd_install_apps():
+        ...
+
+    def cmd_set_theme(profile):
+        ...
+    """
+
+    config_path.write_text(content)
+    return CommandResult(CommandStatus.OK, response=True)
 
 
 COMMANDS: Final = {

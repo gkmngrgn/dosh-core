@@ -3,44 +3,57 @@ version: 2.1
 orbs:
   python: circleci/python@2.0.3
   windows: circleci/windows@4.1.1
+  pre-commit: oandacorp/pre-commit@0.8.0
 
 commands:
-  lint-and-test:
+  build:
     steps:
+      - checkout
       - python/install-packages:
           pkg-manager: poetry
-      - run: pip install pre-commit
-      - run: poetry run poe lint
-      - run: poetry run poe test
+      - run: poetry run build
 
 jobs:
-  lint-linux-amd64:
+  build-for-linux:
     executor:
       name: python/default
       tag: "3.9"
 
     steps:
-      - checkout
-      - lint-and-test
+      - build
 
-  lint-macos-amd64:
+  build-for-macos:
     macos:
       xcode: 12.5.1
 
     steps:
-      - checkout
-      - lint-and-test
+      - build
 
-  lint-windows-amd64:
+  build-for-windows:
     executor: windows/server-2022
 
     steps:
-      - checkout
-      - lint-and-test
+      - build
+
+  release:
+    executor: ...
+    steps:
+      - todo
 
 workflows:
-  lint-and-test-all:
+  pr-checks:
     jobs:
-      - lint-linux-amd64
-      # - lint-macos-amd64
-      # - lint-windows-amd64
+      - pre-commit/run:
+          all-files: true
+          use-cache: true
+
+      - python/test:
+          matrix:
+            parameters:
+              version: ["3.8", "3.9", "3.10"]
+
+  main:
+    jobs:
+      - build
+      - approve
+      - release

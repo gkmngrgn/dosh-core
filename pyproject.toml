@@ -14,7 +14,6 @@ pytest = "^7.1.2"
 pyoxidizer = "^0.22.0"
 poethepoet = "^0.15.0"
 pytest-httpserver = "^1.0.4"
-pylint = "^2.14.5"
 
 [tool.poetry.scripts]
 dosh = "dosh.cli:run"

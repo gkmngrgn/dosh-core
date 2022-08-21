@@ -2,9 +2,10 @@
 import sys
 from typing import List, Optional, Tuple
 
-from dosh.help import generate_help
+from dosh.commands.base import CommandStatus
+from dosh.commands.internal import generate_help, init_config
 from dosh.logger import set_verbosity
-from dosh.parser import get_config_parser
+from dosh.parser import find_config_file, get_config_parser
 
 
 class CLI:
@@ -35,17 +36,22 @@ class CLI:
         """Run task that defined by client."""
         self.conf_parser.run_script([f"cmd_{task}({', '.join(params)})"])
 
-    def config_exists(self) -> bool:
-        """Return dosh configuration file existency."""
-        return self.conf_parser.content is not None
-
     def run(self) -> None:
         """Run cli reading the arguments."""
         verbosity = self.get_arg_verbosity()
         set_verbosity(verbosity=verbosity)
 
-        task = self.get_arg_task()
-        if task is None:
+        task_name, task_params = self.get_arg_task() or ("help", [])
+
+        if task_name == "init":
+            result = init_config(find_config_file())
+            if result.status == CommandStatus.OK:
+                print(result.message)
+            elif result.status == CommandStatus.ERROR:
+                print(result.message, file=sys.stderr)
+            return
+
+        if task_name == "help":
             output = generate_help(
                 commands=self.conf_parser.get_commands(),
                 description=self.conf_parser.get_description(),
@@ -54,15 +60,9 @@ class CLI:
             print(output)
             return
 
-        task_name, task_params = task
         self.run_task(task_name, task_params)
 
 
 def run() -> None:
     """Run command line interface app."""
-    cli = CLI()
-
-    if cli.config_exists():
-        cli.run()
-    else:
-        print("Config file doesn't exist.")
+    CLI().run()

@@ -1,72 +1,18 @@
 """Available commands for `dosh.star`."""
-import functools
 import shutil
 import subprocess
 import urllib.request
-from dataclasses import dataclass
-from enum import Enum
 from pathlib import Path
 from subprocess import CompletedProcess
-from typing import Any, Callable, Final, Generic, List, Optional, TypeVar
-from urllib.parse import urlparse
+from typing import List, Optional
 
-from dosh.logger import get_logger
-
-__all__ = ["COMMANDS"]
-
-T = TypeVar("T")
-logger = get_logger()
-
-
-class CommandStatus(Enum):
-    """Command status for handling the results."""
-
-    OK = "ok"
-    ERROR = "error"
-
-
-@dataclass
-class CommandResult(Generic[T]):
-    """Return type of command functions."""
-
-    status: CommandStatus
-    message: Optional[str] = None
-    response: Optional[T] = None
-
-    def __repr__(self) -> str:
-        """Return result as repr."""
-        return str(self.response)
-
-    def __bool__(self) -> bool:
-        """Return false if command status is not ok."""
-        return self.status == CommandStatus.OK
-
-
-CommandCallable = Callable[..., CommandResult[Any]]
-
-
-def check_command(
-    command_name: str,
-) -> Callable[[CommandCallable], CommandCallable]:
-    """Check command and return error if the command doesn't exist."""
-
-    def decorator(func: CommandCallable) -> CommandCallable:
-        @functools.wraps(func)
-        def wrapper(*args: Any, **kwargs: Any) -> CommandResult[Any]:
-            result = exists_command(command_name)
-            if result.status != CommandStatus.OK:
-                return CommandResult(CommandStatus.ERROR, message=result.message)
-            return func(*args, **kwargs)
-
-        return wrapper
-
-    return decorator
-
-
-def is_url_valid(url: str) -> bool:
-    """Check if url is valid."""
-    result = urlparse(url)
-    return all([result.scheme, result.netloc])
+from dosh.commands.base import (
+    CommandResult,
+    CommandStatus,
+    check_command,
+    is_url_valid,
+    normalize_path,
+)
 
 
 @check_command("apt")
@@ -109,7 +55,6 @@ def winget_install(packages: List[str]) -> CommandResult[None]:
 def copy(src: str, dst: str) -> CommandResult[None]:
     """Copy files from source to destination. It works like `cp` command."""
     dst_path = normalize_path(dst)
-
     glob_index = -1
     src_splitted = src.split("/")
     for index, value in enumerate(src_splitted):
@@ -175,34 +120,3 @@ def exists_command(command: str) -> CommandResult[bool]:
         message = f"The command `{command}` doesn't exist in this system."
         return CommandResult(CommandStatus.ERROR, message=message, response=False)
     return CommandResult(CommandStatus.OK, response=True)
-
-
-def normalize_path(file_path: str) -> Path:
-    """Convert file paths to absolute paths."""
-    path = Path(file_path)
-    if file_path.startswith("~"):
-        path = path.expanduser()
-    elif file_path.startswith("."):
-        path = path.absolute()
-    return path
-
-
-COMMANDS: Final = {
-    # general purpose
-    "clone": clone,
-    "run": run,
-    "run_url": run_url,
-    # package managers
-    "apt_install": apt_install,
-    "brew_install": brew_install,
-    "winget_install": winget_install,
-    # file system
-    "copy": copy,
-    "exists": exists,
-    "exists_command": exists_command,
-    # logging
-    "debug": logger.debug,
-    "info": logger.info,
-    "warning": logger.warning,
-    "error": logger.error,
-}

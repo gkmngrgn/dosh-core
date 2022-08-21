@@ -17,7 +17,7 @@ CONFIG_FILENAME: Final = "dosh.star"
 class ConfigParser:
     """Dosh configuration parser."""
 
-    content: Optional[str]
+    content: str
 
     def get_commands(self) -> Dict[str, str]:
         """Parse commands from dosh configuration."""
@@ -73,9 +73,5 @@ def find_config_file() -> Path:
 def get_config_parser() -> ConfigParser:
     """Create ConfigParser instance with required parameters."""
     config_file = find_config_file()
-    if config_file.exists():
-        content = config_file.read_text()
-    else:
-        content = None
-
+    content = config_file.read_text() if config_file.exists() else ""
     return ConfigParser(content)

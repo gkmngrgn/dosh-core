@@ -1,8 +1,6 @@
-import os
 import urllib.request
 
-from dosh import commands as cmd
-from dosh import environments as env
+from dosh.commands import external as cmd
 
 
 def test_copy(tmp_path):

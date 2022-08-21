@@ -5,7 +5,7 @@ import getpass
 import os
 from typing import Final
 
-from dosh.commands import CommandStatus
+from dosh.commands.base import CommandStatus
 
 __all__ = ["ENVIRONMENTS"]
 

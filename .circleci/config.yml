@@ -1,44 +1,82 @@
 version: 2.1
 
 orbs:
+  windows: circleci/windows@5.0.0
   python: circleci/python@2.0.3
-  windows: circleci/windows@4.1.1
   pre-commit: oandacorp/pre-commit@0.8.0
+
+filters-release: &filters-release
+  branches:
+    only: main
+  tags:
+    only: /^v\d+\.\d+\.\d+$/
+
+filters-development: &filters-development
+  branches:
+    ignore: main
 
 commands:
   build:
+    parameters:
+      directory:
+        type: string
+
     steps:
       - checkout
+
       - python/install-packages:
-          pkg-manager: poetry
-      - run: poetry run build
+          pkg-manager: "poetry"
+
+      - run: |
+          poetry run poe build
+          mv dist << parameters.directory >>
+
+      - store_artifacts:
+          path: << parameters.directory >>
+
+      - persist_to_workspace:
+          root: .
+          paths:
+            - << parameters.directory >>
 
 jobs:
-  build-for-linux:
+  build-on-linux:
     executor:
       name: python/default
       tag: "3.9"
 
     steps:
-      - build
+      - build:
+          directory: "dist-linux"
 
-  build-for-macos:
+  build-on-macos:
     macos:
       xcode: 12.5.1
 
     steps:
-      - build
+      - build:
+          directory: "dist-macos"
 
-  build-for-windows:
+  build-on-windows:
     executor: windows/server-2022
 
     steps:
-      - build
+      - build:
+          directory: "dist-windows"
 
   release:
-    executor: ...
+    docker:
+      - image: cimg/base:2022.08
+
     steps:
-      - todo
+      - attach_workspace:
+          at: .
+
+      # install zip package.
+      # archive folders.
+      # publish.
+      - run: |
+          ls
 
 workflows:
   pr-checks:
@@ -46,14 +84,33 @@ workflows:
       - pre-commit/run:
           all-files: true
           use-cache: true
+          filters: *filters-development
 
       - python/test:
           matrix:
             parameters:
-              version: ["3.8", "3.9", "3.10"]
+              version: ["3.9", "3.10"]
+          filters: *filters-development
 
   main:
     jobs:
-      - build
-      - approve
-      - release
+      - build-on-linux:
+          filters: *filters-release
+
+      - build-on-macos:
+          filters: *filters-release
+
+      - build-on-windows:
+          filters: *filters-release
+
+      - approve:
+          requires:
+            - build-on-linux
+            - build-on-macos
+            - build-on-windows
+          filters: *filters-release
+
+      - release:
+          requires:
+            - approve
+          filters: *filters-release

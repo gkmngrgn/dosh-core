@@ -6,20 +6,20 @@ authors = ["Gökmen Görgen <gkmngrgn@gmail.com>"]
 license = "MIT"
 
 [tool.poetry.dependencies]
-python = "^3.9"
-# DO NOT ADD ANY DEPENDENCY. WE USE PYOXIDIZER.
+python = ">=3.9,<3.11"
+# DO NOT ADD ANY DEPENDENCY. PYTHON IS BATTERY-INCLUDED.
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.1.2"
-pyoxidizer = "^0.22.0"
 poethepoet = "^0.15.0"
 pytest-httpserver = "^1.0.4"
+pyinstaller = "^5.3"
 
 [tool.poetry.scripts]
 dosh = "dosh.cli:run"
 
 [tool.poe.tasks.build]
-cmd = "pyoxidizer build"
+cmd = "poetry run pyinstaller dosh.py"
 help = "Build dosh"
 
 [tool.poe.tasks.lint]

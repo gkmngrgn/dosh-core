@@ -126,14 +126,9 @@ workflows:
       - build-on-windows:
           filters: *filters-release
 
-      - approve:
+      - release:
           requires:
             - build-on-linux
             - build-on-macos
             - build-on-windows
-          filters: *filters-release
-
-      - release:
-          requires:
-            - approve
           filters: *filters-release

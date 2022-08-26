@@ -3,6 +3,8 @@ version: 2.1
 orbs:
   windows: circleci/windows@5.0.0
   python: circleci/python@2.0.3
+  github-cli: circleci/github-cli@2.1.0
+
 
 filters-release: &filters-release
   branches:
@@ -96,14 +98,21 @@ jobs:
       - image: cimg/base:2022.08
 
     steps:
+      - github-cli/install
+
       - attach_workspace:
           at: .
 
-      # install zip package.
-      # archive folders.
-      # publish.
       - run: |
           ls
+
+          tar -czvf dosh-x86_64-linux.tar.gz ./dist-linux/dosh/*
+
+          mkdir release
+          cp *.tar.gz ./release/
+
+      - store_artifacts:
+          path: "release"
 
 workflows:
   pr-checks:
@@ -131,6 +140,6 @@ workflows:
       - release:
           requires:
             - build-on-linux
-            - build-on-macos
-            - build-on-windows
-          filters: *filters-release
+            # - build-on-macos
+            # - build-on-windows
+          filters: *filters-development

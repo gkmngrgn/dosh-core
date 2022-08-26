@@ -41,8 +41,12 @@ repos:
         args: ["--strict", "--ignore-missing-imports"]
         exclude: ^tests/
 
-  - repo: https://github.com/PyCQA/flake8
-    rev: 5.0.4
+  - repo: local
     hooks:
-    -   id: flake8
+      - id: pylint
+        name: pylint
+        entry: poetry run pylint
+        language: system
+        types: [python]
+        require_serial: true
         exclude: ^tests/

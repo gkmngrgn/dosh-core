@@ -3,7 +3,6 @@ version: 2.1
 orbs:
   windows: circleci/windows@5.0.0
   python: circleci/python@2.0.3
-  pre-commit: oandacorp/pre-commit@0.8.0
 
 filters-release: &filters-release
   branches:
@@ -40,9 +39,35 @@ commands:
             - << parameters.directory >>
 
 jobs:
+  lint:
+    executor:
+      name: "python/default"
+      tag: "3.9"
+
+    steps:
+      - python/install-packages:
+          pkg-manager: "poetry"
+
+      - run: poetry run pip install pre-commit
+
+      - run:
+          command: |
+            cp .pre-commit-config.yaml /tmp/checksum.txt
+            poetry run python --version >> /tmp/checksum.txt
+
+      - restore_cache:
+          key: pre-commit-{{ checksum "/tmp/checksum.txt" }}
+
+      - run: poetry run poe lint
+
+      - save_cache:
+          key: pre-commit-{{ checksum "/tmp/checksum.txt" }}
+          paths:
+            - ~/.cache/pre-commit
+
   build-on-linux:
     executor:
-      name: python/default
+      name: "python/default"
       tag: "3.9"
 
     steps:
@@ -81,9 +106,7 @@ jobs:
 workflows:
   pr-checks:
     jobs:
-      - pre-commit/run:
-          all-files: true
-          use-cache: true
+      - lint:
           filters: *filters-development
 
       - python/test:

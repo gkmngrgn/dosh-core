@@ -14,12 +14,13 @@ pytest = "^7.1.2"
 poethepoet = "^0.15.0"
 pytest-httpserver = "^1.0.4"
 pyinstaller = "^5.3"
+pylint = "^2.15.0"
 
 [tool.poetry.scripts]
 dosh = "dosh.cli:run"
 
 [tool.poe.tasks.build]
-cmd = "poetry run pyinstaller dosh.py"
+cmd = "poetry run pyinstaller app.py --console --name=dosh"
 help = "Build dosh"
 
 [tool.poe.tasks.lint]

@@ -20,7 +20,7 @@ pylint = "^2.15.0"
 dosh = "dosh.cli:run"
 
 [tool.poe.tasks.build]
-cmd = "poetry run pyinstaller app.py --console --name=dosh"
+cmd = "poetry run pyinstaller app.py --name=dosh --console --noconfirm"
 help = "Build dosh"
 
 [tool.poe.tasks.lint]

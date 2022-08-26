@@ -120,7 +120,7 @@ workflows:
   main:
     jobs:
       - build-on-linux:
-          filters: *filters-release
+          filters: *filters-development
 
       - build-on-macos:
           filters: *filters-release

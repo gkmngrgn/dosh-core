@@ -78,8 +78,20 @@ jobs:
       xcode: 12.5.1
 
     steps:
-      - build:
-          directory: "dist-macos"
+      - checkout
+
+      # - python/install-packages:
+      #     pkg-manager: "poetry"
+
+      - run: |
+          python --version
+          # poetry run poe build
+          # mv dist << parameters.directory >>
+
+      # - persist_to_workspace:
+      #     root: .
+      #     paths:
+      #       - << parameters.directory >>
 
   build-on-windows:
     executor: windows/server-2022
@@ -122,7 +134,7 @@ workflows:
   main:
     jobs:
       - build-on-linux:
-          filters: *filters-development
+          filters: *filters-release
 
       - build-on-macos:
           filters: *filters-development
@@ -132,7 +144,7 @@ workflows:
 
       - release:
           requires:
-            - build-on-linux
+            # - build-on-linux
             - build-on-macos
             # - build-on-windows
-          filters: *filters-development
+          filters: *filters-release

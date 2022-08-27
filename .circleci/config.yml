@@ -57,12 +57,18 @@ jobs:
           command: |
             poetry install --no-dev
             poetry run pyinstaller app.py --name=dosh --noconfirm
-            mv dist dist-linux
+
+            PYTHON_VERSION=$(python -c 'import sys; print(".".join(map(str, sys.version_info[:3])))')
+            DIR_NAME=dosh-linux-x86_64-py${PYTHON_VERSION}
+
+            cd ./dist/
+            mv dosh $DIR_NAME
+            tar -czvf $DIR_NAME.tar.gz $DIR_NAME/*
 
       - persist_to_workspace:
-          root: .
+          root: "dist"
           paths:
-            - "dist-linux"
+            - "dosh-*.tar.gz"
 
   build-on-macos:
     macos:
@@ -74,18 +80,21 @@ jobs:
       - run:
           name: "Build project"
           command: |
-            curl -sSL https://install.python-poetry.org | python3 -
-            export PATH="/Users/distiller/Library/Python/3.9/bin:$PATH"
-
+            pip3 install poetry
             poetry install --no-dev
             poetry run pyinstaller app.py --name=dosh --console --noconfirm
 
-            mv dist dist-macos
+            PYTHON_VERSION=$(python -c 'import sys; print(".".join(map(str, sys.version_info[:3])))')
+            DIR_NAME=dosh-macos-x86_64-py${PYTHON_VERSION}
+
+            cd ./dist/
+            mv dosh $DIR_NAME
+            tar -czvf $DIR_NAME.tar.gz $DIR_NAME/*
 
       - persist_to_workspace:
-          root: .
+          root: "dist"
           paths:
-            - "dist-macos"
+            - "dosh-*.tar.gz"
 
   build-on-windows:
     executor: windows/server-2022
@@ -94,28 +103,24 @@ jobs:
       - checkout
 
       - run:
-          name: "Install pyenv"
-          shell: "cmd.exe"
-          command: |
-            choco install -y pyenv-win
-            refreshenv
-
-      - run:
           name: "Build project"
-          shell: "cmd.exe"
+          shell: "bash.exe"
           command: |
-            pyenv --help
-
-            pyenv install 3.9.13
-            pyenv global 3.9.13
-
-            python --version
-
             pip install poetry
             poetry install --no-dev
             poetry run pyinstaller app.py --name=dosh --console --noconfirm
 
-            mv dist dist-windows
+            PYTHON_VERSION=$(python -c 'import sys; print(".".join(map(str, sys.version_info[:3])))')
+            DIR_NAME=dosh-windows-x86_64-py${PYTHON_VERSION}
+
+            cd ./dist/
+            mv dosh $DIR_NAME
+            tar -czvf $DIR_NAME.tar.gz $DIR_NAME/*
+
+      - persist_to_workspace:
+          root: "dist"
+          paths:
+            - "dosh-*.tar.gz"
 
   release:
     docker:
@@ -125,33 +130,25 @@ jobs:
       - attach_workspace:
           at: .
 
-      - run: |
-          mkdir release
-
-          cd ./dist-linux && tar -czvf dosh-x86_64-linux.tar.gz ./dosh/* && cd ..
-          cd ./dist-macos && tar -czvf dosh-x86_64-macos.tar.gz ./dosh/* && cd ..
-
-          cp ./dist-*/*.tar.gz ./release/
-
       - store_artifacts:
-          path: "release"
+          path: .
 
 workflows:
-  pr-checks:
-    jobs:
-      - lint:
-          filters: *filters-development
+  # pr-checks:
+  #   jobs:
+  #     - lint:
+  #         filters: *filters-development
 
-      - python/test:
-          matrix:
-            parameters:
-              version: ["3.9", "3.10"]
-          filters: *filters-development
+  #     - python/test:
+  #         matrix:
+  #           parameters:
+  #             version: ["3.9", "3.10"]
+  #         filters: *filters-development
 
   main:
     jobs:
       - build-on-linux:
-          filters: *filters-release
+          filters: *filters-development
 
       - build-on-macos:
           filters: *filters-release
@@ -162,6 +159,6 @@ workflows:
       - release:
           requires:
             - build-on-linux
-            - build-on-macos
-            - build-on-windows
-          filters: *filters-release
+            # - build-on-macos
+            # - build-on-windows
+          filters: *filters-development

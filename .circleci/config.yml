@@ -67,10 +67,14 @@ jobs:
     macos:
       xcode: 12.5.1
 
+    environment:
+      HOMEBREW_NO_AUTO_UPDATE: 1
+
     steps:
       - checkout
 
       - run: |
+          brew install python@3.9
           python --version
 
   build-on-windows:
@@ -78,6 +82,7 @@ jobs:
 
     steps:
       - run: "echo \"TODO: not ready yet.\""
+      - run: "choco help"
 
   release:
     docker:

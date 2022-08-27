@@ -29,6 +29,7 @@ jobs:
       - run: poetry run pip install pre-commit
 
       - run:
+          name: "Create a temporary file for getting a cache key"
           command: |
             cp .pre-commit-config.yaml /tmp/checksum.txt
             poetry run python --version >> /tmp/checksum.txt
@@ -51,12 +52,12 @@ jobs:
     steps:
       - checkout
 
-      - python/install-packages:
-          pkg-manager: "poetry"
-
-      - run: |
-          poetry run poe build
-          mv dist dist-linux
+      - run:
+          name: "Build project"
+          command: |
+            poetry install --no-dev
+            poetry run pyinstaller app.py --name=dosh --noconfirm
+            mv dist dist-linux
 
       - persist_to_workspace:
           root: .
@@ -70,21 +71,38 @@ jobs:
     steps:
       - checkout
 
-      - run: |
-          curl -sSL https://install.python-poetry.org | python3 -
-          export PATH="/Users/distiller/Library/Python/3.9/bin:$PATH"
+      - run:
+          name: "Build project"
+          command: |
+            curl -sSL https://install.python-poetry.org | python3 -
+            export PATH="/Users/distiller/Library/Python/3.9/bin:$PATH"
 
-          poetry install
-          poetry run poe build
+            poetry install --no-dev
+            poetry run pyinstaller app.py --name=dosh --console --noconfirm
 
-          mv dist dist-macos
+            mv dist dist-macos
+
+      - persist_to_workspace:
+          root: .
+          paths:
+            - "dist-macos"
 
   build-on-windows:
     executor: windows/server-2022
 
     steps:
-      - run: "echo \"TODO: not ready yet.\""
-      - run: "choco help"
+      - checkout
+
+      - run:
+          name: "Build project"
+          command: |
+            choco install python --version=3.9.x
+            (Invoke-WebRequest -Uri https://install.python-poetry.org -UseBasicParsing).Content | python -
+
+            poetry install --no-dev
+            poetry run pyinstaller app.py --name=dosh --console --noconfirm
+
+            mv dist dist-windows
 
   release:
     docker:
@@ -123,10 +141,10 @@ workflows:
           filters: *filters-release
 
       - build-on-macos:
-          filters: *filters-development
+          filters: *filters-release
 
       - build-on-windows:
-          filters: *filters-release
+          filters: *filters-development
 
       - release:
           requires:

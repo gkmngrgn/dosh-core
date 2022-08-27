@@ -69,6 +69,13 @@ jobs:
       - checkout
 
       - run:
+          name: "Install prerequisites"
+          command: |
+            mkdir -p ~/.local/bin
+            ln -s $(which python3) ~/.local/bin/python
+            ln -s $(which pip3) ~/.local/bin/pip
+
+      - run:
           name: "Build project"
           command: bash scripts/build.sh
 

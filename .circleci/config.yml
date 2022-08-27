@@ -94,12 +94,16 @@ jobs:
       - checkout
 
       - run:
-          name: "Build project"
+          name: "Install pyenv"
           shell: "cmd.exe"
           command: |
             choco install -y pyenv-win
             refreshenv
 
+      - run:
+          name: "Build project"
+          shell: "cmd.exe"
+          command: |
             pyenv --help
 
             pyenv install 3.9.13

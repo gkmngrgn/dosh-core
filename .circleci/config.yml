@@ -67,15 +67,12 @@ jobs:
     macos:
       xcode: 12.5.1
 
-    environment:
-      PATH: "/Users/distiller/Library/Python/3.9/bin:$PATH"
-
     steps:
       - checkout
 
       - run: |
-          pip3 install virtualenv
           curl -sSL https://install.python-poetry.org | python3 -
+          export PATH="/Users/distiller/Library/Python/3.9/bin:$PATH"
 
           poetry install --no-dev
           poetry run poe build

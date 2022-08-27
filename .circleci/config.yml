@@ -14,27 +14,6 @@ filters-development: &filters-development
   branches:
     ignore: main
 
-commands:
-  build:
-    parameters:
-      directory:
-        type: string
-
-    steps:
-      - checkout
-
-      - python/install-packages:
-          pkg-manager: "poetry"
-
-      - run: |
-          poetry run poe build
-          mv dist << parameters.directory >>
-
-      - persist_to_workspace:
-          root: .
-          paths:
-            - << parameters.directory >>
-
 jobs:
   lint:
     executor:
@@ -70,8 +49,19 @@ jobs:
       tag: "3.9"
 
     steps:
-      - build:
-          directory: "dist-linux"
+      - checkout
+
+      - python/install-packages:
+          pkg-manager: "poetry"
+
+      - run: |
+          poetry run poe build
+          mv dist dist-linux
+
+      - persist_to_workspace:
+          root: .
+          paths:
+            - "dist-linux"
 
   build-on-macos:
     macos:
@@ -80,25 +70,14 @@ jobs:
     steps:
       - checkout
 
-      # - python/install-packages:
-      #     pkg-manager: "poetry"
-
       - run: |
           python --version
-          # poetry run poe build
-          # mv dist << parameters.directory >>
-
-      # - persist_to_workspace:
-      #     root: .
-      #     paths:
-      #       - << parameters.directory >>
 
   build-on-windows:
     executor: windows/server-2022
 
     steps:
-      - build:
-          directory: "dist-windows"
+      - run: "echo \"TODO: not ready yet.\""
 
   release:
     docker:
@@ -140,11 +119,11 @@ workflows:
           filters: *filters-development
 
       - build-on-windows:
-          filters: *filters-release
+          filters: *filters-development
 
       - release:
           requires:
             # - build-on-linux
             - build-on-macos
-            # - build-on-windows
+            - build-on-windows
           filters: *filters-release

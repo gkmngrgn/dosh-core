@@ -74,7 +74,11 @@ jobs:
       - checkout
 
       - run: |
-          brew install python@3.9
+          echo "$HOMEBREW_CELLAR"
+          echo "---"
+
+          ls $HOMEBREW_CELLAR
+
           python --version
 
   build-on-windows:
@@ -124,11 +128,11 @@ workflows:
           filters: *filters-development
 
       - build-on-windows:
-          filters: *filters-development
+          filters: *filters-release
 
       - release:
           requires:
-            # - build-on-linux
+            - build-on-linux
             - build-on-macos
             - build-on-windows
           filters: *filters-release

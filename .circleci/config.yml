@@ -97,6 +97,7 @@ jobs:
           name: "Build project"
           command: |
             choco install -y pyenv-win
+            refreshenv
 
             pyenv --help
 

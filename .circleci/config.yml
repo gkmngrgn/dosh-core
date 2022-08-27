@@ -96,7 +96,7 @@ jobs:
       - run:
           name: "Build project"
           command: |
-            choco install pyenv-win
+            choco install -y pyenv-win
 
             pyenv --help
 

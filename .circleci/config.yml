@@ -54,16 +54,7 @@ jobs:
 
       - run:
           name: "Build project"
-          command: |
-            poetry install --no-dev
-            poetry run pyinstaller app.py --name=dosh --noconfirm
-
-            PYTHON_VERSION=$(python -c 'import sys; print(".".join(map(str, sys.version_info[:3])))')
-            DIR_NAME=dosh-linux-x86_64-py${PYTHON_VERSION}
-
-            cd ./dist/
-            mv dosh $DIR_NAME
-            tar -czvf $DIR_NAME.tar.gz $DIR_NAME/*
+          command: << include(scripts/build.sh) >>
 
       - persist_to_workspace:
           root: "dist"
@@ -79,17 +70,7 @@ jobs:
 
       - run:
           name: "Build project"
-          command: |
-            pip3 install poetry
-            poetry install --no-dev
-            poetry run pyinstaller app.py --name=dosh --console --noconfirm
-
-            PYTHON_VERSION=$(python -c 'import sys; print(".".join(map(str, sys.version_info[:3])))')
-            DIR_NAME=dosh-macos-x86_64-py${PYTHON_VERSION}
-
-            cd ./dist/
-            mv dosh $DIR_NAME
-            tar -czvf $DIR_NAME.tar.gz $DIR_NAME/*
+          command: << include(scripts/build.sh) >>
 
       - persist_to_workspace:
           root: "dist"
@@ -105,17 +86,7 @@ jobs:
       - run:
           name: "Build project"
           shell: "bash.exe"
-          command: |
-            pip install poetry
-            poetry install --no-dev
-            poetry run pyinstaller app.py --name=dosh --console --noconfirm
-
-            PYTHON_VERSION=$(python -c 'import sys; print(".".join(map(str, sys.version_info[:3])))')
-            DIR_NAME=dosh-windows-x86_64-py${PYTHON_VERSION}
-
-            cd ./dist/
-            mv dosh $DIR_NAME
-            tar -czvf $DIR_NAME.tar.gz $DIR_NAME/*
+          command: << include(scripts/build.sh) >>
 
       - persist_to_workspace:
           root: "dist"
@@ -154,7 +125,7 @@ workflows:
           filters: *filters-release
 
       - build-on-windows:
-          filters: *filters-development
+          filters: *filters-release
 
       - release:
           requires:

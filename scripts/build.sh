@@ -1,5 +1,3 @@
-export PATH="$HOME/.local/bin:$HOME/bin:$PATH"
-
 OS_NAME=$(python -c 'import platform; print(platform.system().lower())')
 ARCH_TYPE=$(python -c 'import platform; print(platform.machine().lower())')
 PY_VERSION=$(python -c 'import sys; print(".".join(map(str, sys.version_info[:3])))')

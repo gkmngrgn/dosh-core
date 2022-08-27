@@ -75,6 +75,8 @@ jobs:
             ln -s $(which python3) ~/.local/bin/python
             ln -s $(which pip3) ~/.local/bin/pip
 
+            export PATH="$HOME/.local/bin:$HOME/bin:$PATH"
+
             echo $(which python)
             echo $(python --version)
 
@@ -128,7 +130,7 @@ workflows:
   main:
     jobs:
       - build-on-linux:
-          filters: *filters-release
+          filters: *filters-development
 
       - build-on-macos:
           filters: *filters-development
@@ -138,7 +140,7 @@ workflows:
 
       - release:
           requires:
-            # - build-on-linux
+            - build-on-linux
             - build-on-macos
             - build-on-windows
           filters: *filters-development

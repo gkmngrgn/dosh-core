@@ -75,6 +75,9 @@ jobs:
             ln -s $(which python3) ~/.local/bin/python
             ln -s $(which pip3) ~/.local/bin/pip
 
+            echo $(which python)
+            echo $(python --version)
+
       - run:
           name: "Build project"
           command: bash scripts/build.sh

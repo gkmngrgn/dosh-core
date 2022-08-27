@@ -95,11 +95,12 @@ jobs:
 
       - run:
           name: "Build project"
+          shell: "cmd.exe"
           command: |
             choco install -y pyenv-win
             refreshenv
 
-            %USERPROFILE%\.pyenv\pyenv-win\bin\pyenv --help
+            pyenv --help
 
             pyenv install 3.9.13
             pyenv global 3.9.13

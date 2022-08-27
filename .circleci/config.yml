@@ -99,7 +99,7 @@ jobs:
             choco install -y pyenv-win
             refreshenv
 
-            pyenv --help
+            %USERPROFILE%\.pyenv\pyenv-win\bin\pyenv --help
 
             pyenv install 3.9.13
             pyenv global 3.9.13

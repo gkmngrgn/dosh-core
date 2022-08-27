@@ -69,15 +69,19 @@ jobs:
 
     environment:
       HOMEBREW_NO_AUTO_UPDATE: 1
+      PYTHON: "/usr/local/bin/python3"
 
     steps:
       - checkout
 
       - run: |
-          brew link python@3.9
-          curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
+          $PYTHON --version
+
+          curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | $PYTHON -
+
           poetry install --no-dev
           poetry run poe build
+
           mv dist dist-macos
 
   build-on-windows:

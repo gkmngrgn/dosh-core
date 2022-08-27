@@ -74,7 +74,7 @@ jobs:
           curl -sSL https://install.python-poetry.org | python3 -
           export PATH="/Users/distiller/Library/Python/3.9/bin:$PATH"
 
-          poetry install --no-dev
+          poetry install
           poetry run poe build
 
           mv dist dist-macos

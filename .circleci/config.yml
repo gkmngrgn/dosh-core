@@ -75,11 +75,6 @@ jobs:
             ln -s $(which python3) ~/.local/bin/python
             ln -s $(which pip3) ~/.local/bin/pip
 
-            export PATH="$HOME/.local/bin:$HOME/bin:$PATH"
-
-            echo $(which python)
-            echo $(python --version)
-
       - run:
           name: "Build project"
           command: bash scripts/build.sh
@@ -116,16 +111,16 @@ jobs:
           path: .
 
 workflows:
-  # pr-checks:
-  #   jobs:
-  #     - lint:
-  #         filters: *filters-development
+  pr-checks:
+    jobs:
+      - lint:
+          filters: *filters-development
 
-  #     - python/test:
-  #         matrix:
-  #           parameters:
-  #             version: ["3.9", "3.10"]
-  #         filters: *filters-development
+      - python/test:
+          matrix:
+            parameters:
+              version: ["3.9", "3.10"]
+          filters: *filters-development
 
   main:
     jobs:

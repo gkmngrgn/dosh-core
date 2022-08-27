@@ -74,6 +74,7 @@ jobs:
       - checkout
 
       - run: |
+          brew link python@3.9
           curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
           poetry install --no-dev
           poetry run poe build

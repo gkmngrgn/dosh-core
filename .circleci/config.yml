@@ -125,17 +125,17 @@ workflows:
   main:
     jobs:
       - build-on-linux:
-          filters: *filters-development
+          filters: *filters-release
 
       - build-on-macos:
-          filters: *filters-development
+          filters: *filters-release
 
       - build-on-windows:
-          filters: *filters-development
+          filters: *filters-release
 
       - release:
           requires:
             - build-on-linux
             - build-on-macos
             - build-on-windows
-          filters: *filters-development
+          filters: *filters-release

@@ -74,12 +74,10 @@ jobs:
       - checkout
 
       - run: |
-          echo "$HOMEBREW_CELLAR"
-          echo "---"
-
-          ls $HOMEBREW_CELLAR
-
-          python --version
+          curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
+          poetry install --no-dev
+          poetry run poe build
+          mv dist dist-macos
 
   build-on-windows:
     executor: windows/server-2022

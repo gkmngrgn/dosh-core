@@ -96,9 +96,16 @@ jobs:
       - run:
           name: "Build project"
           command: |
-            choco install python --version=3.9.x
-            (Invoke-WebRequest -Uri https://install.python-poetry.org -UseBasicParsing).Content | python -
+            Invoke-WebRequest -UseBasicParsing -Uri "https://raw.githubusercontent.com/pyenv-win/pyenv-win/master/pyenv-win/install-pyenv-win.ps1" -OutFile "./install-pyenv-win.ps1"; &"./install-pyenv-win.ps1"
 
+            pyenv --help
+
+            pyenv install 3.9.13
+            pyenv global 3.9.13
+
+            python --version
+
+            pip install poetry
             poetry install --no-dev
             poetry run pyinstaller app.py --name=dosh --console --noconfirm
 

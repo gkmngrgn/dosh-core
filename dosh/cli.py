@@ -32,10 +32,6 @@ class CLI:
 
         return args[1], args[2:]
 
-    def run_task(self, task: str, params: List[str]) -> None:
-        """Run task that defined by client."""
-        self.conf_parser.run_script([f"cmd_{task}({', '.join(params)})"])
-
     def run(self) -> None:
         """Run cli reading the arguments."""
         verbosity = self.get_arg_verbosity()
@@ -53,14 +49,14 @@ class CLI:
 
         if task_name == "help":
             output = generate_help(
-                commands=self.conf_parser.get_commands(),
-                description=self.conf_parser.get_description(),
-                epilog=self.conf_parser.get_epilog(),
+                tasks=self.conf_parser.tasks,
+                description=self.conf_parser.description,
+                epilog=self.conf_parser.epilog,
             )
             print(output)
             return
 
-        self.run_task(task_name, task_params)
+        self.conf_parser.run_task(task_name, task_params)
 
 
 def run() -> None:

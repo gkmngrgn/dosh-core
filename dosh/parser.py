@@ -1,64 +1,54 @@
 """DOSH config parser."""
-import json
-from contextlib import redirect_stdout
-from dataclasses import dataclass
-from io import StringIO
 from pathlib import Path
-from typing import Any, Dict, Final, List, Optional
+from typing import Any, Dict, Final, List
 
-from dosh import injections as injects
+from lupa import LuaRuntime
+
 from dosh.commands import COMMANDS
+from dosh.commands.base import Task
 from dosh.environments import ENVIRONMENTS
 
-CONFIG_FILENAME: Final = "dosh.star"
+CONFIG_FILENAME: Final = "dosh.lua"
 
 
-@dataclass
 class ConfigParser:
     """Dosh configuration parser."""
 
-    content: str
+    tasks: List[Task] = []
+    _vars: Dict[str, str] = {}
 
-    def get_commands(self) -> Dict[str, str]:
-        """Parse commands from dosh configuration."""
-        output = self.run_script(
-            commands=[
-                "locals = locals().copy()",
-                "print_commands(locals)",
-            ],
-            variables={
-                "print_commands": injects.print_commands,
-            },
-        )
+    def __init__(self, content: str) -> None:
+        """Parse config first."""
+        lua = LuaRuntime(unpack_returned_tuples=True)
+        lua_code = f"function (env, cmd) {content} return env end"
+        lua_func = lua.eval(lua_code)
 
-        data: Dict[str, str] = json.loads(output)
-        return data
+        commands = COMMANDS.copy()
+        commands["add_task"] = self.add_task
 
-    def get_description(self) -> str:
+        self._vars = lua_func(ENVIRONMENTS, commands)
+
+    @property
+    def description(self) -> str:
         """Get help description."""
-        output = self.run_script(commands=["print(HELP_DESCRIPTION)"])
-        return output.strip()
+        return self._vars["HELP_DESCRIPTION"]
 
-    def get_epilog(self) -> str:
+    @property
+    def epilog(self) -> str:
         """Get help epilog."""
-        output = self.run_script(commands=["print(HELP_EPILOG)"])
-        return output.strip()
+        return self._vars["HELP_EPILOG"]
 
-    def run_script(
-        self, commands: List[str], variables: Optional[Dict[str, Any]] = None
-    ) -> str:
-        """Run dosh script manipulating the content."""
-        output = StringIO()
-        content = (self.content or "") + "\n".join(commands)
+    def run_task(self, task_name: str, params: List[str]) -> None:
+        """Find and run tasks with parameters."""
+        for task in self.tasks:
+            if task.name == task_name:
+                task.command(*params)
+                return
 
-        variables = variables or {}
-        variables.update(COMMANDS)
-        variables.update(ENVIRONMENTS)
-
-        with redirect_stdout(output):
-            exec(content, variables)  # pylint: disable=exec-used
-
-        return output.getvalue()
+    def add_task(self, args: Dict[str, Any]) -> None:
+        """Parse and add task to task list."""
+        task = Task.from_dict(args)
+        self.tasks.append(task)
 
 
 def find_config_file() -> Path:

@@ -1,9 +1,9 @@
 """Pre-defined commands for cli."""
 import textwrap
 from pathlib import Path
-from typing import Dict, Optional
+from typing import List, Optional
 
-from dosh.commands.base import CommandResult, CommandStatus
+from dosh.commands.base import CommandResult, CommandStatus, Task
 
 
 def init_config(config_path: Path) -> CommandResult[None]:
@@ -31,7 +31,7 @@ def init_config(config_path: Path) -> CommandResult[None]:
 
 
 def generate_help(
-    commands: Dict[str, str],
+    tasks: List[Task],
     description: Optional[str] = None,
     epilog: Optional[str] = None,
 ) -> str:
@@ -44,14 +44,15 @@ def generate_help(
         lines.append(description)
 
     # TASKS
-    if commands:
+    if tasks:
         lines.extend(["", "Tasks:"])
 
-        max_len = min(max(map(len, commands.keys())), line_len)
+        task_names = [t.name for t in tasks]
+        max_len = min(max(map(len, task_names)), line_len)
 
-        for name, desc in commands.items():
-            command_init = f"  > {name.ljust(max_len)}"
-            desc_first, *desc_list = desc.split("\n")
+        for task in tasks:
+            command_init = f"  > {task.name.ljust(max_len)}"
+            desc_first, *desc_list = task.description.split("\n")
 
             if not desc_first:
                 lines.append(command_init)

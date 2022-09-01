@@ -2,10 +2,11 @@
 import sys
 from typing import List, Optional, Tuple
 
+from dosh.arguments import find_arg_index
 from dosh.commands.base import CommandStatus
 from dosh.commands.internal import generate_help, init_config
+from dosh.config import find_config_file, get_config_parser
 from dosh.logger import set_verbosity
-from dosh.parser import find_config_file, get_config_parser
 
 
 class CLI:
@@ -25,12 +26,11 @@ class CLI:
 
     def get_arg_task(self) -> Optional[Tuple[str, List[str]]]:
         """Get task name with its parameters."""
-        args = list(filter(lambda a: not a.startswith("-"), sys.argv))
-
-        if len(args) <= 1:
+        available_tasks = [t.name for t in self.conf_parser.tasks]
+        task_index = find_arg_index(*available_tasks)
+        if task_index is None:
             return None
-
-        return args[1], args[2:]
+        return sys.argv[task_index], sys.argv[task_index + 1 :]
 
     def run(self) -> None:
         """Run cli reading the arguments."""

@@ -16,12 +16,28 @@ def init_config(config_path: Path) -> CommandResult[None]:
 
     content = textwrap.dedent(
         """\
-    def cmd_install_apps():
-        info("install your favourite apps with a command.")
+        -- task: say hello to anyone. it takes an argument.
+        cmd.add_task{
+           name="say_hello",
+           description="say hello to anyone",
+           command=function(there)
+              there = there or "world"
+              cmd.info("hello " .. there .. "!")
+           end
+        }
 
-    def cmd_set_theme(profile):
-        info("change your editor, terminal, or system theme with a command.")
-    """
+        -- task: install my favourite apps.
+        cmd.add_task{
+           name="check_my_apps",
+           command=function()
+              if not env.IS_ZSH then
+                 cmd.error("did you forget to install or activate zsh?")
+              else
+                 cmd.info("you have zsh.")
+              end
+           end
+        }
+        """
     )
 
     config_path.write_text(content)
@@ -65,14 +81,24 @@ def generate_help(
             for desc in desc_list:
                 line_list = textwrap.wrap(desc, line_len - max_len)
                 lines.extend(map(lambda l: f"{' ' * (max_len + 7)}{l}", line_list))
+    else:
+        lines.extend(
+            [
+                "",
+                "There's no task.",
+                "Create a file `dosh.lua` and write your tasks first.",
+            ]
+        )
 
     # DOSH COMMANDS
     lines.extend(
         [
             "",
             "Dosh commands:",
-            "  > help   print this output",
-            "  > init   initialize a new config in current working directory",
+            "  > help              print this output",
+            "  > init              initialize a new config in current working directory",
+            "",
+            "  -c, --config PATH   specify config path (default: dosh.lua)",
         ]
     )
 

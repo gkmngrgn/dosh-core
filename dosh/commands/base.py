@@ -44,8 +44,8 @@ class Task:
     """Parsed arguments from dosh config."""
 
     name: str
-    description: str
     command: CommandCallable
+    description: str = ""
 
     @classmethod
     def from_dict(cls, args: Dict[str, Any]) -> Task:

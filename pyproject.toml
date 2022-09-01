@@ -12,7 +12,6 @@ lupa = "^1.13"
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.1.2"
-poethepoet = "^0.15.0"
 pytest-httpserver = "^1.0.4"
 pyinstaller = "^5.3"
 pylint = "^2.15.0"

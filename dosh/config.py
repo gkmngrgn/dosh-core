@@ -1,9 +1,11 @@
 """DOSH config parser."""
+import sys
 from pathlib import Path
 from typing import Any, Dict, Final, List
 
 from lupa import LuaRuntime
 
+from dosh.arguments import find_arg_index
 from dosh.commands import COMMANDS
 from dosh.commands.base import Task
 from dosh.environments import ENVIRONMENTS
@@ -52,12 +54,14 @@ class ConfigParser:
 
 
 def find_config_file() -> Path:
-    """
-    Return file path of dosh script.
+    """Return file path of dosh script."""
+    index = find_arg_index("-c", "--config")
+    if index is None or len(sys.argv) <= index or sys.argv[index + 1].startswith("-"):
+        filename = CONFIG_FILENAME
+    else:
+        filename = sys.argv[index + 1]
 
-    TODO: Improve this function to find the file in a different folder.
-    """
-    return Path.cwd() / CONFIG_FILENAME
+    return Path.cwd() / filename
 
 
 def get_config_parser() -> ConfigParser:

@@ -37,7 +37,7 @@ jobs:
       - restore_cache:
           key: pre-commit-{{ checksum "/tmp/checksum.txt" }}
 
-      - run: poetry run poe lint
+      - run: poetry run pre-commit run --all-files
 
       - save_cache:
           key: pre-commit-{{ checksum "/tmp/checksum.txt" }}

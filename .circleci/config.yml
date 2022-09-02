@@ -26,7 +26,12 @@ jobs:
       - python/install-packages:
           pkg-manager: "poetry"
 
-      - run: poetry run pip install pre-commit
+      - run:
+          name: "Install pre-commit dependencies"
+          command: |
+            apt update -y
+            apt install luarocks -y
+            poetry run pip install pre-commit
 
       - run:
           name: "Create a temporary file for getting a cache key"

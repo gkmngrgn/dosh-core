@@ -5,9 +5,13 @@ ARCH_TYPE=$(python -c 'import platform; print(platform.machine().lower())')
 PY_VERSION=$(python -c 'import sys; print(".".join(map(str, sys.version_info[:3])))')
 DIR_NAME="dosh-${OS_NAME}-${ARCH_TYPE}-py${PY_VERSION}"
 
-pip install poetry
+if ! command -v poetry &> /dev/null
+then
+    pip install poetry
+fi
+
 poetry install
-poetry run poe build
+poetry run pyinstaller app.py --name=dosh --console --noconfirm
 
 cd ./dist/
 mv dosh $DIR_NAME

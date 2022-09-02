@@ -45,15 +45,15 @@ jobs:
             - ~/.cache/pre-commit
 
   lint-lua:
-    - docker:
-        image: pipelinecomponents/luacheck:latest
+    docker:
+      - image: pipelinecomponents/luacheck:latest
 
-    - steps:
-        - checkout
+    steps:
+      - checkout
 
-        - run:
-            name: Check lua files.
-            command: luacheck --globals=cmd --globals=env -- examples
+      - run:
+          name: Check lua files.
+          command: luacheck --globals=cmd --globals=env -- examples
 
   build-on-linux:
     executor:

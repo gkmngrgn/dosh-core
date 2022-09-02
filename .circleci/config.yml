@@ -16,19 +16,17 @@ filters-development: &filters-development
 
 jobs:
   lint:
-    docker:
-      - image: cimg/base:edge-22.04
+    executor:
+      name: "python/default"
+      tag: "3.9"
 
     steps:
       - checkout
 
-      - run:
-          name: "Install pre-commit dependencies"
-          command: |
-            sudo apt update -y
-            sudo apt install python3 lua5.4 -y
-            curl -sSL https://install.python-poetry.org | python3 - -y
-            poetry run pip install pre-commit
+      - python/install-packages:
+          pkg-manager: "poetry"
+
+      - run: poetry run pip install pre-commit
 
       - run:
           name: "Create a temporary file for getting a cache key"
@@ -45,6 +43,17 @@ jobs:
           key: pre-commit-{{ checksum "/tmp/checksum.txt" }}
           paths:
             - ~/.cache/pre-commit
+
+  lint-lua:
+    - docker:
+        image: pipelinecomponents/luacheck:latest
+
+    - steps:
+        - checkout
+
+        - run:
+            name: Check lua files.
+            command: luacheck --globals=cmd --globals=env -- examples
 
   build-on-linux:
     executor:
@@ -116,6 +125,9 @@ workflows:
   pr-checks:
     jobs:
       - lint:
+          filters: *filters-development
+
+      - lint-lua:
           filters: *filters-development
 
       - python/test:

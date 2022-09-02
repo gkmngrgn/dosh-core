@@ -22,12 +22,10 @@ jobs:
     steps:
       - checkout
 
-      - python/install-packages:
-          pkg-manager: "poetry"
-
       - run:
           name: "Install pre-commit dependencies"
           command: |
+            curl -sSL https://install.python-poetry.org | python3 - -y -f
             sudo apt update -y
             sudo apt install luarocks -y
             poetry run pip install pre-commit

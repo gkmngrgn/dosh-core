@@ -37,12 +37,23 @@ jobs:
       - restore_cache:
           key: pre-commit-{{ checksum "/tmp/checksum.txt" }}
 
-      - run: poetry run poe lint
+      - run: poetry run pre-commit run --all-files
 
       - save_cache:
           key: pre-commit-{{ checksum "/tmp/checksum.txt" }}
           paths:
             - ~/.cache/pre-commit
+
+  lint-lua:
+    docker:
+      - image: pipelinecomponents/luacheck:latest
+
+    steps:
+      - checkout
+
+      - run:
+          name: "Check lua files"
+          command: luacheck --globals=cmd --globals=env -- examples
 
   build-on-linux:
     executor:
@@ -114,6 +125,9 @@ workflows:
   pr-checks:
     jobs:
       - lint:
+          filters: *filters-development
+
+      - lint-lua:
           filters: *filters-development
 
       - python/test:

@@ -226,13 +226,16 @@ https://github.com/bazelbuild/starlark/blob/master/users.md
 
 ## CONTRIBUTION
 
-Install [poetry](https://python-poetry.org/) and
-[pre-commit](https://pre-commit.com/) first, then:
+Install these development dependencies manually:
+
+- [poetry](https://python-poetry.org/)
+- [poethepoet](https://github.com/nat-n/poethepoet)
+- [pre-commit](https://pre-commit.com/)
 
 ```shell
 $ poetry install
-$ poetry run dosh       # run dosh without instaling.
-$ poetry run poe lint   # run pre-commit hooks manually.
-$ poetry run poe test   # run unit tests.
-$ poetry run poe build  # build and generate self-executable file.
+$ poetry run dosh   # run dosh without instaling.
+$ poetry poe lint   # run pre-commit hooks manually.
+$ poetry poe test   # run unit tests.
+$ poetry poe build  # build and generate self-executable file.
 ```

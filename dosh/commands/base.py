@@ -1,10 +1,12 @@
 """Common helper functions and classes for commands submodule."""
+from __future__ import annotations
+
 import functools
 import shutil
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
-from typing import Any, Callable, Generic, Optional, TypeVar
+from typing import Any, Callable, Dict, Generic, Optional, TypeVar
 from urllib.parse import urlparse
 
 T = TypeVar("T")
@@ -35,6 +37,20 @@ class CommandResult(Generic[T]):
 
 
 CommandCallable = Callable[..., CommandResult[Any]]
+
+
+@dataclass
+class Task:
+    """Parsed arguments from dosh config."""
+
+    name: str
+    command: CommandCallable
+    description: str = ""
+
+    @classmethod
+    def from_dict(cls, args: Dict[str, Any]) -> Task:
+        """Create task from arguments."""
+        return cls(**args)
 
 
 def check_command(

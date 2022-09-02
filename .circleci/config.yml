@@ -16,9 +16,8 @@ filters-development: &filters-development
 
 jobs:
   lint:
-    executor:
-      name: "python/default"
-      tag: "3.10"
+    docker:
+      - image: cimg/base:edge-22.04
 
     steps:
       - checkout

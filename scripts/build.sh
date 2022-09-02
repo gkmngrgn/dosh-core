@@ -6,8 +6,9 @@ PY_VERSION=$(python -c 'import sys; print(".".join(map(str, sys.version_info[:3]
 DIR_NAME="dosh-${OS_NAME}-${ARCH_TYPE}-py${PY_VERSION}"
 
 pip install poetry
+poetry self add "poethepoet[poetry_plugin]"
 poetry install
-poetry run poe build
+poetry poe build
 
 cd ./dist/
 mv dosh $DIR_NAME

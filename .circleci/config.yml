@@ -52,7 +52,7 @@ jobs:
       - checkout
 
       - run:
-          name: Check lua files.
+          name: "Check lua files"
           command: luacheck --globals=cmd --globals=env -- examples
 
   build-on-linux:

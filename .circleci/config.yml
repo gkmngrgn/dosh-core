@@ -57,7 +57,7 @@ jobs:
 
   build-on-linux:
     docker:
-      - image: cimg/python:3.9
+      - image: python:3.9-alpine
 
     steps:
       - checkout
@@ -65,15 +65,11 @@ jobs:
       - run:
           name: "Install prerequisites"
           command: |
-            sudo apt update -y
-            sudo apt install python3 python3-dev -y
-            mkdir -p ~/.local/bin
-            ln -s $(which python3) ~/.local/bin/python
-            ln -s $(which pip3) ~/.local/bin/pip
+            apk add --no-cache --virtual .build-deps gcc musl-dev
 
       - run:
           name: "Build project"
-          command: bash scripts/build.sh
+          command: sh scripts/build.sh
 
       - persist_to_workspace:
           root: "dist"

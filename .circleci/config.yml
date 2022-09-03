@@ -65,6 +65,7 @@ jobs:
       - run:
           name: "Install prerequisites"
           command: |
+            apk add --no-cache --virtual .build-deps gcc musl-dev
             which python
             which pip
 

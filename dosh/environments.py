@@ -9,16 +9,16 @@ from dosh.commands.base import CommandStatus
 
 __all__ = ["ENVIRONMENTS"]
 
-SHELL: Final = os.getenv("SHELL")
+SHELL: Final = os.getenv("SHELL") or ""
 OSTYPE: Final = os.getenv("OSTYPE") or ""
 ENVIRONMENTS: Final = {
     "USER": getpass.getuser(),
     "HELP_DESCRIPTION": "dosh - shell-independent command manager",
     "HELP_EPILOG": "",
     # shell type
-    "IS_ZSH": SHELL == "zsh",
-    "IS_BASH": SHELL == "bash",
-    "IS_PWSH": SHELL == "pwsh",
+    "IS_ZSH": SHELL.endswith("zsh"),
+    "IS_BASH": SHELL.endswith("bash"),
+    "IS_PWSH": SHELL.endswith("pwsh"),
     # os type
     "IS_MACOS": OSTYPE.startswith("darwin"),
     "IS_LINUX": OSTYPE == "linux",

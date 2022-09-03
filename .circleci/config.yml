@@ -56,9 +56,8 @@ jobs:
           command: luacheck --globals=cmd --globals=env -- examples
 
   build-on-linux:
-    executor:
-      name: "python/default"
-      tag: "3.9"
+    docker:
+      - image: cimg/python:3.9
 
     steps:
       - checkout

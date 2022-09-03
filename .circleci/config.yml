@@ -57,19 +57,14 @@ jobs:
 
   build-on-linux:
     docker:
-      - image: python:3.9-alpine
+      - image: python:3.9-bullseye
 
     steps:
       - checkout
 
       - run:
-          name: "Install prerequisites"
-          command: |
-            apk add --no-cache --virtual .build-deps gcc musl-dev
-
-      - run:
           name: "Build project"
-          command: sh scripts/build.sh
+          command: bash scripts/build.sh
 
       - persist_to_workspace:
           root: "dist"
@@ -126,24 +121,24 @@ jobs:
           path: .
 
 workflows:
-  pr-checks:
-    jobs:
-      - lint:
-          filters: *filters-development
+  # pr-checks:
+  #   jobs:
+  #     - lint:
+  #         filters: *filters-development
 
-      - lint-lua:
-          filters: *filters-development
+  #     - lint-lua:
+  #         filters: *filters-development
 
-      - python/test:
-          matrix:
-            parameters:
-              version: ["3.9", "3.10"]
-          filters: *filters-development
+  #     - python/test:
+  #         matrix:
+  #           parameters:
+  #             version: ["3.9", "3.10"]
+  #         filters: *filters-development
 
   main:
     jobs:
       - build-on-linux:
-          filters: *filters-release
+          filters: *filters-development
 
       - build-on-macos:
           filters: *filters-release

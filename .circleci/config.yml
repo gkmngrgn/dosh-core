@@ -121,24 +121,24 @@ jobs:
           path: .
 
 workflows:
-  # pr-checks:
-  #   jobs:
-  #     - lint:
-  #         filters: *filters-development
+  pr-checks:
+    jobs:
+      - lint:
+          filters: *filters-development
 
-  #     - lint-lua:
-  #         filters: *filters-development
+      - lint-lua:
+          filters: *filters-development
 
-  #     - python/test:
-  #         matrix:
-  #           parameters:
-  #             version: ["3.9", "3.10"]
-  #         filters: *filters-development
+      - python/test:
+          matrix:
+            parameters:
+              version: ["3.9", "3.10"]
+          filters: *filters-development
 
   main:
     jobs:
       - build-on-linux:
-          filters: *filters-development
+          filters: *filters-release
 
       - build-on-macos:
           filters: *filters-release

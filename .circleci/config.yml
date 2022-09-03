@@ -70,7 +70,7 @@ jobs:
 
       - run:
           name: "Build project"
-          command: bash scripts/build.sh
+          command: sh scripts/build.sh
 
       - persist_to_workspace:
           root: "dist"

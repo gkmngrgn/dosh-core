@@ -57,19 +57,14 @@ jobs:
 
   build-on-linux:
     docker:
-      - image: python:3.9-alpine
+      - image: python:3.9-bullseye
 
     steps:
       - checkout
 
       - run:
-          name: "Install prerequisites"
-          command: |
-            apk add --no-cache --virtual .build-deps gcc musl-dev
-
-      - run:
           name: "Build project"
-          command: sh scripts/build.sh
+          command: bash scripts/build.sh
 
       - persist_to_workspace:
           root: "dist"

@@ -57,7 +57,7 @@ jobs:
 
   build-on-linux:
     docker:
-      - image: cimg/python:3.9
+      - image: python:3.9-alpine
 
     steps:
       - checkout
@@ -65,7 +65,8 @@ jobs:
       - run:
           name: "Install prerequisites"
           command: |
-            pip install setuptools
+            which python
+            which pip
 
       - run:
           name: "Build project"

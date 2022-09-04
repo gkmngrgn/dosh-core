@@ -8,6 +8,8 @@ from dosh.commands.internal import generate_help, init_config
 from dosh.config import find_config_file, get_config_parser
 from dosh.logger import set_verbosity
 
+PREDEFINED_TASKS = ["help", "init"]
+
 
 class CLI:
     """DOSH command line interface."""
@@ -26,8 +28,8 @@ class CLI:
 
     def get_arg_task(self) -> Optional[Tuple[str, List[str]]]:
         """Get task name with its parameters."""
-        available_tasks = [t.name for t in self.conf_parser.tasks]
-        task_index = find_arg_index(*available_tasks)
+        tasks = [t.name for t in self.conf_parser.tasks] + PREDEFINED_TASKS
+        task_index = find_arg_index(*tasks)
         if task_index is None:
             return None
         return sys.argv[task_index], sys.argv[task_index + 1 :]

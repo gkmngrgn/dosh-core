@@ -1,3 +1,5 @@
+-- I've a config repo, I configure my system using this script.
+
 local config_dir = "~/.config"
 
 cmd.add_task{

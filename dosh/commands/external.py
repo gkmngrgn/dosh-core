@@ -91,7 +91,7 @@ def clone(url: str, destination: str = "", fetch: bool = False) -> CommandResult
 
 def run(command: str) -> CommandResult[CompletedProcess[bytes]]:
     """Run a shell command using subprocess."""
-    result = subprocess.run(command.split(), capture_output=True, check=True)
+    result = subprocess.run(command.split(), capture_output=True, check=False)
     return CommandResult(CommandStatus.OK, response=result)
 
 
@@ -102,7 +102,7 @@ def run_url(url: str) -> CommandResult[CompletedProcess[bytes]]:
         return CommandResult(CommandStatus.ERROR, message=message)
     with urllib.request.urlopen(url) as response:
         content = response.read()
-    result = subprocess.run(content, capture_output=True, shell=True, check=True)
+    result = subprocess.run(content, capture_output=True, shell=True, check=False)
     return CommandResult(CommandStatus.OK, response=result)
 
 

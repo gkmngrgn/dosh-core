@@ -13,8 +13,8 @@ cmd.add_task{
    description="deploy changes",
    command=function ()
       check_commands({"hugo", "rsync"})
-      cmd.eval("hugo")
-      cmd.eval("rsync -avz --delete public/ user@mydomain.com:/var/www/html/mydomain.com/")
+      cmd.run("hugo")
+      cmd.run("rsync -avz --delete public/ user@mydomain.com:/var/www/html/mydomain.com/")
    end
 }
 
@@ -23,6 +23,6 @@ cmd.add_task{
    description="run development server",
    command=function ()
       check_commands({"hugo"})
-      cmd.eval("hugo server -D --bind 0.0.0.0 -b myngrokdomain")
+      cmd.run("hugo server -D --bind 0.0.0.0 -b myngrokdomain")
    end
 }

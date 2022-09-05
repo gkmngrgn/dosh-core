@@ -12,9 +12,9 @@ cmd.add_task{
          end
       end
 
-      cmd.eval("latexindent -w -s tex/*.tex")
-      cmd.eval("latexmk -xelatex tex/*.tex")
-      cmd.eval("mkdir -p pdf/ && mv *.pdf pdf/")
+      cmd.run("latexindent -w -s tex/*.tex")
+      cmd.run("latexmk -xelatex tex/*.tex")
+      cmd.run("mkdir -p pdf/ && mv *.pdf pdf/")
    end
 }
 
@@ -22,7 +22,7 @@ cmd.add_task{
    name="clean",
    description="remove build files, except pdfs",
    command=function ()
-      cmd.eval("rm *.{aux,fdb_latexmk,fls,log,out,xdv}")
-      cmd.eval("rm tex/*.bak*")
+      cmd.run("rm *.{aux,fdb_latexmk,fls,log,out,xdv}")
+      cmd.run("rm tex/*.bak*")
    end
 }

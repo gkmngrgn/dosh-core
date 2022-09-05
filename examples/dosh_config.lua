@@ -13,11 +13,11 @@ cmd.add_task{
       -- zsh specific settings
       if env.IS_ZSH then
          if not cmd.exists("~/.oh-my-zsh") then
-            cmd.eval_url("https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh")
+            cmd.run_url("https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh")
          end
 
          if cmd.exists_command("conda") then
-            cmd.eval("conda init zsh")
+            cmd.run("conda init zsh")
          end
       end
 
@@ -52,7 +52,7 @@ cmd.add_task{
       end
 
       if not cmd.IS_WINDOWS and not cmd.exists_command("nvm") then
-         cmd.eval_url("https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh")
+         cmd.run_url("https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh")
       end
    end
 }

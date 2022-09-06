@@ -1,6 +1,6 @@
 # DOSH
 
-Shell-independent command manager. Create your `dosh.star` file in the
+Shell-independent task manager. Create your `dosh.lua` file in the
 project folder and define your tasks, aliases, environments. Dosh will
 work like a CLI app reading your config file.
 
@@ -16,13 +16,13 @@ parts defining these variables:
 - `HELP_DESCRIPTION`
 - `HELP_EPILOG`
 
-If you want to delete the description or epilog, define it as `None`.
+If you want to delete the description or epilog, define it as `nil`.
 
 
 #### OPERATING SYSTEM TYPE CHECKING
 
 OS type variables to detect your current operating system. All
-variables return `True` or `False`. You can find many examples of use
+variables return `true` or `false`. You can find many examples of use
 of these variables in the documentation.
 
 - `IS_LINUX`
@@ -32,12 +32,24 @@ of these variables in the documentation.
 
 #### SHELL TYPE CHECKING
 
-Your current shell. All these variables return `True` or `False`. It's
+Your current shell. All these variables return `true` or `false`. It's
 useful if you use shell-specific package like `ohmyzsh`.
 
 - `IS_BASH`
 - `IS_PWSH`
 - `IS_ZSH`
+
+
+#### DOSH-SPECIFIC ENVIRONMENTS
+
+Consider you have some tasks that help you to test the project on your
+local and you want to restrict the task to prevent running it on the
+server by mistake. So the method `cmd.add_task` has an `environments`
+parameter and you can set your environment name for each target.
+
+- `DOSH_ENV` (define it on your `~/.profile` file or CI/CD service)
+
+_Check out the file [`dosh_environments.lua`](./examples/dosh_environments.lua) for example usage._
 
 
 ## FUNCTIONS
@@ -48,29 +60,19 @@ The main purpose of dosh to write one script that works on multiple
 operating systems and shells. But it has to have a limit and it's
 nonsense to define functions for each command. So if you want to run a
 cli app (like `exa`, `bat`, `helix`, etc.), then you can use `run` for
-it:
+it.
 
-```python
-run("echo 'hello, world!'")
+_Check out the file [`dosh_greet.lua`](./examples/dosh_greet.lua) for example usage._
 
-if IS_MACOS or IS_LINUX:
-    run_url("https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh")
-
-if IS_WINDOWS:
-    clone("https://github.com/coreybutler/nvm-windows.git")
-```
 
 #### FILE SYSTEM OPERATIONS
 
 There are some ready-made functions both to keep the code readable and
 to make it work the same in every operating system. You know Windows
 prefers backslash as a path separator. This code will work on all
-operating systems:
+operating systems.
 
-```python
-if USER == "goedev":
-    copy(HOME / "Workspace/goedev/emacs.d", HOME / ".emacs.d")
-```
+_Check out the file [`dosh_config.lua`](./examples/dosh_config.lua) for example usage._
 
 
 #### PACKAGE MANAGERS
@@ -90,9 +92,8 @@ mostly:
 - `winget_install` (for Windows)
   - `packages`: list of strings, required.
 
-```python
-brew_install(["emacs", "helix"], cask=True, taps=["helix-editor/helix"])
-```
+_Check out the file [`dosh_config.lua`](./examples/dosh_config.lua) for example usage._
+
 
 #### FILE, FOLDER, COMMAND EXISTENCY: `exists`, `exists_command`
 
@@ -111,85 +112,94 @@ have to use these logging functions:
 - `warning`
 - `error`
 
-```python
-info("if you don't want to see this message, you have to run dosh with the correct verbosity level.")
-```
+For more information about the verbosity parameter of dosh, type `dosh help`.
 
-For more information about the verbosity parameter of dosh, type `dosh --help` (not `help`).
+_Check out the file [`dosh_greet.lua`](./examples/dosh_greet.lua) for example usage._
 
 
 ## EXAMPLE CONFIGURATION
 
-```python
-REPOS_DIR = HOME / "Workspace/goedev"
-CONFIG_REPO_DIR = REPOS_DIR / "config"
+```lua
+local config_dir = "~/.config"
 
+cmd.add_task{
+   name="config_os",
+   description="copy my configuration files and replace",
+   command=function()
+      -- copy config files.
+      cmd.copy("./config/*", config_dir)
+      cmd.copy("./home/.*", "~")
 
-def cmd_setup_my_os():
-    """place my config files."""
+      -- zsh specific settings
+      if env.IS_ZSH then
+         if not cmd.exists("~/.oh-my-zsh") then
+            cmd.run_url("https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh")
+         end
 
-    info("replace my config folder and home files.")
-    copy(CONFIG_REPO_DIR / "config/*", HOME / ".config")
-    copy(CONFIG_REPO_DIR / "tmp/home/.*", HOME)
+         if cmd.exists_command("conda") then
+            cmd.run("conda init zsh")
+         end
+      end
 
-    if IS_ZSH and not exists(HOME / ".oh-my-zsh"):
-        debug("ohmyzsh is not installed yet.")
-        run_url("https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh")
+      -- tmux
+      cmd.clone{
+         url="https://github.com/tmux-plugins/tpm",
+         destination="~/.tmux/plugins/tmp",
+         fetch=true,
+      }
+   end
+}
 
-    clone("https://github.com/tmux-plugins/tpm", target=HOME / ".tmux/plugins/tpm", fetch=True)
+cmd.add_task{
+   name="install_cli_apps",
+   description="install my favourite apps",
+   command=function ()
+      if env.IS_WINDOWNS then
+         local packages = {"Git.Git", "VSCodium.VSCodium", "Discord.Discord", "Valve.Steam"}
+         cmd.winget_install(packages)
+      elseif env.IS_MACOS then
+         local packages = {
+            "MisterTea/et/et", "bat", "clojure", "cmake", "deno", "exa", "exercism", "fd",
+            "git-delta", "git-lfs", "golang", "helix", "htop", "hugo", "jq", "llvm",
+            "multimarkdown", "openssl", "pass", "pre-commit", "ripgrep", "rustup-init",
+            "rust-analyzer", "shellcheck", "tmux", "font-ibm-plex", "miktex-console", "miniconda"
+         }
+         local taps = {"helix-editor/helix"}
+         cmd.brew_install{packages, cask=true, taps=taps}
+      elseif env.IS_LINUX then
+         local packages = {"git", "ripgrep"}
+         cmd.apt_install(packages)
+      end
 
-
-def cmd_install_cli_apps():
-    """install my favorite apps."""
-
-    if IS_MACOS:
-        brew_install(["git", "ripgrep", "bat", "exa", "miniconda", "emacs"])
-
-    elif IS_LINUX:
-        apt_install(["git", "ripgrep", "bat", "exa", "alacritty"])
-
-    elif IS_WINDOWS:
-        winget_install(["Git.Git", "Microsoft.WindowsTerminal", "Microsoft.VisualStudioCode"])
-
-    else:
-        error("What the hell are you using??")
-
-
-def cmd_sync_repos(repos):
-    """
-    don't forget to push your changes before working on a different laptop.
-
-    - repos: path of repositories. List[str], optional
-    """
-    repos = repos or get_folders(REPOS_DIR)
-
-    for repo_dir in repo_dirs:
-        result = sync(repo_dir)
-        if result.status == STATUS_OK:
-            info(result.message)
-        else:
-            error(message)
+      if not cmd.IS_WINDOWS and not cmd.exists_command("nvm") then
+         cmd.run_url("https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh")
+      end
+   end
+}
 ```
+
 
 ## WHAT IF YOU TRY TO USE THIS CONFIG...
 
-After you created your `dosh.star` file, you can see all available
+After you created your `dosh.lua` file, you can see all available
 tasks with the command `dosh help`:
 
 ```shell
 $ dosh help  # or just dosh
+dosh - shell-independent command manager
+
 Tasks:
-  > setup_my_os        place my config files.
-  > install_cli_apps   install my favorite apps.
-  > sync_repos         don't forget to push your changes before working on a different
-                       laptop.
-                       - repo_path: str, optional
+  > config_os          copy my configuration files and replace
+  > install_cli_apps   install my favourite apps
+  > change_theme       sync your editor theme with system
 
-$ dosh install_cli_apps
-...
+Dosh commands:
+  > help                 print this output
+  > init                 initialize a new config in current working directory
 
-$ dosh sync_repos -- repo_path=yank
-...
+  -c, --config PATH      specify config path (default: dosh.lua)
+  -v|vv|vvv, --verbose   increase the verbosity of messages:
+                         1 - default, 2 - detailed, 3 - debug
 ```
 
 
@@ -214,14 +224,6 @@ Because it's too dangerous! I don't use any remove command in my
 scripts indeed. If you really need a remove command, you can run it
 with `run`. But remember, contributors of this project don't
 guarantee anything.
-
-
-### IS THERE ANY SYNTAX HIGHLIGHTER, EDITOR EXTENSION, OR LINTER FOR D...
-
-Open your `dosh.star` file in your favorite editor with Python -
-Bazel - Starlark mode and just write your f*cking script now.  Or take
-a look at this link:
-https://github.com/bazelbuild/starlark/blob/master/users.md
 
 
 ## CONTRIBUTION

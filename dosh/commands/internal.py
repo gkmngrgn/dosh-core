@@ -95,10 +95,12 @@ def generate_help(
         [
             "",
             "Dosh commands:",
-            "  > help              print this output",
-            "  > init              initialize a new config in current working directory",
+            "  > help                 print this output",
+            "  > init                 initialize a new config in current working directory",
             "",
-            "  -c, --config PATH   specify config path (default: dosh.lua)",
+            "  -c, --config PATH      specify config path (default: dosh.lua)",
+            "  -v|vv|vvv, --verbose   increase the verbosity of messages:",
+            "                         1 - default, 2 - detailed, 3 - debug",
         ]
     )
 

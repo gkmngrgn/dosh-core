@@ -6,7 +6,7 @@ import shutil
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
-from typing import Any, Callable, Dict, Generic, Optional, TypeVar
+from typing import Any, Callable, Dict, Generic, List, Optional, TypeVar
 from urllib.parse import urlparse
 
 T = TypeVar("T")
@@ -46,6 +46,7 @@ class Task:
     name: str
     command: CommandCallable
     description: str = ""
+    environments: Optional[List[str]] = None
 
     @classmethod
     def from_dict(cls, args: Dict[str, Any]) -> Task:

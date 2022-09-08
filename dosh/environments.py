@@ -15,6 +15,7 @@ ENVIRONMENTS: Final = {
     "USER": getpass.getuser(),
     "HELP_DESCRIPTION": "dosh - shell-independent command manager",
     "HELP_EPILOG": "",
+    "DOSH_ENV": os.getenv("DOSH_ENV") or "",
     # shell type
     "IS_ZSH": SHELL.endswith("zsh"),
     "IS_BASH": SHELL.endswith("bash"),

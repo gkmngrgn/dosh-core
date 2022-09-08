@@ -6,9 +6,12 @@ from typing import Final, List, Optional, Tuple
 from dosh.commands.base import CommandStatus
 from dosh.commands.internal import generate_help, init_config
 from dosh.config import CONFIG_FILENAME, ConfigParser
-from dosh.logger import set_verbosity
+from dosh.environments import ENVIRONMENTS
+from dosh.logger import get_logger, set_verbosity
 
 PREDEFINED_TASKS: Final = ["help", "init"]
+
+logger = get_logger()
 
 
 class ArgumentParser:
@@ -85,6 +88,7 @@ class CLI:
         elif task_name == "help":
             self.run_help()
         else:
+            logger.debug("DOSH_ENV: %s", ENVIRONMENTS["DOSH_ENV"] or "not specified.")
             self.conf_parser.run_task(task_name, task_params)
 
     def run_init(self) -> None:

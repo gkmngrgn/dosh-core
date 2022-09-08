@@ -1,6 +1,12 @@
 """DOSH runner."""
 
-from dosh import cli
+from dosh.cli import CLI
+
+
+def main() -> None:
+    """Run command line interface app."""
+    CLI().run()
+
 
 if __name__ == "__main__":
-    cli.run()
+    main()

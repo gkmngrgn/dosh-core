@@ -17,7 +17,7 @@ pyinstaller = "^5.3"
 pylint = "^2.15.0"
 
 [tool.poetry.scripts]
-dosh = "dosh.cli:run"
+dosh = "app:main"
 
 [tool.poe.tasks.build]
 cmd = "bash scripts/build.sh"

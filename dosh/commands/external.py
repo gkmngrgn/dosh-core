@@ -13,6 +13,9 @@ from dosh.commands.base import (
     is_url_valid,
     normalize_path,
 )
+from dosh.logger import get_logger
+
+logger = get_logger()
 
 
 @check_command("apt")
@@ -92,6 +95,11 @@ def clone(url: str, destination: str = "", fetch: bool = False) -> CommandResult
 def run(command: str) -> CommandResult[CompletedProcess[bytes]]:
     """Run a shell command using subprocess."""
     result = subprocess.run(command.split(), capture_output=True, check=False)
+    logger.info("RUN -> %s", command)
+    if result.returncode == 0:
+        logger.debug(result.stdout.decode("UTF-8"))
+    else:
+        logger.error(result.stderr.decode("UTF-8"))
     return CommandResult(CommandStatus.OK, response=result)
 
 

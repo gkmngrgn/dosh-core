@@ -48,7 +48,6 @@ repos:
         entry: poetry run pylint
         language: system
         types: [python]
-        args:
-          - "--extension-pkg-allow-list=lupa"
+        args: ["--extension-pkg-allow-list=lupa"]
         require_serial: true
         exclude: ^tests/

@@ -95,7 +95,7 @@ def clone(url: str, destination: str = "", fetch: bool = False) -> CommandResult
 def run(command: str) -> CommandResult[CompletedProcess[bytes]]:
     """Run a shell command using subprocess."""
     result = subprocess.run(command.split(), capture_output=True, check=False)
-    logger.info("RUN -> %s", command)
+    logger.info(command)
     if result.returncode == 0:
         logger.debug(result.stdout.decode("UTF-8"))
     else:

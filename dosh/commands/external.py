@@ -71,12 +71,16 @@ def copy(src: str, dst: str) -> CommandResult[None]:
             path_dst = dst_path / path.name
 
             if path.is_dir():
+                logger.info("COPY DIR: %s -> %s", path, path_dst)
                 shutil.copytree(path, path_dst, dirs_exist_ok=True)
             else:
+                logger.info("COPY FILE: %s -> %s", path, path_dst)
                 shutil.copy(path, path_dst)
     else:
-        src_path = normalize_path(src)
-        shutil.copy(src_path, dst_path / src_path.name)
+        path = normalize_path(src)
+        path_dst = dst_path / path.name
+        logger.info("COPY FILE: %s -> %s", path, path_dst)
+        shutil.copy(path, path_dst)
 
     return CommandResult(CommandStatus.OK)
 
@@ -94,8 +98,8 @@ def clone(url: str, destination: str = "", fetch: bool = False) -> CommandResult
 
 def run(command: str) -> CommandResult[CompletedProcess[bytes]]:
     """Run a shell command using subprocess."""
+    logger.info("[RUN] %s", command)
     result = subprocess.run(command.split(), capture_output=True, check=False)
-    logger.info("RUN -> %s", command)
     if result.returncode == 0:
         logger.debug(result.stdout.decode("UTF-8"))
     else:
@@ -110,6 +114,8 @@ def run_url(url: str) -> CommandResult[CompletedProcess[bytes]]:
         return CommandResult(CommandStatus.ERROR, message=message)
     with urllib.request.urlopen(url) as response:
         content = response.read()
+
+    logger.info("[RUN_URL] %s", url)
     result = subprocess.run(content, capture_output=True, shell=True, check=False)
     return CommandResult(CommandStatus.OK, response=result)
 

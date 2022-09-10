@@ -1,7 +1,8 @@
 """Logging support."""
-
-from logging import DEBUG, ERROR, INFO, WARNING, Logger, basicConfig, getLogger
+from logging import DEBUG, ERROR, INFO, WARNING, Logger
 from typing import Optional
+
+import colorlog
 
 __LOGGER: Optional[Logger] = None
 
@@ -11,7 +12,15 @@ def get_logger() -> Logger:
     global __LOGGER  # pylint: disable=global-statement
 
     if __LOGGER is None:
-        __LOGGER = getLogger("dosh")
+        handler = colorlog.StreamHandler()
+        handler.setFormatter(
+            colorlog.ColoredFormatter("%(log_color)s%(name)s => %(message)s")
+        )
+
+        logger = colorlog.getLogger("DOSH")
+        logger.addHandler(handler)
+
+        __LOGGER = logger
 
     return __LOGGER
 
@@ -27,4 +36,4 @@ def set_verbosity(verbosity: int = 0) -> None:
     else:
         level = ERROR
 
-    basicConfig(level=level, format="%(message)s")
+    get_logger().setLevel(level)

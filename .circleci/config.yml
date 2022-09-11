@@ -2,7 +2,7 @@ version: 2.1
 
 orbs:
   windows: circleci/windows@5.0.0
-  python: circleci/python@2.0.3
+  python: circleci/python@2.1.0
 
 filters-release: &filters-release
   branches:

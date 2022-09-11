@@ -96,15 +96,34 @@ def clone(url: str, destination: str = "", fetch: bool = False) -> CommandResult
     return CommandResult(CommandStatus.OK)
 
 
-def run(command: str) -> CommandResult[CompletedProcess[bytes]]:
+def run(command: str) -> CommandResult[str]:
     """Run a shell command using subprocess."""
     logger.info("[RUN] %s", command)
-    result = subprocess.run(command.split(), capture_output=True, check=False)
-    if result.returncode == 0:
-        logger.debug(result.stdout.decode("UTF-8"))
-    else:
-        logger.error(result.stderr.decode("UTF-8"))
-    return CommandResult(CommandStatus.OK, response=result)
+
+    response_lines = []
+    with subprocess.Popen(
+        command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True
+    ) as proc:
+        for out, log in [(proc.stdout, logger.debug), (proc.stderr, logger.error)]:
+            if out is None:
+                continue
+
+            while True:
+                line = out.readline()
+                if not line:
+                    break
+
+                line_str = line.decode().rstrip()
+                response_lines.append(line_str)
+                log(line_str)
+
+        returncode = proc.wait()
+        if returncode == 0:
+            status = CommandStatus.OK
+        else:
+            status = CommandStatus.ERROR
+
+    return CommandResult(status, response="\n".join(response_lines))
 
 
 def run_url(url: str) -> CommandResult[CompletedProcess[bytes]]:
@@ -116,7 +135,7 @@ def run_url(url: str) -> CommandResult[CompletedProcess[bytes]]:
         content = response.read()
 
     logger.info("[RUN_URL] %s", url)
-    result = subprocess.run(content, capture_output=True, shell=True, check=False)
+    result = subprocess.run(content, shell=True, capture_output=True, check=True)
     return CommandResult(CommandStatus.OK, response=result)
 
 

@@ -1,4 +1,5 @@
 """DOSH config parser."""
+import shutil
 from typing import Any, Dict, Final, List
 
 from lupa import LuaRuntime
@@ -6,8 +7,11 @@ from lupa import LuaRuntime
 from dosh.commands import COMMANDS
 from dosh.commands.base import Task
 from dosh.environments import ENVIRONMENTS
+from dosh.logger import get_logger
 
 CONFIG_FILENAME: Final = "dosh.lua"
+
+logger = get_logger()
 
 
 class ConfigParser:
@@ -18,9 +22,9 @@ class ConfigParser:
 
     def __init__(self, content: str) -> None:
         """Parse config first."""
-        self.lua = LuaRuntime(unpack_returned_tuples=True)
+        lua = LuaRuntime(unpack_returned_tuples=True)
         lua_code = f"function (env, cmd) {content} return env end"
-        lua_func = self.lua.eval(lua_code)
+        lua_func = lua.eval(lua_code)
 
         commands = COMMANDS.copy()
         commands["add_task"] = self.add_task
@@ -39,24 +43,37 @@ class ConfigParser:
 
     def run_task(self, task_name: str, params: List[str]) -> None:
         """Find and run tasks with parameters."""
-        for task in self.tasks:
-            if task.name != task_name:
-                continue
-
-            if (
-                task.environments is not None
-                and ENVIRONMENTS["DOSH_ENV"] not in task.environments
-            ):
-                msg = f"This task works on these environments: {', '.join(task.environments)}"
-                self.lua.eval(f'error("{msg}")')
+        task = None
+        for current_task in self.tasks:
+            if current_task.name == task_name:
+                task = current_task
                 break
 
-            task.command(*params)
-            break
+        if task is None:
+            return
+
+        if (
+            task.environments is not None
+            and ENVIRONMENTS["DOSH_ENV"] not in task.environments
+        ):
+            logger.error(
+                "This task works only in these environments: %s",
+                ", ".join(task.environments),
+            )
+            return
+
+        for command in task.required_commands or []:
+            if shutil.which(command) is None:
+                logger.error("The command `%s` doesn't exist in this system.", command)
+                return
+
+        task.command(*params)
 
     def add_task(self, args: Dict[str, Any]) -> None:
         """Parse and add task to task list."""
-        envs = args["environments"]
-        args["environments"] = None if envs is None else list(envs.values())
+        for list_key in ["environments", "required_commands"]:
+            val = args[list_key]
+            args[list_key] = None if val is None else list(val.values())
+
         task = Task.from_dict(args)
         self.tasks.append(task)

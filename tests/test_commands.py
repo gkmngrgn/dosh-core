@@ -22,8 +22,7 @@ def test_copy(tmp_path):
 def test_run():
     result = cmd.run("echo Hello, World!")
     assert result.status == cmd.CommandStatus.OK
-    assert result.response is not None
-    assert result.response.stdout == b"Hello, World!\n"
+    assert result.response == "Hello, World!"
 
 
 def test_run_url(httpserver):

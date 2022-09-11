@@ -2,7 +2,7 @@ version: 2.1
 
 orbs:
   windows: circleci/windows@5.0.0
-  python: circleci/python@2.0.3
+  python: circleci/python@2.1.0
 
 filters-release: &filters-release
   branches:
@@ -22,6 +22,10 @@ jobs:
 
     steps:
       - checkout
+
+      - run:
+          name: Update poetry
+          command: poetry self update
 
       - python/install-packages:
           pkg-manager: "poetry"
@@ -54,6 +58,27 @@ jobs:
       - run:
           name: "Check lua files"
           command: luacheck --globals=cmd --globals=env -- examples
+
+  test:
+    parameters:
+      version:
+        type: string
+
+    executor:
+      name: "python/default"
+      tag: << parameters.version >>
+
+    steps:
+      - checkout
+
+      - run:
+          name: Update poetry
+          command: poetry self update
+
+      - python/install-packages:
+          pkg-manager: "poetry"
+
+      - run: poetry run pytest
 
   build-on-linux:
     docker:
@@ -129,7 +154,7 @@ workflows:
       - lint-lua:
           filters: *filters-development
 
-      - python/test:
+      - test:
           matrix:
             parameters:
               version: ["3.9", "3.10"]

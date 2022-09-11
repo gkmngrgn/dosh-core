@@ -47,6 +47,7 @@ class Task:
     command: CommandCallable
     description: str = ""
     environments: Optional[List[str]] = None
+    required_commands: Optional[List[str]] = None
 
     @classmethod
     def from_dict(cls, args: Dict[str, Any]) -> Task:

@@ -4,14 +4,8 @@
 cmd.add_task{
    name="build",
    description="run formatter and generate pdf files",
+   required_commands={"latexindent", "ladexmk"},
    command=function ()
-      local commands = {"latexindent", "ladexmk"}
-      for i = 1, #commands do
-         if not cmd.exists_command(commands[i]) then
-            error("Command does not exist: " .. commands[i])
-         end
-      end
-
       cmd.run("latexindent -w -s tex/*.tex")
       cmd.run("latexmk -xelatex tex/*.tex")
       cmd.run("mkdir -p pdf/ && mv *.pdf pdf/")

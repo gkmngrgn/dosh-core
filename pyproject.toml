@@ -19,6 +19,9 @@ pylint = "^2.15.0"
 [tool.poetry.scripts]
 dosh = "app:main"
 
+[tool.poetry.group.dev.dependencies]
+pytest-cov = "^3.0.0"
+
 [tool.poe.tasks.build]
 cmd = "bash scripts/build.sh"
 help = "Build dosh"
@@ -36,6 +39,9 @@ name = "name"
 positional = true
 default = "test"
 help = "Filter tests by $name"
+
+[tool.pytest.ini_options]
+addopts = "--cov=dosh --cov-report term-missing --cov-report html:./tests/cov_html"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

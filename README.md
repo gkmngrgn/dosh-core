@@ -4,6 +4,8 @@ Shell-independent task manager. Create your `dosh.lua` file in the
 project folder and define your tasks, aliases, environments. Dosh will
 work like a CLI app reading your config file.
 
+<img src="./files/dosh-logo.png" width=200 />
+
 
 ## ENVIRONMENT VARIABLES
 

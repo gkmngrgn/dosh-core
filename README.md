@@ -119,81 +119,34 @@ For more information about the verbosity parameter of dosh, type `dosh help`.
 _Check out the file [`dosh_greet.lua`](./examples/dosh_greet.lua) for example usage._
 
 
-## EXAMPLE CONFIGURATION
+## ANATOMY OF `dosh.lua`
 
 ```lua
-local config_dir = "~/.config"
+local name = "there"                         -- you can use all features of Lua programming language.
 
-cmd.add_task{
-   name="config_os",
-   description="copy my configuration files and replace",
-   command=function()
-      -- copy config files.
-      cmd.copy("./config/*", config_dir)
-      cmd.copy("./home/.*", "~")
+local function hello(there)                  -- even you can define your custom functions.
+    there = there or name
+    local message = "Hello, " .. there .. "!"
+    cmd.run("osascript -e 'display notification \"" .. message .. "\" with title \"Hi!\"'")
+end
 
-      -- zsh specific settings
-      if env.IS_ZSH then
-         if not cmd.exists("~/.oh-my-zsh") then
-            cmd.run_url("https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh")
-         end
-
-         if cmd.exists_command("conda") then
-            cmd.run("conda init zsh")
-         end
-      end
-
-      -- tmux
-      cmd.clone{
-         url="https://github.com/tmux-plugins/tpm",
-         destination="~/.tmux/plugins/tmp",
-         fetch=true,
-      }
-   end
-}
-
-cmd.add_task{
-   name="install_cli_apps",
-   description="install my favourite apps",
-   command=function ()
-      if env.IS_WINDOWNS then
-         local packages = {"Git.Git", "VSCodium.VSCodium", "Discord.Discord", "Valve.Steam"}
-         cmd.winget_install(packages)
-      elseif env.IS_MACOS then
-         local packages = {
-            "MisterTea/et/et", "bat", "clojure", "cmake", "deno", "exa", "exercism", "fd",
-            "git-delta", "git-lfs", "golang", "helix", "htop", "hugo", "jq", "llvm",
-            "multimarkdown", "openssl", "pass", "pre-commit", "ripgrep", "rustup-init",
-            "rust-analyzer", "shellcheck", "tmux", "font-ibm-plex", "miktex-console", "miniconda"
-         }
-         local taps = {"helix-editor/helix"}
-         cmd.brew_install{packages, cask=true, taps=taps}
-      elseif env.IS_LINUX then
-         local packages = {"git", "ripgrep"}
-         cmd.apt_install(packages)
-      end
-
-      if not cmd.IS_WINDOWS and not cmd.exists_command("nvm") then
-         cmd.run_url("https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh")
-      end
-   end
+cmd.add_task{                                -- cmd comes from dosh.
+   name="hello",                             -- task name, or subcommand for your cli.
+   description="say hello",                  -- task description for the help output.
+   required_commands={"osascript"},          -- check if the programs exist before running the task.
+   environments={"development", "staging"},  -- DOSH_ENV variable should be either development or staging to run this task.
+   command=hello                             -- run hello function with its parameters when the task ran.
 }
 ```
 
-
-## WHAT IF YOU TRY TO USE THIS CONFIG...
-
-After you created your `dosh.lua` file, you can see all available
-tasks with the command `dosh help`:
+When you ran this command on MacOS, you will get a notification:
 
 ```shell
-$ dosh help  # or just dosh
+$ dosh help
 dosh - shell-independent command manager
 
 Tasks:
-  > config_os          copy my configuration files and replace
-  > install_cli_apps   install my favourite apps
-  > change_theme       sync your editor theme with system
+  > hello                say hello
 
 Dosh commands:
   > help                 print this output
@@ -202,7 +155,12 @@ Dosh commands:
   -c, --config PATH      specify config path (default: dosh.lua)
   -v|vv|vvv, --verbose   increase the verbosity of messages:
                          1 - default, 2 - detailed, 3 - debug
+
+$ DOSH_ENV="development" dosh hello lua
+DOSH => [RUN] osascript -e 'display notification "Hello, lua!" with title "Hi!"'
 ```
+
+Take a look at the [`examples`](./examples) folder to find ready-in-use config files.
 
 
 ## QUESTIONS

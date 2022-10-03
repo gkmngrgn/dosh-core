@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "dosh"
 version = "0.1.0"
-description = "Shell-independent command manager."
+description = "Shell-independent task manager."
 authors = ["Gökmen Görgen <gkmngrgn@gmail.com>"]
 license = "MIT"
 

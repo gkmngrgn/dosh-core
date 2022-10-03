@@ -6,113 +6,6 @@ aliases, environments. Dosh will work like a CLI app reading your config file.
 <img src="./files/dosh-logo.png" width=200 />
 
 
-## ENVIRONMENT VARIABLES
-
-#### HELP OUTPUT
-
-Help outputs consist of three parts: description, tasks, epilog. The tasks are generated
-reading your config but you can edit the other parts defining these variables:
-
-- `HELP_DESCRIPTION`
-- `HELP_EPILOG`
-
-If you want to delete the description or epilog, define it as `nil`.
-
-
-#### OPERATING SYSTEM TYPE CHECKING
-
-OS type variables to detect your current operating system. All variables return `true`
-or `false`. You can find many examples of use of these variables in the documentation.
-
-- `env.IS_LINUX`
-- `env.IS_MACOS`
-- `env.IS_WINDOWS`
-
-
-#### SHELL TYPE CHECKING
-
-Your current shell. All these variables return `true` or `false`. It's useful if you use
-shell-specific package like `ohmyzsh`.
-
-- `IS_BASH`
-- `IS_PWSH`
-- `IS_ZSH`
-
-
-#### DOSH-SPECIFIC ENVIRONMENTS
-
-Consider you have some tasks that help you to test the project on your local and you
-want to restrict the task to prevent running it on the server by mistake. So the method
-`cmd.add_task` has an `environments` parameter and you can set your environment name for
-each target.
-
-- `DOSH_ENV` (define it on your `~/.profile` file or CI/CD service)
-
-_Check out the file [`dosh_environments.lua`](./examples/dosh_environments.lua) for
-example usage._
-
-
-## FUNCTIONS
-
-#### GENERAL PURPOSE
-
-The main purpose of dosh to write one script that works on multiple operating systems
-and shells. But it has to have a limit and it's nonsense to define functions for each
-command. So if you want to run a cli app (like `exa`, `bat`, `helix`, etc.), then you
-can use `run` for it.
-
-_Check out the file [`dosh_greet.lua`](./examples/dosh_greet.lua) for example usage._
-
-
-#### FILE SYSTEM OPERATIONS
-
-There are some ready-made functions both to keep the code readable and to make it work
-the same in every operating system. You know Windows prefers backslash as a path
-separator. This code will work on all operating systems.
-
-_Check out the file [`dosh_config.lua`](./examples/dosh_config.lua) for example usage._
-
-
-#### PACKAGE MANAGERS
-
-There are many package managers and I'm not sure if we need to implement all of
-them. But at least I'm using these three of them mostly:
-
-- `brew_install` (for MacOS and Linux)
-  - `packages`: list of strings, required.
-  - `cask`: boolean, default is `false`.
-  - `taps`: list of strings, optional.
-
-- `apt_install` (for Debian based Linux distros)
-  - `packages`: list of strings, required.
-
-- `winget_install` (for Windows)
-  - `packages`: list of strings, required.
-
-_Check out the file [`dosh_config.lua`](./examples/dosh_config.lua) for example usage._
-
-
-#### FILE, FOLDER, COMMAND EXISTENCY: `exists`, `exists_command`
-
-TODO...
-
-
-#### LOGGING
-
-You can manage the command outputs by defining the verbosity level. It's still possible
-to use `print`, but if you want to hide the command outputs completely or print them by
-the verbosity level, you have to use these logging functions:
-
-- `debug`
-- `info`
-- `warning`
-- `error`
-
-For more information about the verbosity parameter of dosh, type `dosh help`.
-
-_Check out the file [`dosh_greet.lua`](./examples/dosh_greet.lua) for example usage._
-
-
 ## ANATOMY OF `dosh.lua`
 
 ```lua
@@ -136,13 +29,37 @@ cmd.add_task{                                -- cmd comes from dosh.
 When you ran this command on MacOS, you will get a notification:
 
 ```shell
-$ dosh help
-dosh - shell-independent task manager
+$ DOSH_ENV="development" dosh hello lua
+DOSH => [RUN] osascript -e 'display notification "Hello, lua!" with title "Hi!"'
+```
 
-Tasks:
+Take a look at the [`examples`](./examples) folder to find ready-in-use config files.
+
+
+## ENVIRONMENT VARIABLES
+
+#### HELP OUTPUT
+
+Help outputs consist of four parts: **description**, **tasks**, **commands**, and
+**epilog**. The tasks will be generated getting task names and descriptions from your
+config file. The commands are including pre-defined dosh tasks and common task
+parameters. All help outputs start with a description and ends with an epilog if you
+have.
+
+If you want to edit the default description and add an epilog to the help output, you
+can modify these variables:
+
+- `env.HELP_DESCRIPTION`
+- `env.HELP_EPILOG`
+
+```shell
+$ dosh help
+dosh - shell-independent task manager                                           # HELP_DESCRIPTION HERE
+
+Tasks:                                                                          # TASKS DEFINED BY THE USER
   > hello                say hello
 
-Dosh commands:
+Dosh commands:                                                                  # COMMON DOSH COMMANDS
   > help                 print this output
   > init                 initialize a new config in current working directory
 
@@ -150,11 +67,104 @@ Dosh commands:
   -v|vv|vvv, --verbose   increase the verbosity of messages:
                          1 - default, 2 - detailed, 3 - debug
 
-$ DOSH_ENV="development" dosh hello lua
-DOSH => [RUN] osascript -e 'display notification "Hello, lua!" with title "Hi!"'
+Wikipedia says that an epilog is a piece of writing at the end of a work of     # HELP_EPILOG HERE
+literature, usually used to bring closure to the work.
 ```
 
-Take a look at the [`examples`](./examples) folder to find ready-in-use config files.
+#### OPERATING SYSTEM TYPE
+
+All the following variables will return `true` or `false` depending on the operating
+system that you ran dosh:
+
+- `env.IS_LINUX`
+- `env.IS_MACOS`
+- `env.IS_WINDOWS`
+
+
+#### SHELL TYPE
+
+It's like OS type checking. It's useful if you use shell-specific package like
+`ohmyzsh`.
+
+- `env.IS_BASH`
+- `env.IS_PWSH`
+- `env.IS_ZSH`
+
+
+#### DOSH-SPECIFIC ENVIRONMENTS
+
+Consider you have some tasks that help you to test the project on your local and you
+want to restrict the task to prevent running it on the server by mistake. So the method
+`cmd.add_task` has an `environments` parameter and you can set your environment name for
+each target.
+
+- `DOSH_ENV` (define it on your `~/.profile` file or CI/CD service)
+
+_Check out the file [`dosh_environments.lua`](./examples/dosh_environments.lua) for
+example usage._
+
+
+## COMMANDS
+
+#### GENERAL PURPOSE
+
+The main purpose of dosh to write one script that works on multiple operating systems
+and different shells. But it has to have a limit and it's nonsense to define functions
+for each cli command. So if you want to run a cli app (like `exa`, `bat`, `helix`,
+etc.), then you can use `cmd.run` for it.
+
+_Check out the file [`dosh_greet.lua`](./examples/dosh_greet.lua) for example usage._
+
+
+#### FILE SYSTEM OPERATIONS
+
+There are some ready-made functions both to keep the code readable and to make it work
+the same in all operating systems. You know Windows prefers backslash as a path
+separator but with dosh, use always `/` as in `/foo/bar/baz`, let dosh to find the path
+in a common way.
+
+_Check out the file [`dosh_config.lua`](./examples/dosh_config.lua) for example usage._
+
+
+#### PACKAGE MANAGERS
+
+There are many package managers and I'm not sure if we need to implement all of
+them. But at least dosh supports these three of them mostly:
+
+- `cmd.brew_install` (for MacOS and Linux)
+  - `packages`: list of strings, required.
+  - `cask`: boolean, default is `false`.
+  - `taps`: list of strings, optional.
+
+- `cmd.apt_install` (for Debian based Linux distros)
+  - `packages`: list of strings, required.
+
+- `cmd.winget_install` (for Windows)
+  - `packages`: list of strings, required.
+
+_Check out the file [`dosh_config.lua`](./examples/dosh_config.lua) for example usage._
+
+
+#### FILE, FOLDER, COMMAND EXISTENCY
+
+To check if file or folder exists, use `cmd.exists`. And if you want to check if a
+command exists, use `cmd.exists_command`.
+
+
+#### LOGGING
+
+You can manage the command outputs by defining the verbosity level. It's still possible
+to use `print`, but if you want to hide the command outputs completely or print them by
+the verbosity level, you have to use these logging functions:
+
+- `cmd.debug`
+- `cmd.info`
+- `cmd.warning`
+- `cmd.error`
+
+For more information about the verbosity parameter of dosh, type `dosh help`.
+
+_Check out the file [`dosh_greet.lua`](./examples/dosh_greet.lua) for example usage._
 
 
 ## QUESTIONS
@@ -173,7 +183,7 @@ my scripts in multiple languages. This is why I created this project.
 ### WHY DOESN'T DOSH HAVE ANY REMOVE COMMAND?
 
 Because it's too dangerous! I don't use any remove command in my scripts indeed. If you
-really need a remove command, you can run it with `run`. But remember, contributors of
+really need a remove command, you can run it with `cmd.run`. But remember, contributors of
 this project don't guarantee anything.
 
 

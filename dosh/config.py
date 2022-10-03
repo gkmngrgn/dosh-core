@@ -67,7 +67,11 @@ class ConfigParser:
                 logger.error("The command `%s` doesn't exist in this system.", command)
                 return
 
-        task.command(*params)
+        try:
+            task.command(*params)
+        except KeyboardInterrupt:
+            print("\r", end="")
+            logger.error("keyboard interrupt...")
 
     def add_task(self, args: Dict[str, Any]) -> None:
         """Parse and add task to task list."""

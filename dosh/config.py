@@ -22,12 +22,12 @@ class ConfigParser:
 
     def __init__(self, content: str) -> None:
         """Parse config first."""
+        commands = COMMANDS.copy()
+        commands["add_task"] = self.add_task
+
         lua = LuaRuntime(unpack_returned_tuples=True)
         lua_code = f"function (env, cmd) {content} return env end"
         lua_func = lua.eval(lua_code)
-
-        commands = COMMANDS.copy()
-        commands["add_task"] = self.add_task
 
         self._vars = lua_func(ENVIRONMENTS, commands)
 
@@ -67,7 +67,11 @@ class ConfigParser:
                 logger.error("The command `%s` doesn't exist in this system.", command)
                 return
 
-        task.command(*params)
+        try:
+            task.command(*params)
+        except KeyboardInterrupt:
+            print("\r", end="")
+            logger.error("keyboard interrupt...")
 
     def add_task(self, args: Dict[str, Any]) -> None:
         """Parse and add task to task list."""

@@ -13,7 +13,7 @@ SHELL: Final = os.getenv("SHELL") or ""
 OSTYPE: Final = os.getenv("OSTYPE") or ""
 ENVIRONMENTS: Final = {
     "USER": getpass.getuser(),
-    "HELP_DESCRIPTION": "dosh - shell-independent command manager",
+    "HELP_DESCRIPTION": "dosh - shell-independent task manager",
     "HELP_EPILOG": "",
     "DOSH_ENV": os.getenv("DOSH_ENV") or "",
     # shell type

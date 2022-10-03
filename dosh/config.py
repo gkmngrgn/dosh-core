@@ -22,12 +22,12 @@ class ConfigParser:
 
     def __init__(self, content: str) -> None:
         """Parse config first."""
+        commands = COMMANDS.copy()
+        commands["add_task"] = self.add_task
+
         lua = LuaRuntime(unpack_returned_tuples=True)
         lua_code = f"function (env, cmd) {content} return env end"
         lua_func = lua.eval(lua_code)
-
-        commands = COMMANDS.copy()
-        commands["add_task"] = self.add_task
 
         self._vars = lua_func(ENVIRONMENTS, commands)
 

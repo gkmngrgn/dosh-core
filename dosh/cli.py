@@ -3,9 +3,10 @@ import sys
 from pathlib import Path
 from typing import Final, List, Optional, Tuple
 
+from dosh import dosh_initializer
 from dosh.commands.base import CommandStatus
 from dosh.commands.internal import generate_help, init_config
-from dosh.config import CONFIG_FILENAME, ConfigParser
+from dosh.config import ConfigParser
 from dosh.environments import ENVIRONMENTS
 from dosh.logger import get_logger, set_verbosity
 
@@ -17,7 +18,7 @@ logger = get_logger()
 class ArgumentParser:
     """CLI Argument parser."""
 
-    def __find_arg_index(self, *args: str) -> Optional[int]:
+    def __get_arg_index(self, *args: str) -> Optional[int]:
         """Parse CLI arguments and return the index of expected arg."""
         index: Optional[int] = None
         for i, arg in enumerate(sys.argv):
@@ -26,9 +27,20 @@ class ArgumentParser:
                 break
         return index
 
+    def __get_arg_value(self, *args: str) -> Optional[str]:
+        """Return argument value."""
+        index = self.__get_arg_index(*args)
+        if (
+            index is None
+            or len(sys.argv) <= index
+            or sys.argv[index + 1].startswith("-")
+        ):
+            return None
+        return sys.argv[index + 1]
+
     def get_verbosity_level(self) -> int:
         """Get verbosity level."""
-        index = self.__find_arg_index("-v", "-vv", "-vvv", "--verbose")
+        index = self.__get_arg_index("-v", "-vv", "-vvv", "--verbose")
 
         if index is not None:
             arg = sys.argv[index]
@@ -42,24 +54,20 @@ class ArgumentParser:
 
         return 2  # default verbosity level.
 
-    def get_config_path(self) -> Path:
+    def get_config_path(self) -> Optional[Path]:
         """Return file path of dosh script."""
-        index = self.__find_arg_index("-c", "--config")
-        if (
-            index is None
-            or len(sys.argv) <= index
-            or sys.argv[index + 1].startswith("-")
-        ):
-            filename = CONFIG_FILENAME
-        else:
-            filename = sys.argv[index + 1]
+        filename = self.__get_arg_value("-c", "--config")
+        return None if filename is None else Path.cwd() / filename
 
-        return Path.cwd() / filename
+    def get_current_working_directory(self) -> Optional[Path]:
+        """Return to get current working directory."""
+        dir_str = self.__get_arg_value("-d", "--directory")
+        return Path.cwd() if dir_str is None else Path(dir_str)
 
     def get_task_param(self, tasks: List[str]) -> Tuple[str, List[str]]:
         """Get task name with its parameters."""
         tasks += PREDEFINED_TASKS
-        task_index = self.__find_arg_index(*tasks)
+        task_index = self.__get_arg_index(*tasks)
         if task_index is None:
             return ("help", [])
         return sys.argv[task_index], sys.argv[task_index + 1 :]
@@ -71,9 +79,15 @@ class CLI:
     def __init__(self) -> None:
         """Initialize cli with config parser."""
         self.arg_parser = ArgumentParser()
-
-        config_path = self.arg_parser.get_config_path()
-        content = config_path.read_text() if config_path.exists() else ""
+        dosh_initializer.update(
+            base_directory=self.arg_parser.get_current_working_directory(),
+            config_path=self.arg_parser.get_config_path(),
+        )
+        content = (
+            dosh_initializer.config_path.read_text(encoding="utf-8")
+            if dosh_initializer.config_path.exists()
+            else ""
+        )
         self.conf_parser = ConfigParser(content)
 
     def run(self) -> None:
@@ -93,7 +107,7 @@ class CLI:
 
     def run_init(self) -> None:
         """Create new config."""
-        result = init_config(self.arg_parser.get_config_path())
+        result = init_config(dosh_initializer.config_path)
         if result.status == CommandStatus.OK:
             print(result.message)
         elif result.status == CommandStatus.ERROR:

@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import Any, Callable, Dict, Generic, List, Optional, TypeVar
 from urllib.parse import urlparse
 
-from dosh import dosh_initializer
+from dosh import DoshInitializer
 
 T = TypeVar("T")
 
@@ -86,7 +86,7 @@ def normalize_path(file_path: str) -> Path:
     if file_path.startswith("/"):
         path = Path(file_path)
     else:
-        path = dosh_initializer.base_directory.joinpath(*file_path.split("/"))
+        path = DoshInitializer().base_directory.joinpath(*file_path.split("/"))
 
     if file_path.startswith("~"):
         path = path.expanduser()

@@ -3,7 +3,7 @@ import sys
 from pathlib import Path
 from typing import Final, List, Optional, Tuple
 
-from dosh import dosh_initializer
+from dosh import DoshInitializer
 from dosh.commands.base import CommandStatus
 from dosh.commands.internal import generate_help, init_config
 from dosh.config import ConfigParser
@@ -79,13 +79,20 @@ class CLI:
     def __init__(self) -> None:
         """Initialize cli with config parser."""
         self.arg_parser = ArgumentParser()
-        dosh_initializer.update(
-            base_directory=self.arg_parser.get_current_working_directory(),
-            config_path=self.arg_parser.get_config_path(),
-        )
+
+        # update dosh initializer settings by cli arguments
+        base_directory = self.arg_parser.get_current_working_directory()
+        if base_directory is not None:
+            DoshInitializer.base_directory = base_directory
+
+        config_path = self.arg_parser.get_config_path()
+        if config_path is not None:
+            DoshInitializer.config_path = config_path
+
+        # define config parser
         content = (
-            dosh_initializer.config_path.read_text(encoding="utf-8")
-            if dosh_initializer.config_path.exists()
+            DoshInitializer.config_path.read_text(encoding="utf-8")
+            if DoshInitializer.config_path.exists()
             else ""
         )
         self.conf_parser = ConfigParser(content)
@@ -107,7 +114,7 @@ class CLI:
 
     def run_init(self) -> None:
         """Create new config."""
-        result = init_config(dosh_initializer.config_path)
+        result = init_config(DoshInitializer.config_path)
         if result.status == CommandStatus.OK:
             print(result.message)
         elif result.status == CommandStatus.ERROR:

@@ -1,5 +1,7 @@
 # DOSH - shell-independent task manager
 
+[![CircleCI](https://dl.circleci.com/status-badge/img/gh/gkmngrgn/dosh/tree/main.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/gkmngrgn/dosh/tree/main)
+
 Create your `dosh.lua` file in the project folder -or anywhere- and define your tasks,
 aliases, environments. Dosh will work like a CLI app reading your config file.
 

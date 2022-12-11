@@ -1,6 +1,6 @@
 """DOSH config parser."""
 import shutil
-from typing import Any, Dict, Final, List
+from typing import Any, Dict, List
 
 from lupa import LuaRuntime
 
@@ -8,8 +8,6 @@ from dosh.commands import COMMANDS
 from dosh.commands.base import Task
 from dosh.environments import ENVIRONMENTS
 from dosh.logger import get_logger
-
-CONFIG_FILENAME: Final = "dosh.lua"
 
 logger = get_logger()
 

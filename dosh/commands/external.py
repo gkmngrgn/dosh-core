@@ -86,12 +86,22 @@ def copy(src: str, dst: str) -> CommandResult[None]:
 
 
 @check_command("git")
-def clone(url: str, destination: str = "", fetch: bool = False) -> CommandResult[None]:
+def clone(url: str, destination: str = "", fetch: bool = True) -> CommandResult[None]:
     """Clone repository from VCS."""
-    if fetch is True and Path(destination).exists():
-        command = f"git pull {destination}".strip()
+    if destination and fetch is True:
+        sync(destination)
     else:
-        command = f"git clone {url} {destination}".strip()
+        command = f"git clone {url}"
+        if destination:
+            command = f"{command} {normalize_path(destination)}"
+        run(command)
+    return CommandResult(CommandStatus.OK)
+
+
+@check_command("git")
+def sync(destination: str = ".") -> CommandResult[None]:
+    """Sync VCS folder."""
+    command = f"git pull {normalize_path(destination)}"
     run(command)
     return CommandResult(CommandStatus.OK)
 

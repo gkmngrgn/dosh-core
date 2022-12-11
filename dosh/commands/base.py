@@ -9,6 +9,8 @@ from pathlib import Path
 from typing import Any, Callable, Dict, Generic, List, Optional, TypeVar
 from urllib.parse import urlparse
 
+from dosh import DoshInitializer
+
 T = TypeVar("T")
 
 
@@ -81,9 +83,13 @@ def is_url_valid(url: str) -> bool:
 
 def normalize_path(file_path: str) -> Path:
     """Convert file paths to absolute paths."""
-    path = Path(file_path)
+    if file_path.startswith("/"):
+        path = Path(file_path)
+    else:
+        path = DoshInitializer().base_directory.joinpath(*file_path.split("/"))
+
     if file_path.startswith("~"):
         path = path.expanduser()
-    elif file_path.startswith("."):
+    elif not file_path.startswith("/"):
         path = path.absolute()
     return path

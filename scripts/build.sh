@@ -10,7 +10,7 @@ then
     pip install poetry
 fi
 
-poetry install
+poetry install --with=dev
 poetry run pyinstaller app.py --name=dosh --console --noconfirm
 
 cd ./dist/

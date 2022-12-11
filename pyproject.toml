@@ -22,8 +22,8 @@ pylint = "^2.15.0"
 dosh = "app:main"
 
 [tool.poe.tasks.build]
-cmd = "bash scripts/build.sh"
-help = "Build dosh"
+cmd = "poetry run pyinstaller app.py --name=dosh --console --noconfirm"
+help = "Build dosh with pyinstaller"
 
 [tool.poe.tasks.lint]
 cmd = "pre-commit run --all-files"

@@ -2,7 +2,7 @@ version: 2.1
 
 orbs:
   windows: circleci/windows@5.0.0
-  python: circleci/python@2.1.0
+  python: circleci/python@2.1.1
 
 filters-release: &filters-release
   branches:
@@ -88,8 +88,12 @@ jobs:
       - checkout
 
       - run:
+          name: "Install poetry"
+          command: "curl -sSL https://install.python-poetry.org | python3 -"
+
+      - run:
           name: "Build project"
-          command: bash scripts/build.sh
+          command: bash scripts/package.sh
 
       - persist_to_workspace:
           root: "dist"
@@ -104,15 +108,12 @@ jobs:
       - checkout
 
       - run:
-          name: "Install prerequisites"
-          command: |
-            mkdir -p ~/.local/bin
-            ln -s $(which python3) ~/.local/bin/python
-            ln -s $(which pip3) ~/.local/bin/pip
+          name: "Install poetry"
+          command: "curl -sSL https://install.python-poetry.org | python3 -"
 
       - run:
           name: "Build project"
-          command: bash scripts/build.sh
+          command: bash scripts/package.sh
 
       - persist_to_workspace:
           root: "dist"
@@ -126,8 +127,12 @@ jobs:
       - checkout
 
       - run:
+          name: "Install poetry"
+          command: "(Invoke-WebRequest -Uri https://install.python-poetry.org -UseBasicParsing).Content | py -"
+
+      - run:
           name: "Build project"
-          command: bash scripts/build.sh
+          command: bash scripts/package.sh
 
       - persist_to_workspace:
           root: "dist"

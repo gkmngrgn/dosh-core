@@ -7,7 +7,7 @@ DIR_NAME="dosh-${OS_NAME}-${ARCH_TYPE}-py${PY_VERSION}"
 
 if ! command -v poetry &> /dev/null
 then
-    pip install poetry
+    curl -sSL https://install.python-poetry.org | python3 -
 fi
 
 poetry install --with=dev

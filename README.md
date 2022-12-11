@@ -64,6 +64,7 @@ Dosh commands:                                                                  
   > init                 initialize a new config in current working directory
 
   -c, --config PATH      specify config path (default: dosh.lua)
+  -d, --directory PATH   change the working directory
   -v|vv|vvv, --verbose   increase the verbosity of messages:
                          1 - default, 2 - detailed, 3 - debug
 

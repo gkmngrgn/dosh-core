@@ -109,7 +109,12 @@ class CLI:
         elif task_name == "help":
             self.run_help()
         else:
-            logger.debug("DOSH_ENV: %s", ENVIRONMENTS["DOSH_ENV"] or "not specified.")
+            dosh_env = ENVIRONMENTS["DOSH_ENV"] or "not specified."
+            working_directory = self.arg_parser.get_current_working_directory()
+            logger.debug("DOSH ENVIRONMENT : %s", dosh_env)
+            logger.debug("CONFIG FILE PATH : %s", self.arg_parser.get_config_path())
+            logger.debug("WORKING DIRECTORY: %s", working_directory)
+
             self.conf_parser.run_task(task_name, task_params)
 
     def run_init(self) -> None:

@@ -157,7 +157,7 @@ workflows:
       - test:
           matrix:
             parameters:
-              version: ["3.9", "3.10"]
+              version: ["3.9", "3.10", "3.11"]
           filters: *filters-development
 
   main:

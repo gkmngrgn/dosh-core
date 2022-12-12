@@ -12,6 +12,7 @@ echo "Python Version    : $PY_VERSION"
 echo "Poetry Version    : $POETRY_VERSION"
 
 export POETRY_HOME=~/poetry
+python -m pip install virtualenv
 python -m venv $POETRY_HOME
 
 $POETRY_HOME/bin/pip install "poetry==$POETRY_VERSION"

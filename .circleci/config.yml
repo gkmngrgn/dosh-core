@@ -88,10 +88,6 @@ jobs:
       - checkout
 
       - run:
-          name: "Install poetry"
-          command: "curl -sSL https://install.python-poetry.org | python3 -"
-
-      - run:
           name: "Build project"
           command: bash scripts/package.sh
 
@@ -108,10 +104,6 @@ jobs:
       - checkout
 
       - run:
-          name: "Install poetry"
-          command: "curl -sSL https://install.python-poetry.org | python3 -"
-
-      - run:
           name: "Build project"
           command: bash scripts/package.sh
 
@@ -125,10 +117,6 @@ jobs:
 
     steps:
       - checkout
-
-      - run:
-          name: "Install poetry"
-          command: "(Invoke-WebRequest -Uri https://install.python-poetry.org -UseBasicParsing).Content | py -"
 
       - run:
           name: "Build project"

@@ -11,13 +11,11 @@ echo "Architecture Type : $ARCH_TYPE"
 echo "Python Version    : $PY_VERSION"
 echo "Poetry Version    : $POETRY_VERSION"
 
-export POETRY_HOME=~/poetry
-python -m pip install virtualenv
-python -m venv $POETRY_HOME
+python -m pip install --user pipx
+python -m pipx install "poetry==$POETRY_VERSION"
 
-$POETRY_HOME/bin/pip install "poetry==$POETRY_VERSION"
-$POETRY_HOME/bin/poetry install --with=dev
-$POETRY_HOME/bin/poetry run pyinstaller app.py --name=dosh --console --noconfirm
+poetry install
+poetry run pyinstaller app.py --name=dosh --console --noconfirm
 
 cd ./dist/
 mv dosh $DIR_NAME

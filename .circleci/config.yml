@@ -68,10 +68,6 @@ jobs:
     steps:
       - checkout
 
-      - run:
-          name: Update poetry
-          command: poetry self update
-
       - python/install-packages:
           pkg-manager: "poetry"
           args: "--no-ansi"

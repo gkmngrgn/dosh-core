@@ -74,6 +74,7 @@ jobs:
 
       - python/install-packages:
           pkg-manager: "poetry"
+          args: "--no-ansi"
 
       - run: poetry run pytest
 

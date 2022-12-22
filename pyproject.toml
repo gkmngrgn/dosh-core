@@ -30,7 +30,7 @@ cmd = "pre-commit run --all-files"
 help = "Check code quality"
 
 [tool.poe.tasks.test]
-cmd = "pytest -sk $name"
+cmd = "pytest --no-cov -k $name"
 help = "Run tests"
 
 [[tool.poe.tasks.test.args]]

@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import functools
+import os
 import shutil
 from dataclasses import dataclass
 from enum import Enum
@@ -19,6 +20,31 @@ class CommandStatus(Enum):
 
     OK = "ok"
     ERROR = "error"
+
+
+class OperatingSystem(str, Enum):
+    """Operating system types."""
+
+    LINUX = "linux"
+    MACOS = "macos"
+    WINDOWS = "windows"
+    UNSUPPORTED = "unsupported"
+
+    @classmethod
+    def get_current(cls) -> OperatingSystem:
+        """Get current operating system."""
+        os_type = os.getenv("OSTYPE") or ""
+
+        if os_type.startswith("darwin"):
+            return cls.MACOS
+
+        if os_type == "linux":
+            return cls.LINUX
+
+        if os_type == "msys":
+            return cls.WINDOWS
+
+        return cls.UNSUPPORTED
 
 
 @dataclass
@@ -50,6 +76,7 @@ class Task:
     description: str = ""
     environments: Optional[List[str]] = None
     required_commands: Optional[List[str]] = None
+    required_platforms: Optional[List[str]] = None
 
     @classmethod
     def from_dict(cls, args: Dict[str, Any]) -> Task:

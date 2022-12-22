@@ -23,12 +23,9 @@ jobs:
     steps:
       - checkout
 
-      - run:
-          name: Update poetry
-          command: poetry self update
-
       - python/install-packages:
           pkg-manager: "poetry"
+          args: "--no-ansi"
 
       - run: poetry run pip install pre-commit
 
@@ -71,12 +68,9 @@ jobs:
     steps:
       - checkout
 
-      - run:
-          name: Update poetry
-          command: poetry self update
-
       - python/install-packages:
           pkg-manager: "poetry"
+          args: "--no-ansi"
 
       - run: poetry run pytest
 
@@ -157,7 +151,7 @@ workflows:
       - test:
           matrix:
             parameters:
-              version: ["3.9", "3.10", "3.11"]
+              version: ["3.8", "3.9", "3.10", "3.11"]
           filters: *filters-development
 
   main:

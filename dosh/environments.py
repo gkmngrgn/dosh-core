@@ -5,12 +5,13 @@ import getpass
 import os
 from typing import Final
 
-from dosh.commands.base import CommandStatus
+from dosh.commands.base import CommandStatus, OperatingSystem
 
 __all__ = ["ENVIRONMENTS"]
 
 SHELL: Final = os.getenv("SHELL") or ""
-OSTYPE: Final = os.getenv("OSTYPE") or ""
+CURRENT_OS: Final = OperatingSystem.get_current()
+
 ENVIRONMENTS: Final = {
     "USER": getpass.getuser(),
     "HELP_DESCRIPTION": "dosh - shell-independent task manager",
@@ -21,9 +22,9 @@ ENVIRONMENTS: Final = {
     "IS_BASH": SHELL.endswith("bash"),
     "IS_PWSH": SHELL.endswith("pwsh"),
     # os type
-    "IS_MACOS": OSTYPE.startswith("darwin"),
-    "IS_LINUX": OSTYPE == "linux",
-    "IS_WINDOWS": OSTYPE == "msys",
+    "IS_MACOS": CURRENT_OS == OperatingSystem.MACOS,
+    "IS_LINUX": CURRENT_OS == OperatingSystem.LINUX,
+    "IS_WINDOWS": CURRENT_OS == OperatingSystem.WINDOWS,
     # command statuses
     "STATUS_OK": CommandStatus.OK,
     "STATUS_ERROR": CommandStatus.ERROR,

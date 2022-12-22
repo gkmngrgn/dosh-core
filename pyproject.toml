@@ -6,7 +6,7 @@ authors = ["Gökmen Görgen <gkmngrgn@gmail.com>"]
 license = "MIT"
 
 [tool.poetry.dependencies]
-python = ">=3.9,<3.11"
+python = ">=3.9,<3.12"
 lupa = "^1.13"
 colorlog = "^6.7.0"
 poetry = "^1.2.0"
@@ -30,7 +30,7 @@ cmd = "pre-commit run --all-files"
 help = "Check code quality"
 
 [tool.poe.tasks.test]
-cmd = "pytest -sk $name"
+cmd = "pytest --no-cov -k $name"
 help = "Run tests"
 
 [[tool.poe.tasks.test.args]]

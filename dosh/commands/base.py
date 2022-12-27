@@ -11,8 +11,10 @@ from typing import Any, Callable, Dict, Generic, List, Optional, TypeVar
 from urllib.parse import urlparse
 
 from dosh import DoshInitializer
+from dosh.logger import get_logger
 
 T = TypeVar("T")
+logger = get_logger()
 
 
 class CommandStatus(Enum):
@@ -120,3 +122,13 @@ def normalize_path(file_path: str) -> Path:
     elif not file_path.startswith("/"):
         path = path.absolute()
     return path
+
+
+def copy_tree(src: Path, dst: Path) -> None:
+    """Copy file or directory to destination."""
+    if src.is_dir():
+        logger.info("COPY DIR: %s -> %s", src, dst)
+        shutil.copytree(src, dst, dirs_exist_ok=True)
+    else:
+        logger.info("COPY FILE: %s -> %s", src, dst)
+        shutil.copy(src, dst)

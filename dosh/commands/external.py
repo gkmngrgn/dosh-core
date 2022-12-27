@@ -10,6 +10,7 @@ from dosh.commands.base import (
     CommandResult,
     CommandStatus,
     check_command,
+    copy_tree,
     is_url_valid,
     normalize_path,
 )
@@ -68,24 +69,10 @@ def copy(src: str, dst: str) -> CommandResult[None]:
     if glob_index >= 0:
         src_path = normalize_path("/".join(src_splitted[:glob_index]))
         for path in src_path.glob("/".join(src_splitted[glob_index:])):
-            path_dst = dst_path / path.name
-
-            if path.is_dir():
-                logger.info("COPY DIR: %s -> %s", path, path_dst)
-                shutil.copytree(path, path_dst, dirs_exist_ok=True)
-            else:
-                logger.info("COPY FILE: %s -> %s", path, path_dst)
-                shutil.copy(path, path_dst)
+            copy_tree(path, dst_path / path.name)
     else:
         path = normalize_path(src)
-        path_dst = dst_path / path.name if dst_path.exists() else dst_path
-
-        if path.is_dir():
-            logger.info("COPY DIR: %s -> %s", path, path_dst, dirs_exist_ok=True)
-            shutil.copytree(path, path_dst)
-        else:
-            logger.info("COPY FILE: %s -> %s", path, path_dst)
-            shutil.copy(path, path_dst)
+        copy_tree(path, dst_path / path.name if dst_path.exists() else dst_path)
 
     return CommandResult(CommandStatus.OK)
 

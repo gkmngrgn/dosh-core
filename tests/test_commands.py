@@ -8,15 +8,30 @@ def test_copy(tmp_path):
     (tmp_path / "foo" / "bar" / "meow.py").touch()
     (tmp_path / "foo" / "bar" / "baz" / "hell.txt").touch()
 
-    src = str(tmp_path / "foo" / "*")
-    dst = str(tmp_path / "dst")
-    cmd.copy(src, dst)
+    # test with files "foo/*"
+    src1 = str(tmp_path / "foo" / "*")
+    dst1 = str(tmp_path / "dst1")
 
-    assert (tmp_path / "dst" / "bar" / "meow.py").exists()
-    assert (tmp_path / "dst" / "bar" / "baz" / "hell.txt").exists()
+    cmd.copy(src1, dst1)
+    assert (tmp_path / "dst1" / "bar" / "meow.py").exists()
+    assert (tmp_path / "dst1" / "bar" / "baz" / "hell.txt").exists()
 
-    # try overwrite
-    cmd.copy(src, dst)
+    # try overwrite, we don't expect to create a folder "foo" in dst1.
+    cmd.copy(src1, dst1)
+    assert not (tmp_path / "dst1" / "foo").exists()
+
+    # test with a folder name "foo"
+    src2 = str(tmp_path / "foo")
+    dst2 = str(tmp_path / "dst2")
+
+    cmd.copy(src2, dst2)
+    assert (tmp_path / "dst2" / "bar" / "meow.py").exists()
+    assert (tmp_path / "dst2" / "bar" / "baz" / "hell.txt").exists()
+
+    # try overwrite, we expect to create a folder "foo" in dst2.
+    cmd.copy(src2, dst2)
+    assert (tmp_path / "dst2" / "foo" / "bar" / "meow.py").exists()
+    assert (tmp_path / "dst2" / "foo" / "bar" / "baz" / "hell.txt").exists()
 
 
 def test_run():

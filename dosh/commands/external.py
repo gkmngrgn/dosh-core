@@ -78,9 +78,14 @@ def copy(src: str, dst: str) -> CommandResult[None]:
                 shutil.copy(path, path_dst)
     else:
         path = normalize_path(src)
-        path_dst = dst_path / path.name
-        logger.info("COPY FILE: %s -> %s", path, path_dst)
-        shutil.copy(path, path_dst)
+        path_dst = dst_path / path.name if dst_path.exists() else dst_path
+
+        if path.is_dir():
+            logger.info("COPY DIR: %s -> %s", path, path_dst, dirs_exist_ok=True)
+            shutil.copytree(path, path_dst)
+        else:
+            logger.info("COPY FILE: %s -> %s", path, path_dst)
+            shutil.copy(path, path_dst)
 
     return CommandResult(CommandStatus.OK)
 

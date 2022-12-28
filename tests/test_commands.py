@@ -1,6 +1,8 @@
 import urllib.request
+from pathlib import Path
 
 from dosh.commands import external as cmd
+from dosh.commands.base import normalize_path
 
 
 def test_copy(tmp_path):
@@ -74,3 +76,11 @@ def test_exists(tmp_path):
 def test_exists_command():
     assert cmd.exists_command("bash")
     assert not cmd.exists_command("hsab")
+
+
+def test_normalize_path(monkeypatch):
+    monkeypatch.setenv("HOME", "/home/dosh")
+
+    assert normalize_path("~/.config") == Path("/home/dosh/.config")
+    assert normalize_path("/foo/bar/baz") == Path("/foo/bar/baz")
+    assert normalize_path("current_dir") == Path.cwd() / "current_dir"

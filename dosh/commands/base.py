@@ -114,13 +114,10 @@ def normalize_path(file_path: str) -> Path:
     """Convert file paths to absolute paths."""
     if file_path.startswith("/"):
         path = Path(file_path)
+    elif file_path.startswith("~"):
+        path = Path(file_path).expanduser()
     else:
         path = DoshInitializer().base_directory.joinpath(*file_path.split("/"))
-
-    if file_path.startswith("~"):
-        path = path.expanduser()
-    elif not file_path.startswith("/"):
-        path = path.absolute()
     return path
 
 

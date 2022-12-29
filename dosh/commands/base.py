@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import functools
-import os
+import platform
 import shutil
 from dataclasses import dataclass
 from enum import Enum
@@ -35,15 +35,15 @@ class OperatingSystem(str, Enum):
     @classmethod
     def get_current(cls) -> OperatingSystem:
         """Get current operating system."""
-        os_type = os.getenv("OSTYPE") or ""
+        os_type = platform.system().lower()
 
-        if os_type.startswith("darwin"):
+        if os_type == "darwin":
             return cls.MACOS
 
         if os_type == "linux":
             return cls.LINUX
 
-        if os_type == "msys":
+        if os_type == "windows":
             return cls.WINDOWS
 
         return cls.UNSUPPORTED

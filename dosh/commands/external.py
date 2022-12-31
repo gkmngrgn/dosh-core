@@ -9,6 +9,7 @@ from typing import List, Optional
 from dosh.commands.base import (
     CommandResult,
     CommandStatus,
+    LuaTable,
     check_command,
     copy_tree,
     is_url_valid,
@@ -30,20 +31,20 @@ def apt_install(packages: List[str]) -> CommandResult[None]:
 
 @check_command("brew")
 def brew_install(
-    packages: List[str],
+    packages: LuaTable,
     cask: bool = False,
-    taps: Optional[List[str]] = None,
+    taps: Optional[LuaTable] = None,
 ) -> CommandResult[None]:
     """Install packages with brew."""
     if taps is not None:
-        for tap_path in taps:
+        for tap_path in list(taps.values()):
             run(f"brew tap {tap_path}")
 
     command = "brew install"
     if cask is True:
         command = f"{command} --cask"
 
-    run(f"{command} {' '.join(packages)}")
+    run(f"{command} {' '.join(list(packages.values()))}")
     return CommandResult(CommandStatus.OK)
 
 

@@ -4,7 +4,7 @@
 cmd.add_task{
    name="build",
    description="run formatter and generate pdf files",
-   required_commands={"latexindent", "ladexmk"},
+   required_commands={ "latexindent", "latexmk" },
    command=function ()
       cmd.run("latexindent -w -s tex/*.tex")
       cmd.run("latexmk -xelatex tex/*.tex")

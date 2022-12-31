@@ -6,7 +6,7 @@ from lupa import LuaRuntime
 
 from dosh.commands import COMMANDS
 from dosh.commands.base import OperatingSystem, Task
-from dosh.environments import ENVIRONMENTS
+from dosh.environments import DOSH_ENV, ENVIRONMENTS
 from dosh.logger import get_logger
 
 logger = get_logger()
@@ -50,29 +50,29 @@ class ConfigParser:
         if task is None:
             return
 
-        if (
-            task.environments is not None
-            and ENVIRONMENTS["DOSH_ENV"] not in task.environments
-        ):
+        os_type = OperatingSystem.get_current().value
+        if task.required_platforms and os_type not in task.required_platforms:
             logger.error(
-                "This task works only in these environments: %s",
+                "The task `%s` works only on these operating system: %s (current: %s)",
+                task.name,
+                ", ".join(task.required_platforms),
+                os_type,
+            )
+            return
+
+        if task.environments and DOSH_ENV not in task.environments:
+            logger.error(
+                "The task `%s` works only in these environments: %s (current: %s)",
+                task.name,
                 ", ".join(task.environments),
+                DOSH_ENV,
             )
             return
 
-        for command in task.required_commands or []:
+        for command in task.required_commands:
             if shutil.which(command) is None:
-                logger.error("The command `%s` doesn't exist in this system.", command)
+                logger.error("The command `%s` doesn't exist.", command)
                 return
-
-        if (
-            task.required_platforms
-            and OperatingSystem.get_current() not in task.required_platforms
-        ):
-            logger.error(
-                "The task `%s` does not work on this operating system.", task.name
-            )
-            return
 
         try:
             task.command(*params)

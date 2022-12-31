@@ -4,6 +4,7 @@ from __future__ import annotations
 import functools
 import platform
 import shutil
+from collections import namedtuple
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
@@ -14,6 +15,9 @@ from dosh import DoshInitializer
 from dosh.logger import get_logger
 
 T = TypeVar("T")
+LuaFunction = Callable[..., None]
+LuaTable = namedtuple("LuaTable", ["values"])
+
 logger = get_logger()
 
 
@@ -69,21 +73,34 @@ class CommandResult(Generic[T]):
 CommandCallable = Callable[..., CommandResult[Any]]
 
 
-@dataclass
-class Task:
+class Task:  # pylint: disable=too-few-public-methods
     """Parsed arguments from dosh config."""
 
-    name: str
-    command: CommandCallable
-    description: str = ""
-    environments: Optional[List[str]] = None
-    required_commands: Optional[List[str]] = None
-    required_platforms: Optional[List[str]] = None
+    def __init__(  # pylint: disable=too-many-arguments
+        self,
+        name: str,
+        command: LuaFunction,
+        description: str = "",
+        environments: Optional[LuaTable] = None,
+        required_commands: Optional[LuaTable] = None,
+        required_platforms: Optional[LuaTable] = None,
+    ) -> None:
+        """Parse task parameters getting from Lua config to use in Python code well."""
+        self.name = name
+        self.command = command
+        self.description = description
+        self.environments = self.parse_table(environments)
+        self.required_commands = self.parse_table(required_commands)
+        self.required_platforms = self.parse_table(required_platforms)
 
     @classmethod
     def from_dict(cls, args: Dict[str, Any]) -> Task:
         """Create task from arguments."""
         return cls(**args)
+
+    def parse_table(self, lua_table: Optional[LuaTable]) -> List[str]:
+        """Convert lua table to Python object."""
+        return [] if lua_table is None else list(lua_table.values())
 
 
 def check_command(

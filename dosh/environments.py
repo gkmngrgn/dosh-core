@@ -11,12 +11,12 @@ __all__ = ["ENVIRONMENTS"]
 
 SHELL: Final = os.getenv("SHELL") or ""
 CURRENT_OS: Final = OperatingSystem.get_current()
-
+DOSH_ENV: Final = os.getenv("DOSH_ENV") or ""
 ENVIRONMENTS: Final = {
     "USER": getpass.getuser(),
     "HELP_DESCRIPTION": "dosh - shell-independent task manager",
     "HELP_EPILOG": "",
-    "DOSH_ENV": os.getenv("DOSH_ENV") or "",
+    "DOSH_ENV": DOSH_ENV,
     # shell type
     "IS_ZSH": SHELL.endswith("zsh"),
     "IS_BASH": SHELL.endswith("bash"),

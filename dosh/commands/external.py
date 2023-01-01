@@ -1,4 +1,6 @@
 """Available commands for `dosh.star`."""
+from __future__ import annotations
+
 import shutil
 import subprocess
 import urllib.request
@@ -9,13 +11,13 @@ from typing import List, Optional
 from dosh.commands.base import (
     CommandResult,
     CommandStatus,
-    LuaTable,
     check_command,
     copy_tree,
     is_url_valid,
     normalize_path,
 )
 from dosh.logger import get_logger
+from dosh.lua_runtime import LuaTable, lua_runtime
 
 logger = get_logger()
 
@@ -31,17 +33,18 @@ def apt_install(packages: List[str]) -> CommandResult[None]:
 
 @check_command("brew")
 def brew_install(
-    packages: LuaTable,
-    cask: bool = False,
-    taps: Optional[LuaTable] = None,
+    packages: LuaTable, options: Optional[LuaTable] = None
 ) -> CommandResult[None]:
     """Install packages with brew."""
-    if taps is not None:
-        for tap_path in list(taps.values()):
-            run(f"brew tap {tap_path}")
+    if options is None:
+        options = lua_runtime.table()
+
+    for tap_path in list((options["taps"] or lua_runtime.table()).values()):
+        run(f"brew tap {tap_path}")
 
     command = "brew install"
-    if cask is True:
+
+    if options["cask"] is True:
         command = f"{command} --cask"
 
     run(f"{command} {' '.join(list(packages.values()))}")
@@ -79,23 +82,21 @@ def copy(src: str, dst: str) -> CommandResult[None]:
 
 
 @check_command("git")
-def clone(url: str, destination: str = "", fetch: bool = True) -> CommandResult[None]:
+def clone(url: str, options: Optional[LuaTable] = None) -> CommandResult[None]:
     """Clone repository from VCS."""
-    if destination and fetch is True:
-        sync(destination)
+    if options is None:
+        options = lua_runtime.table()
+
+    destination = normalize_path(
+        options["destination"] or url.rsplit("/", 1)[-1].rsplit(".git", 1)[0]
+    )
+
+    if destination.exists():
+        logger.info("[CLONE] the folder `%s` already exists. skipped.", destination)
     else:
-        command = f"git clone {url}"
-        if destination:
-            command = f"{command} {normalize_path(destination)}"
+        command = f"git clone {url} {destination}"
         run(command)
-    return CommandResult(CommandStatus.OK)
 
-
-@check_command("git")
-def sync(destination: str = ".") -> CommandResult[None]:
-    """Sync VCS folder."""
-    command = f"git pull {normalize_path(destination)}"
-    run(command)
     return CommandResult(CommandStatus.OK)
 
 

@@ -209,8 +209,8 @@ comparable. I keep these rules in mind:
 ### WHY DOESN'T DOSH HAVE ANY REMOVE COMMAND?
 
 Because it's too dangerous! I don't use any remove command in my scripts indeed. If you
-really need a remove command, you can run it with `cmd.run`. But remember, contributors of
-this project don't guarantee anything.
+really need a remove command, you can run it with `cmd.run`. But remember, contributors
+of this project don't guarantee anything.
 
 
 ## CONTRIBUTION

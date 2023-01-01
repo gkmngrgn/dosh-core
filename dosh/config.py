@@ -2,12 +2,11 @@
 import shutil
 from typing import Any, Dict, List
 
-from lupa import LuaRuntime
-
 from dosh.commands import COMMANDS
 from dosh.commands.base import OperatingSystem, Task
 from dosh.environments import DOSH_ENV, ENVIRONMENTS
 from dosh.logger import get_logger
+from dosh.lua_runtime import get_lua_environment
 
 logger = get_logger()
 
@@ -22,12 +21,7 @@ class ConfigParser:
         """Parse config first."""
         commands = COMMANDS.copy()
         commands["add_task"] = self.add_task
-
-        lua = LuaRuntime(unpack_returned_tuples=True)
-        lua_code = f"function (env, cmd) {content} return env end"
-        lua_func = lua.eval(lua_code)
-
-        self._vars = lua_func(ENVIRONMENTS, commands)
+        self._vars = get_lua_environment(content, ENVIRONMENTS, commands)
 
     @property
     def description(self) -> str:

@@ -4,7 +4,6 @@ from __future__ import annotations
 import functools
 import platform
 import shutil
-from collections import namedtuple
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
@@ -13,10 +12,9 @@ from urllib.parse import urlparse
 
 from dosh import DoshInitializer
 from dosh.logger import get_logger
+from dosh.lua_runtime import LuaFunction, LuaTable
 
 T = TypeVar("T")
-LuaFunction = Callable[..., None]
-LuaTable = namedtuple("LuaTable", ["values"])
 
 logger = get_logger()
 

@@ -206,6 +206,12 @@ comparable. I keep these rules in mind:
   in powershell and zsh, DOSH makes it simple.
 
 
+### WHY DOESN'T THIS PROJECT HAVE `DOSH.LUA`?
+
+Because there's `pyproject.toml` and I use `poetry`. The other reason is that I don't
+want to create a circular dependency.
+
+
 ### WHY DOESN'T DOSH HAVE ANY REMOVE COMMAND?
 
 Because it's too dangerous! I don't use any remove command in my scripts indeed. If you

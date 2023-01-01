@@ -180,8 +180,30 @@ No. Don't trust any project. The source code is open, trust yourself and read th
 
 ### BUT DO YOU USE THIS PROJECT YOURSELF?
 
-Yes, I use multiple operating systems with different shells, and I'm too tired to write
-my scripts in multiple languages. This is why I created this project.
+Yes, of course. I use multiple operating systems with different shells, and I'm too
+tired to write my scripts in multiple languages. This is why I created this project.
+
+
+### BUT YOU COULD USE MAKEFILE, CMAKE, OR SIMILAR TOOL?
+
+They are typically used to build and package software for distribution and are more
+geared towards building and managing software projects, while Dosh is more focused on
+running tasks from the command line. They serve different purposes and are not directly
+comparable. I keep these rules in mind:
+
+- If I need to add a paragraph to `README.md` file to explain how to configure the
+  development environment and need to run some commands on my local, write a DOSH task
+  named `setup` instead, then add just one sentence: "You can start development with a
+  magic command: `dosh setup`." Or better, say the contributors to type `dosh help` to
+  see all available tasks.
+
+- If I don't want to create a project or repository for my personal tasks, I create
+  `dosh.lua` in home folder and write my tasks directly. For example, I have a task
+  named `git-sync` and it pulls the latest changes from the remote server or warn me if
+  there's a conflict in the repository.
+
+- If I need a command alias but have to run the command in both windows and macos or
+  powershell and zsh, it's easy to do that with DOSH for me.
 
 
 ### WHY DOESN'T DOSH HAVE ANY REMOVE COMMAND?

@@ -76,6 +76,7 @@ class ConfigParser:
 
     def add_task(self, args: Dict[str, Any]) -> None:
         """Parse and add task to task list."""
+        breakpoint()
         for list_key in ["environments", "required_commands"]:
             val = args[list_key]
             args[list_key] = None if val is None else list(val.values())

@@ -4,7 +4,7 @@ from __future__ import annotations
 import functools
 import platform
 import shutil
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
 from typing import Any, Callable, Dict, Generic, List, Optional, TypeVar
@@ -12,7 +12,7 @@ from urllib.parse import urlparse
 
 from dosh import DoshInitializer
 from dosh.logger import get_logger
-from dosh.lua_runtime import LuaFunction, LuaTable
+from dosh.lua_runtime import LuaFunction
 
 T = TypeVar("T")
 
@@ -71,34 +71,21 @@ class CommandResult(Generic[T]):
 CommandCallable = Callable[..., CommandResult[Any]]
 
 
-class Task:  # pylint: disable=too-few-public-methods
+@dataclass
+class Task:
     """Parsed arguments from dosh config."""
 
-    def __init__(  # pylint: disable=too-many-arguments
-        self,
-        name: str,
-        command: LuaFunction,
-        description: str = "",
-        environments: Optional[LuaTable] = None,
-        required_commands: Optional[LuaTable] = None,
-        required_platforms: Optional[LuaTable] = None,
-    ) -> None:
-        """Parse task parameters getting from Lua config to use in Python code well."""
-        self.name = name
-        self.command = command
-        self.description = description
-        self.environments = self.parse_table(environments)
-        self.required_commands = self.parse_table(required_commands)
-        self.required_platforms = self.parse_table(required_platforms)
+    name: str
+    command: LuaFunction
+    description: str = ""
+    environments: List[str] = field(default_factory=list)
+    required_commands: List[str] = field(default_factory=list)
+    required_platforms: List[str] = field(default_factory=list)
 
     @classmethod
     def from_dict(cls, args: Dict[str, Any]) -> Task:
         """Create task from arguments."""
         return cls(**args)
-
-    def parse_table(self, lua_table: Optional[LuaTable]) -> List[str]:
-        """Convert lua table to Python object."""
-        return [] if lua_table is None else list(lua_table.values())
 
 
 def check_command(

@@ -1,5 +1,6 @@
 """DOSH config parser."""
 import shutil
+from dataclasses import fields
 from typing import Any, Dict, List
 
 from dosh.commands import COMMANDS
@@ -76,9 +77,9 @@ class ConfigParser:
 
     def add_task(self, args: Dict[str, Any]) -> None:
         """Parse and add task to task list."""
-        for list_key in ["environments", "required_commands"]:
-            val = args[list_key]
-            args[list_key] = None if val is None else list(val.values())
+        for field in filter(lambda field: field.type.startswith("List"), fields(Task)):
+            val = args[field.name]
+            args[field.name] = [] if val is None else list(val.values())
 
         task = Task.from_dict(args)
         self.tasks.append(task)

@@ -12,7 +12,7 @@ from urllib.parse import urlparse
 
 from dosh import DoshInitializer
 from dosh.logger import get_logger
-from dosh.lua_runtime import LuaFunction, LuaTable
+from dosh.lua_runtime import LuaFunction
 
 T = TypeVar("T")
 
@@ -78,9 +78,9 @@ class Task:
     name: str
     command: LuaFunction
     description: str = ""
-    environments: Optional[List[str]] = field(default_factory=list)
-    required_commands: Optional[List[str]] = field(default_factory=list)
-    required_platforms: Optional[List[str]] = field(default_factory=list)
+    environments: List[str] = field(default_factory=list)
+    required_commands: List[str] = field(default_factory=list)
+    required_platforms: List[str] = field(default_factory=list)
 
     @classmethod
     def from_dict(cls, args: Dict[str, Any]) -> Task:

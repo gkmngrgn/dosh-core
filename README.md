@@ -225,12 +225,16 @@ Install these development dependencies manually:
 
 - [poetry](https://python-poetry.org/)
 - [poethepoet](https://github.com/nat-n/poethepoet)
+- [poetry-dynamic-versioning](https://github.com/mtkennerly/poetry-dynamic-versioning)
 - [pre-commit](https://pre-commit.com/)
 
 ```shell
-$ poetry install
-$ poetry run dosh   # run dosh without instaling.
-$ poetry poe lint   # run pre-commit hooks manually.
-$ poetry poe test   # run unit tests.
-$ poetry poe build  # build and generate self-executable file.
+$ poetry poe --help
+[...]
+
+CONFIGURED TASKS
+  build          Build dosh with pyinstaller
+  lint           Check code quality
+  test           Run tests
+    name         Filter tests by $name
 ```

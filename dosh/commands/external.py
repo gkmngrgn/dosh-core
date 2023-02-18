@@ -11,6 +11,7 @@ from typing import List, Optional
 from dosh.commands.base import (
     CommandResult,
     CommandStatus,
+    FileType,
     check_command,
     copy_tree,
     is_url_valid,
@@ -98,6 +99,37 @@ def clone(url: str, options: Optional[LuaTable] = None) -> CommandResult[None]:
         run(command)
 
     return CommandResult(CommandStatus.OK)
+
+
+def scan_directory(
+    parent_dir: str = ".", file_types: Optional[List[str]] = None
+) -> CommandResult[List[str]]:
+    """List files and folders."""
+    parent = normalize_path(parent_dir)
+
+    if not parent.is_dir():
+        return CommandResult(CommandStatus.ERROR, message=f"Not a folder: {parent_dir}")
+
+    files, directories = [], []
+
+    for item in parent.iterdir():
+        if item.is_dir():
+            directories.append(str(item))
+        elif item.is_file():
+            files.append(str(item))
+
+    items = []
+
+    if file_types is None:
+        file_types = [FileType.FILE, FileType.DIRECTORY]
+
+    if FileType.FILE in file_types:
+        items.extend(files)
+
+    if FileType.DIRECTORY in file_types:
+        items.extend(directories)
+
+    return CommandResult(CommandStatus.OK, response=items)
 
 
 def run(command: str) -> CommandResult[str]:

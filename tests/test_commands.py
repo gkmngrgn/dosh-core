@@ -1,8 +1,9 @@
+import pathlib
 import urllib.request
 from pathlib import Path
 
 from dosh.commands import external as cmd
-from dosh.commands.base import normalize_path
+from dosh.commands.base import CommandStatus, normalize_path
 
 
 def test_copy(tmp_path):
@@ -84,3 +85,33 @@ def test_normalize_path(monkeypatch):
     assert normalize_path("~/.config") == Path("/home/dosh/.config")
     assert normalize_path("/foo/bar/baz") == Path("/foo/bar/baz")
     assert normalize_path("current_dir") == Path.cwd() / "current_dir"
+
+
+def test_scan_directory():
+    cwd = pathlib.Path.cwd()
+
+    # test current working directory
+    result = cmd.scan_directory()
+    assert result.status == CommandStatus.OK
+    assert result.response is not None
+    assert str(cwd / "README.md") in result.response
+
+    # test examples directory
+    result = cmd.scan_directory("./examples")
+    assert result.status == CommandStatus.OK
+    assert result.response is not None
+    assert result.response == [
+        str(cwd / "examples" / file_name)
+        for file_name in [
+            "dosh_latex.lua",
+            "dosh_config.lua",
+            "dosh_environments.lua",
+            "dosh_greet.lua",
+            "dosh_website.lua",
+        ]
+    ]
+
+    # test invalid directory
+    result = cmd.scan_directory("./README.md")
+    assert result.status == CommandStatus.ERROR
+    assert result.message == "Not a folder: ./README.md"

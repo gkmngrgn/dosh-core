@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "dosh"
-version = "0.0.0"  # dynamic versioning enabled
+version = "0.0.0-post.100+9f7afc4"  # dynamic versioning enabled
 description = "Shell-independent task manager."
 authors = ["Gökmen Görgen <gkmngrgn@gmail.com>"]
 license = "MIT"
@@ -43,7 +43,7 @@ help = "Filter tests by $name"
 addopts = "--cov=dosh --cov-report term-missing --cov-report html:./tests/cov_html"
 
 [tool.poetry-dynamic-versioning]
-enable = true
+enable = false
 vcs = "git"
 style = "semver"
 

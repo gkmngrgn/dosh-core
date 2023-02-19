@@ -51,13 +51,6 @@ class OperatingSystem(str, Enum):
         return cls.UNSUPPORTED
 
 
-class FileType(str, Enum):
-    """File types."""
-
-    FILE = "file"
-    DIRECTORY = "directory"
-
-
 @dataclass
 class CommandResult(Generic[T]):
     """Return type of command functions."""

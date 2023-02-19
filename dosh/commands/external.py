@@ -1,6 +1,7 @@
 """Available commands for `dosh.star`."""
 from __future__ import annotations
 
+import os
 import shutil
 import subprocess
 import urllib.request
@@ -11,7 +12,6 @@ from typing import List, Optional
 from dosh.commands.base import (
     CommandResult,
     CommandStatus,
-    FileType,
     check_command,
     copy_tree,
     is_url_valid,
@@ -66,6 +66,7 @@ def copy(src: str, dst: str) -> CommandResult[None]:
     dst_path = normalize_path(dst)
     glob_index = -1
     src_splitted = src.split("/")
+
     for index, value in enumerate(src_splitted):
         if "*" in value:
             glob_index = index
@@ -102,10 +103,18 @@ def clone(url: str, options: Optional[LuaTable] = None) -> CommandResult[None]:
 
 
 def scan_directory(
-    parent_dir: str = ".", file_types: Optional[List[str]] = None
-) -> CommandResult[List[str]]:
-    """List files and folders."""
+    parent_dir: str = ".", opts: Optional[LuaTable] = None
+) -> CommandResult[LuaTable]:
+    """
+    List files and directories.
+
+    Optional parameters:
+        include_files: boolean (default: true)
+        include_dirs: boolean (default: true)
+        excludes: list[str] (default: [])
+    """
     parent = normalize_path(parent_dir)
+    options = opts or lua_runtime.table()
 
     if not parent.is_dir():
         return CommandResult(CommandStatus.ERROR, message=f"Not a folder: {parent_dir}")
@@ -120,16 +129,19 @@ def scan_directory(
 
     items = []
 
-    if file_types is None:
-        file_types = [FileType.FILE, FileType.DIRECTORY]
-
-    if FileType.FILE in file_types:
+    if options["include_files"] is not False:
         items.extend(files)
 
-    if FileType.DIRECTORY in file_types:
+    if options["include_dirs"] is not False:
         items.extend(directories)
 
-    return CommandResult(CommandStatus.OK, response=items)
+    excludes = list((options["excludes"] or lua_runtime.table()).values())
+    if excludes:
+        items = list(filter(lambda i: i.rsplit(os.sep, 1)[-1] not in excludes, items))
+
+    return CommandResult(
+        CommandStatus.OK, response=lua_runtime.table_from(sorted(items))
+    )
 
 
 def run(command: str) -> CommandResult[str]:

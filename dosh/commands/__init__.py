@@ -12,6 +12,7 @@ logger = get_logger()
 COMMANDS: Final = {
     # general purpose
     "clone": cmd.clone,
+    "ls": cmd.scan_directory,
     "run": cmd.run,
     "run_url": cmd.run_url,
     # package managers

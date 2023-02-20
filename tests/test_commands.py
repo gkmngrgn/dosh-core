@@ -1,8 +1,15 @@
+import os
+import pathlib
 import urllib.request
 from pathlib import Path
 
+import pytest
+
 from dosh.commands import external as cmd
-from dosh.commands.base import normalize_path
+from dosh.commands.base import CommandException, normalize_path
+from dosh.logger import get_logger, set_verbosity
+
+logger = get_logger()
 
 
 def test_copy(tmp_path):
@@ -36,13 +43,17 @@ def test_copy(tmp_path):
     assert (tmp_path / "dst2" / "foo" / "bar" / "baz" / "hell.txt").exists()
 
 
-def test_run():
+def test_run(caplog):
+    set_verbosity(3)
     result = cmd.run("echo Hello, World!")
-    assert result.status == cmd.CommandStatus.OK
-    assert result.response == "Hello, World!"
+    assert result == os.EX_OK
+    assert caplog.records[0].message == "[RUN] echo Hello, World!"
+    assert caplog.records[1].message == "Hello, World!"
 
 
-def test_run_url(httpserver):
+def test_run_url(httpserver, caplog):
+    set_verbosity(3)
+
     sh_content = 'echo "Hello, World!"'
     httpserver.expect_request("/hello.sh").respond_with_data(
         sh_content, content_type="text/plain"
@@ -55,9 +66,12 @@ def test_run_url(httpserver):
     assert content.decode("utf-8") == sh_content
 
     result = cmd.run_url(url)
-    assert result.status == cmd.CommandStatus.OK
-    assert result.response is not None
-    assert result.response.stdout.decode("utf-8") == "Hello, World!\n"
+    assert result == os.EX_OK
+    assert (
+        caplog.records[2].message
+        == f"[RUN_URL] http://{httpserver.host}:{httpserver.port}/hello.sh"
+    )
+    assert caplog.records[3].message == "Hello, World!"
 
 
 def test_exists(tmp_path):
@@ -84,3 +98,31 @@ def test_normalize_path(monkeypatch):
     assert normalize_path("~/.config") == Path("/home/dosh/.config")
     assert normalize_path("/foo/bar/baz") == Path("/foo/bar/baz")
     assert normalize_path("current_dir") == Path.cwd() / "current_dir"
+
+
+def test_scan_directory():
+    cwd = pathlib.Path.cwd()
+
+    # test current working directory
+    result = cmd.scan_directory()
+    assert result is not None
+    assert str(cwd / "README.md") in list(result.values())
+
+    # test examples directory
+    result = cmd.scan_directory("./examples")
+    assert result is not None
+    assert list(result.values()) == [
+        str(cwd / "examples" / file_name)
+        for file_name in [
+            "dosh_config.lua",
+            "dosh_environments.lua",
+            "dosh_greet.lua",
+            "dosh_latex.lua",
+            "dosh_website.lua",
+        ]
+    ]
+
+    # test invalid directory
+    with pytest.raises(CommandException) as excinfo:
+        cmd.scan_directory("./README.md")
+        assert str(excinfo.value) == "Not a folder: ./README.md"

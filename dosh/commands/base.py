@@ -7,7 +7,7 @@ import shutil
 from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
-from typing import Any, Callable, Dict, Generic, List, Optional, TypeVar
+from typing import Any, Callable, Dict, List, TypeVar
 from urllib.parse import urlparse
 
 from dosh import DoshInitializer
@@ -19,11 +19,8 @@ T = TypeVar("T")
 logger = get_logger()
 
 
-class CommandStatus(Enum):
-    """Command status for handling the results."""
-
-    OK = "ok"
-    ERROR = "error"
+class CommandException(Exception):
+    """Dosh command exception."""
 
 
 class OperatingSystem(str, Enum):
@@ -51,24 +48,7 @@ class OperatingSystem(str, Enum):
         return cls.UNSUPPORTED
 
 
-@dataclass
-class CommandResult(Generic[T]):
-    """Return type of command functions."""
-
-    status: CommandStatus
-    message: Optional[str] = None
-    response: Optional[T] = None
-
-    def __repr__(self) -> str:
-        """Return result as repr."""
-        return str(self.response)
-
-    def __bool__(self) -> bool:
-        """Return false if command status is not ok."""
-        return self.status == CommandStatus.OK
-
-
-CommandCallable = Callable[..., CommandResult[Any]]
+CommandCallable = Callable[..., Any]
 
 
 @dataclass
@@ -95,10 +75,11 @@ def check_command(
 
     def decorator(func: CommandCallable) -> CommandCallable:
         @functools.wraps(func)
-        def wrapper(*args: Any, **kwargs: Any) -> CommandResult[Any]:
+        def wrapper(*args: Any, **kwargs: Any) -> Any:
             if shutil.which(command_name) is None:
-                message = f"The command `{command_name}` doesn't exist in this system."
-                return CommandResult(CommandStatus.ERROR, message=message)
+                raise CommandException(
+                    f"The command `{command_name}` doesn't exist in this system."
+                )
             return func(*args, **kwargs)
 
         return wrapper

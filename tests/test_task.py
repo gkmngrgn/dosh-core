@@ -1,7 +1,7 @@
 import platform
 import textwrap
 
-from dosh.commands.base import CommandResult, CommandStatus, OperatingSystem, Task
+from dosh.commands.base import OperatingSystem
 from dosh.config import ConfigParser
 
 

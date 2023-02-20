@@ -4,7 +4,6 @@ from pathlib import Path
 from typing import Final, List, Optional, Tuple
 
 from dosh import DoshInitializer
-from dosh.commands.base import CommandStatus
 from dosh.commands.internal import generate_help, init_config
 from dosh.config import ConfigParser
 from dosh.environments import ENVIRONMENTS
@@ -73,7 +72,7 @@ class ArgumentParser:
         return sys.argv[task_index], sys.argv[task_index + 1 :]
 
 
-class CLI:
+class CLI:  # pylint: disable=too-few-public-methods
     """DOSH command line interface."""
 
     def __init__(self) -> None:
@@ -105,9 +104,14 @@ class CLI:
         task_name, task_params = self.arg_parser.get_task_param(tasks)
 
         if task_name == "init":
-            self.run_init()
+            init_config(DoshInitializer.config_path)
         elif task_name == "help":
-            self.run_help()
+            output = generate_help(
+                tasks=self.conf_parser.tasks,
+                description=self.conf_parser.description,
+                epilog=self.conf_parser.epilog,
+            )
+            print(output)
         else:
             dosh_env = ENVIRONMENTS["DOSH_ENV"] or "not specified."
             working_directory = self.arg_parser.get_current_working_directory()
@@ -116,20 +120,3 @@ class CLI:
             logger.debug("WORKING DIRECTORY: %s", working_directory)
 
             self.conf_parser.run_task(task_name, task_params)
-
-    def run_init(self) -> None:
-        """Create new config."""
-        result = init_config(DoshInitializer.config_path)
-        if result.status == CommandStatus.OK:
-            print(result.message)
-        elif result.status == CommandStatus.ERROR:
-            print(result.message, file=sys.stderr)
-
-    def run_help(self) -> None:
-        """Print help output."""
-        output = generate_help(
-            tasks=self.conf_parser.tasks,
-            description=self.conf_parser.description,
-            epilog=self.conf_parser.epilog,
-        )
-        print(output)

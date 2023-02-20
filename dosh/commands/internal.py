@@ -3,15 +3,18 @@ import textwrap
 from pathlib import Path
 from typing import List, Optional
 
-from dosh.commands.base import CommandResult, CommandStatus, Task
+from dosh.commands.base import Task
+from dosh.logger import get_logger
+
+logger = get_logger()
 
 
-def init_config(config_path: Path) -> CommandResult[None]:
+def init_config(config_path: Path) -> None:
     """Initialize dosh config in the current working directory."""
     if config_path.exists():
-        return CommandResult(
-            CommandStatus.ERROR,
-            message=f"The file `{config_path.name}` already exists in current working directory.",
+        logger.error(
+            "The file `%s` already exists in current working directory.",
+            config_path.name,
         )
 
     content = textwrap.dedent(
@@ -33,11 +36,8 @@ def init_config(config_path: Path) -> CommandResult[None]:
             }
         """
     )
-
     config_path.write_text(content)
-    return CommandResult(
-        CommandStatus.OK, message=f"The file `{config_path.name}` is created."
-    )
+    logger.info("The file `%s` is created.", config_path.name)
 
 
 def generate_help(

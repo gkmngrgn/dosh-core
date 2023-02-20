@@ -5,7 +5,7 @@ import getpass
 import os
 from typing import Final
 
-from dosh.commands.base import CommandStatus, OperatingSystem
+from dosh.commands.base import OperatingSystem
 
 __all__ = ["ENVIRONMENTS"]
 
@@ -25,7 +25,4 @@ ENVIRONMENTS: Final = {
     "IS_MACOS": CURRENT_OS == OperatingSystem.MACOS,
     "IS_LINUX": CURRENT_OS == OperatingSystem.LINUX,
     "IS_WINDOWS": CURRENT_OS == OperatingSystem.WINDOWS,
-    # command statuses
-    "STATUS_OK": CommandStatus.OK,
-    "STATUS_ERROR": CommandStatus.ERROR,
 }

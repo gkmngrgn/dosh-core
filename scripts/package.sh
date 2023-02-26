@@ -5,7 +5,7 @@ export PATH="$HOME/.local/bin:$HOME/bin:$PATH"
 python -m pip install --user pipx
 python -m pipx install poetry
 
-poetry install
+poetry install --no-ansi --no-interaction
 poetry run pyinstaller app.py --name=dosh --console --noconfirm
 
 OS_NAME=$(python -c 'import platform; print(platform.system().lower())')

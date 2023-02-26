@@ -91,6 +91,7 @@ def generate_help(
             "Dosh commands:",
             "  > help                 print this output",
             "  > init                 initialize a new config in current working directory",
+            "  > version              print version of DOSH",
             "",
             "  -c, --config PATH      specify config path (default: dosh.lua)",
             "  -d, --directory PATH   change the working directory",

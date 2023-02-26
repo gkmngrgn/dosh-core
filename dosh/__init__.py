@@ -1,5 +1,8 @@
 """DOSH module."""
+import importlib.metadata
 from pathlib import Path
+
+__version__ = importlib.metadata.version(__package__ or __name__)
 
 
 class DoshInitializer:  # pylint: disable=too-few-public-methods

@@ -1,17 +1,24 @@
 """DOSH CLI app."""
 import sys
+from enum import Enum
 from pathlib import Path
-from typing import Final, List, Optional, Tuple
+from typing import List, Optional, Tuple
 
-from dosh import DoshInitializer
+from dosh import DoshInitializer, __version__
 from dosh.commands.internal import generate_help, init_config
 from dosh.config import ConfigParser
 from dosh.environments import ENVIRONMENTS
 from dosh.logger import get_logger, set_verbosity
 
-PREDEFINED_TASKS: Final = ["help", "init"]
-
 logger = get_logger()
+
+
+class PredefinedTask(str, Enum):
+    """Default DOSH tasks that run even if the configuration file is missing."""
+
+    HELP = "help"
+    INIT = "init"
+    VERSION = "version"
 
 
 class ArgumentParser:
@@ -65,10 +72,10 @@ class ArgumentParser:
 
     def get_task_param(self, tasks: List[str]) -> Tuple[str, List[str]]:
         """Get task name with its parameters."""
-        tasks += PREDEFINED_TASKS
+        tasks += list(PredefinedTask)
         task_index = self.__get_arg_index(*tasks)
         if task_index is None:
-            return ("help", [])
+            return (PredefinedTask.HELP, [])
         return sys.argv[task_index], sys.argv[task_index + 1 :]
 
 
@@ -103,15 +110,17 @@ class CLI:  # pylint: disable=too-few-public-methods
         tasks = [t.name for t in self.conf_parser.tasks]
         task_name, task_params = self.arg_parser.get_task_param(tasks)
 
-        if task_name == "init":
-            init_config(DoshInitializer.config_path)
-        elif task_name == "help":
+        if task_name == PredefinedTask.HELP:
             output = generate_help(
                 tasks=self.conf_parser.tasks,
                 description=self.conf_parser.description,
                 epilog=self.conf_parser.epilog,
             )
             print(output)
+        elif task_name == PredefinedTask.INIT:
+            init_config(DoshInitializer.config_path)
+        elif task_name == PredefinedTask.VERSION:
+            print(__version__)
         else:
             dosh_env = ENVIRONMENTS["DOSH_ENV"] or "not specified."
             working_directory = self.arg_parser.get_current_working_directory()

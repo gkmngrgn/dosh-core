@@ -6,7 +6,7 @@ python -m pip install --user pipx
 python -m pipx install poetry
 
 poetry install --no-ansi --no-interaction
-poetry run pyinstaller app.py --name=dosh --console --noconfirm
+poetry run pyinstaller app.py --name=dosh --console --noconfirm --copy-metadata=dosh
 
 OS_NAME=$(python -c 'import platform; print(platform.system().lower())')
 ARCH_TYPE=$(python -c 'import platform; print(platform.machine().lower())')

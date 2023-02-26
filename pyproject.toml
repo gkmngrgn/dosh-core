@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "dosh"
-version = "0.1.0"
+version = "0.1.1"
 description = "Shell-independent task manager."
 authors = ["Gökmen Görgen <gkmngrgn@gmail.com>"]
 license = "MIT"
@@ -22,7 +22,7 @@ pylint = "^2.15.10"
 dosh = "app:main"
 
 [tool.poe.tasks.build]
-cmd = "poetry run pyinstaller app.py --name=dosh --console --noconfirm"
+cmd = "poetry run pyinstaller app.py --name=dosh --console --noconfirm --copy-metadata=dosh"
 help = "Build dosh with pyinstaller"
 
 [tool.poe.tasks.lint]

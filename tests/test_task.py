@@ -1,8 +1,8 @@
 import platform
 import textwrap
 
-from dosh.commands.base import OperatingSystem
-from dosh.config import ConfigParser
+from dosh_core.commands.base import OperatingSystem
+from dosh_core.config import ConfigParser
 
 
 def test_get_current_operating_system(monkeypatch):

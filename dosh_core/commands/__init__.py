@@ -1,8 +1,8 @@
 """Available commands for `dosh.star`."""
 from typing import Final
 
-from dosh.commands import external as cmd
-from dosh.logger import get_logger
+from dosh_core.commands import external as cmd
+from dosh_core.logger import get_logger
 
 __all__ = ["COMMANDS"]
 

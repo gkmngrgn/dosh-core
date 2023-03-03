@@ -3,8 +3,8 @@ import textwrap
 from pathlib import Path
 from typing import List, Optional
 
-from dosh.commands.base import Task
-from dosh.logger import get_logger
+from dosh_core.commands.base import Task
+from dosh_core.logger import get_logger
 
 logger = get_logger()
 

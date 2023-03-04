@@ -113,7 +113,7 @@ jobs:
           command: bash scripts/package.sh
 
       - persist_to_workspace:
-          root: "dist"
+          root: "."
           paths:
             - "dosh-*.tar.gz"
 
@@ -128,7 +128,7 @@ jobs:
           command: bash scripts/package.sh
 
       - persist_to_workspace:
-          root: "dist"
+          root: "."
           paths:
             - "dosh-*.tar.gz"
 

@@ -4,11 +4,11 @@ from enum import Enum
 from pathlib import Path
 from typing import List, Optional, Tuple
 
-from dosh import DoshInitializer, __version__
-from dosh.commands.internal import generate_help, init_config
-from dosh.config import ConfigParser
-from dosh.environments import ENVIRONMENTS
-from dosh.logger import get_logger, set_verbosity
+from dosh_core import DoshInitializer, __version__
+from dosh_core.commands.internal import generate_help, init_config
+from dosh_core.config import ConfigParser
+from dosh_core.environments import ENVIRONMENTS
+from dosh_core.logger import get_logger, set_verbosity
 
 logger = get_logger()
 
@@ -129,3 +129,7 @@ class CLI:  # pylint: disable=too-few-public-methods
             logger.debug("WORKING DIRECTORY: %s", working_directory)
 
             self.conf_parser.run_task(task_name, task_params)
+
+
+if __name__ == "__main__":
+    CLI().run()

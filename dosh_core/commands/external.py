@@ -9,15 +9,15 @@ import urllib.request
 from pathlib import Path
 from typing import List, Optional
 
-from dosh.commands.base import (
+from dosh_core.commands.base import (
     CommandException,
     check_command,
     copy_tree,
     is_url_valid,
     normalize_path,
 )
-from dosh.logger import get_logger
-from dosh.lua_runtime import LuaTable, lua_runtime
+from dosh_core.logger import get_logger
+from dosh_core.lua_runtime import LuaTable, lua_runtime
 
 logger = get_logger()
 

@@ -11,7 +11,7 @@ else
 fi
 
 poetry install --no-ansi --no-interaction
-poetry self add 'poethepoet[poetry_plugin]'
+poetry self add 'poethepoet[poetry_plugin]' --no-ansi --no-interaction
 poetry poe build
 
 OS_NAME=$(python -c 'import platform; print(platform.system().lower())')

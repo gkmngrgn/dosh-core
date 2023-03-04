@@ -11,8 +11,6 @@ else
 fi
 
 poetry install --no-ansi --no-interaction
-poetry self add 'poethepoet[poetry_plugin]' --no-ansi --no-interaction
-poetry poe build
 
 OS_NAME=$(python -c 'import platform; print(platform.system().lower())')
 ARCH_TYPE=$(python -c 'import platform; print(platform.machine().lower())')
@@ -26,5 +24,10 @@ echo "DIRECTORY     : ${DIR_NAME}"
 echo "---"
 
 mkdir "${DIR_NAME}"
-mv dosh.bin "${DIR_NAME}/dosh"
-tar -czvf "${DIR_NAME}.tar.gz" "${DIR_NAME}/"*
+yes | poetry run python                 \
+             -m nuitka dosh_cli/dosh.py \
+             --standalone               \
+             --onefile                  \
+             --output-filename=dosh     \
+             --output-dir="${DIR_NAME}"
+tar -czvf "${DIR_NAME}.tar.gz" "${DIR_NAME}/dosh"

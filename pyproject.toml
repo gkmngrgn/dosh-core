@@ -20,10 +20,6 @@ nuitka = "^1.4.8"
 ordered-set = "^4.1.0"
 zstandard = "^0.20.0"
 
-[tool.poe.tasks.build]
-cmd = "poetry run python -m nuitka dosh_cli/dosh.py --standalone --onefile"
-help = "Build dosh with nuitka"
-
 [tool.poe.tasks.lint]
 cmd = "pre-commit run --all-files"
 help = "Check code quality"

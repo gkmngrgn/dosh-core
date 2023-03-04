@@ -2,11 +2,17 @@
 
 export PATH="$HOME/.local/bin:$HOME/bin:$PATH"
 
-python -m pip install --user pipx
-python -m pipx install poetry
+if command -v poetry &> /dev/null
+then
+    echo "poetry found in path."
+else
+    python -m pip install --user pipx
+    python -m pipx install poetry
+fi
 
 poetry install --no-ansi --no-interaction
-poetry run pyinstaller app.py --name=dosh --console --noconfirm --copy-metadata=dosh
+poetry self add 'poethepoet[poetry_plugin]'
+poetry poe build
 
 OS_NAME=$(python -c 'import platform; print(platform.system().lower())')
 ARCH_TYPE=$(python -c 'import platform; print(platform.machine().lower())')
@@ -19,6 +25,6 @@ echo "PYTHON VERSION: ${PY_VERSION}"
 echo "DIRECTORY     : ${DIR_NAME}"
 echo "---"
 
-cd ./dist/ || exit
-mv dosh "${DIR_NAME}"
+mkdir "${DIR_NAME}"
+mv dosh.bin "${DIR_NAME}/dosh"
 tar -czvf "${DIR_NAME}.tar.gz" "${DIR_NAME}/"*

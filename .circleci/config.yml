@@ -83,14 +83,14 @@ jobs:
 
       - run:
           name: "Install dependencies"
-          command: sudo apt-get update && apt-get install -y patchelf
+          command: apt-get update && apt-get install -y patchelf
 
       - run:
           name: "Build project"
           command: bash scripts/package.sh
 
       - persist_to_workspace:
-          root: "dist"
+          root: "."
           paths:
             - "dosh-*.tar.gz"
 

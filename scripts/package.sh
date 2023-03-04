@@ -10,19 +10,25 @@ else
     python -m pipx install poetry
 fi
 
-poetry install --no-ansi --no-interaction
-
 OS_NAME=$(python -c 'import platform; print(platform.system().lower())')
 ARCH_TYPE=$(python -c 'import platform; print(platform.machine().lower())')
 PY_VERSION=$(python -c 'import sys; print(".".join(map(str, sys.version_info[:3])))')
-DOSH_VERSION=$(poetry run dosh version)
+DOSH_VERSION=$(poetry version --no-ansi --short)
 DIR_NAME="dosh-${DOSH_VERSION}-${OS_NAME}-${ARCH_TYPE}"
+
+if [ "$OS_NAME" == 'windows' ]
+then
+    BIN_NAME="dosh.exe"
+else
+    BIN_NAME="dosh"
+fi
 
 echo "---"
 echo "PYTHON VERSION: ${PY_VERSION}"
 echo "DIRECTORY     : ${DIR_NAME}"
 echo "---"
 
+poetry install --no-ansi --no-interaction
 mkdir "${DIR_NAME}"
 yes | poetry run python                 \
              -m nuitka dosh_cli/dosh.py \
@@ -30,4 +36,4 @@ yes | poetry run python                 \
              --onefile                  \
              --output-filename=dosh     \
              --output-dir="${DIR_NAME}"
-tar -czvf "${DIR_NAME}.tar.gz" "${DIR_NAME}/dosh"
+tar -czvf "${DIR_NAME}.tar.gz" "${DIR_NAME}/${BIN_NAME}"

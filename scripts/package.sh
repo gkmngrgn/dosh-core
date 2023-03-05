@@ -16,24 +16,12 @@ PY_VERSION=$(python -c 'import sys; print(".".join(map(str, sys.version_info[:3]
 DOSH_VERSION=$(poetry version --no-ansi --short)
 DIR_NAME="dosh-${DOSH_VERSION}-${OS_NAME}-${ARCH_TYPE}"
 
-if [ "$OS_NAME" == 'windows' ]
-then
-    BIN_NAME="dosh.exe"
-else
-    BIN_NAME="dosh"
-fi
-
 echo "---"
 echo "PYTHON VERSION: ${PY_VERSION}"
 echo "DIRECTORY     : ${DIR_NAME}"
 echo "---"
 
 poetry install --no-ansi --no-interaction
-mkdir "${DIR_NAME}"
-yes | poetry run python                 \
-             -m nuitka dosh_cli/dosh.py \
-             --standalone               \
-             --onefile                  \
-             --output-filename=dosh     \
-             --output-dir="${DIR_NAME}"
-tar -czvf "${DIR_NAME}.tar.gz" "${DIR_NAME}/${BIN_NAME}"
+yes | poetry run python -m nuitka dosh_cli/dosh.py --standalone
+mv dosh.dist "${DIR_NAME}"
+tar -czvf "${DIR_NAME}.tar.gz" "${DIR_NAME}/"*

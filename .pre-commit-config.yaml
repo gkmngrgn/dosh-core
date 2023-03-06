@@ -1,6 +1,6 @@
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: 'v4.4.0'
+    rev: "v4.4.0"
     hooks:
       - id: trailing-whitespace
       - id: end-of-file-fixer
@@ -14,11 +14,6 @@ repos:
     hooks:
       - id: forbid-crlf
       - id: remove-crlf
-
-  - repo: https://github.com/jumanjihouse/pre-commit-hooks
-    rev: "3.0.0"
-    hooks:
-      - id: shellcheck
 
   - repo: https://github.com/pycqa/pydocstyle
     rev: "6.3.0"

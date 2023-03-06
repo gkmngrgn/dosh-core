@@ -4,6 +4,16 @@ version = "0.2.0"
 description = "Shell-independent task manager."
 authors = ["Gökmen Görgen <gkmngrgn@gmail.com>"]
 license = "MIT"
+classifiers = [
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Intended Audience :: System Administrators",
+    "Natural Language :: English",
+    "Operating System :: MacOS",
+    "Operating System :: Microsoft",
+    "Operating System :: POSIX :: Linux",
+    "Topic :: Software Development :: Build Tools",
+]
 
 [tool.poetry.dependencies]
 python = ">=3.9,<3.12"

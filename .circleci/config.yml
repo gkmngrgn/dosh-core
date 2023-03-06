@@ -1,14 +1,7 @@
 version: 2.1
 
 orbs:
-  windows: circleci/windows@5.0.0
   python: circleci/python@2.1.1
-
-filters-release: &filters-release
-  branches:
-    only: main
-  tags:
-    only: /^v\d+\.\d+\.\d+$/
 
 filters-development: &filters-development
   branches:
@@ -74,75 +67,6 @@ jobs:
 
       - run: poetry run pytest
 
-  build-on-linux:
-    docker:
-      - image: python:3.9-bullseye
-
-    steps:
-      - checkout
-
-      - run:
-          name: "Install dependencies"
-          command: apt-get update && apt-get install -y patchelf
-
-      - run:
-          name: "Build project"
-          command: bash scripts/package.sh
-
-      - persist_to_workspace:
-          root: "."
-          paths:
-            - "dosh-*.tar.gz"
-
-  build-on-macos:
-    macos:
-      xcode: 12.5.1
-
-    steps:
-      - checkout
-
-      - run:
-          name: "Add symlinks for python and pip"
-          command: |
-            mkdir -p ~/.local/bin
-            ln -s $(which python3) ~/.local/bin/python
-            ln -s $(which pip3) ~/.local/bin/pip
-
-      - run:
-          name: "Build project"
-          command: bash scripts/package.sh
-
-      - persist_to_workspace:
-          root: "."
-          paths:
-            - "dosh-*.tar.gz"
-
-  build-on-windows:
-    executor: windows/server-2022
-
-    steps:
-      - checkout
-
-      - run:
-          name: "Build project"
-          command: bash scripts/package.sh
-
-      - persist_to_workspace:
-          root: "."
-          paths:
-            - "dosh-*.tar.gz"
-
-  release:
-    docker:
-      - image: cimg/base:2022.08
-
-    steps:
-      - attach_workspace:
-          at: .
-
-      - store_artifacts:
-          path: .
-
 workflows:
   pr-checks:
     jobs:
@@ -157,21 +81,3 @@ workflows:
             parameters:
               version: ["3.8", "3.9", "3.10", "3.11"]
           filters: *filters-development
-
-  main:
-    jobs:
-      - build-on-linux:
-          filters: *filters-release
-
-      - build-on-macos:
-          filters: *filters-release
-
-      - build-on-windows:
-          filters: *filters-release
-
-      - release:
-          requires:
-            - build-on-linux
-            - build-on-macos
-            - build-on-windows
-          filters: *filters-release

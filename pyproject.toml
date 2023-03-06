@@ -28,10 +28,6 @@ pytest-cov = "^4.0.0"
 pytest-httpserver = "^1.0.6"
 pylint = "^2.15.10"
 
-[tool.poe.tasks.cli]
-cmd = "python dosh_cli/dosh.py"
-help = "run cli for testing"
-
 [tool.poe.tasks.lint]
 cmd = "pre-commit run --all-files"
 help = "Check code quality"

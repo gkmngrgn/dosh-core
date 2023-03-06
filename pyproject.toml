@@ -1,9 +1,11 @@
 [tool.poetry]
-name = "dosh_core"
+name = "dosh-core"
 version = "0.2.0"
 description = "Shell-independent task manager."
 authors = ["Gökmen Görgen <gkmngrgn@gmail.com>"]
+readme = "README.md"
 license = "MIT"
+packages = [{include = "dosh_core"}]
 classifiers = [
     "Environment :: Console",
     "Intended Audience :: Developers",
@@ -51,5 +53,5 @@ help = "Filter tests by $name"
 addopts = "--cov=dosh --cov-report term-missing --cov-report html:./tests/cov_html"
 
 [build-system]
-requires = ["poetry-core>=1.0.0"]
+requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"

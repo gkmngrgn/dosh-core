@@ -21,7 +21,7 @@ repos:
       - id: pydocstyle
         language: python
         exclude: ^tests/
-        additional_dependencies: ["toml"]
+        additional_dependencies: ["tomli"]
 
   - repo: https://github.com/pycqa/isort
     rev: "5.12.0"

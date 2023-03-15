@@ -109,16 +109,15 @@ def test_scan_directory():
     assert str(cwd / "README.md") in list(result.values())
 
     # test examples directory
-    result = cmd.scan_directory("./examples")
+    result = cmd.scan_directory("./tests")
     assert result is not None
     assert list(result.values()) == [
-        str(cwd / "examples" / file_name)
+        str(cwd / "tests" / file_name)
         for file_name in [
-            "dosh_config.lua",
-            "dosh_environments.lua",
-            "dosh_greet.lua",
-            "dosh_latex.lua",
-            "dosh_website.lua",
+            "__pycache__",
+            "test_commands.py",
+            "test_logger.py",
+            "test_task.py",
         ]
     ]
 

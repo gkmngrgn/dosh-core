@@ -43,7 +43,7 @@ default = "test"
 help = "Filter tests by $name"
 
 [tool.pytest.ini_options]
-addopts = "--cov=dosh --cov-report term-missing --cov-report html:./tests/cov_html"
+addopts = "--cov=dosh_core --cov-report term-missing --cov-report html:./tests/cov_html"
 
 [build-system]
 requires = ["poetry-core"]

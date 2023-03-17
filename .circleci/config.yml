@@ -2,37 +2,38 @@ version: 2.1
 
 orbs:
   python: circleci/python@2
+  windows: circleci/windows@5
 
-filters-development: &filters-development
-  branches:
-    ignore: main
+aliases:
+  - python-tag: &python-tag "3.9"
+  - filters-dev: &filters-dev
+      branches:
+        ignore: main
 
 jobs:
   lint:
     executor:
       name: "python/default"
-      tag: "3.9"
+      tag: *python-tag
 
     steps:
       - checkout
-
       - python/install-packages:
           pkg-manager: "poetry"
           args: "--no-ansi"
-
-      - run: poetry run pip install pre-commit
-
+      - python/install-packages:
+          pkg-manager: "pip"
+          args: "pre-commit"
       - run:
-          name: "Create a temporary file for getting a cache key"
+          name: Create a temporary file for getting a cache key
           command: |
             cp .pre-commit-config.yaml /tmp/checksum.txt
             poetry run python --version >> /tmp/checksum.txt
-
       - restore_cache:
           key: pre-commit-{{ checksum "/tmp/checksum.txt" }}
-
-      - run: poetry run pre-commit run --all-files
-
+      - run:
+          name: Run pre-commit
+          command: pre-commit run --all-files
       - save_cache:
           key: pre-commit-{{ checksum "/tmp/checksum.txt" }}
           paths:
@@ -40,30 +41,44 @@ jobs:
 
   test:
     parameters:
-      version:
+      python-tag:
         type: string
 
     executor:
-      name: "python/default"
-      tag: << parameters.version >>
+      name: python/default
+      tag: << parameters.python-tag >>
 
     steps:
       - checkout
-
       - python/install-packages:
           pkg-manager: "poetry"
           args: "--no-ansi"
+      - run:
+          name: Run tests
+          command: poetry run pytest
 
-      - run: poetry run pytest
+  test-windows:
+    executor:
+      name: win/default
+
+    steps:
+      - checkout
+      - python/install-packages:
+          pkg-manager: "poetry"
+          args: "--no-ansi"
+      - run:
+          name: Run tests
+          command: poetry run pytest
 
 workflows:
   pr-checks:
     jobs:
       - lint:
-          filters: *filters-development
-
+          filters: *filters-dev
       - test:
           matrix:
             parameters:
-              version: ["3.8", "3.9", "3.10", "3.11"]
-          filters: *filters-development
+              python-tag: ["3.8", "3.9", "3.10", "3.11"]
+          filters: *filters-dev
+      - test-windows:
+          filters: *filters-dev

@@ -61,6 +61,7 @@ jobs:
   test-windows:
     executor:
       name: windows/default
+      shell: bash.exe
 
     steps:
       - checkout
@@ -69,7 +70,8 @@ jobs:
           command: |
             python -m pip install --upgrade pip
             python -m pip install --user pipx
-            python -m pipx install poetry
+            python -m pipx ensurepath
+            pipx install poetry
       - run:
           name: Run tests
           command: poetry run pytest

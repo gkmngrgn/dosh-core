@@ -38,21 +38,6 @@ jobs:
           paths:
             - ~/.cache/pre-commit
 
-  test:
-    parameters:
-      python-tag:
-        type: string
-
-    executor:
-      name: python/default
-      tag: << parameters.python-tag >>
-
-    steps:
-      - checkout
-      - python/test:
-          pkg-manager: poetry
-          test-tool: pytest
-
   test-windows:
     executor:
       name: windows/default
@@ -75,10 +60,10 @@ workflows:
     jobs:
       - lint:
           filters: *filters-dev
-      - test:
+      - python/test:
           matrix:
             parameters:
-              python-tag: ["3.8", "3.9", "3.10", "3.11"]
+              version: ["3.8", "3.9", "3.10", "3.11"]
           filters: *filters-dev
       - test-windows:
           filters: *filters-dev

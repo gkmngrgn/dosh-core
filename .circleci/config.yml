@@ -31,7 +31,7 @@ jobs:
       - run:
           name: Run pre-commit
           command: |
-            poetry add pre-commit
+            poetry add pre-commit --no-ansi
             poetry run pre-commit run --all-files
       - save_cache:
           key: pre-commit-{{ checksum "/tmp/checksum.txt" }}
@@ -64,17 +64,15 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Install Pipx
+          name: Install Poetry
           command: |
             python -m pip install --upgrade pip
             python -m pip install --user pipx
-            python -m pipx ensurepath
-      - run:
-          name: Install Poetry
-          command: pipx install poetry
       - run:
           name: Run tests
-          command: poetry run pytest
+          command: |
+            python -m pipx run poetry install --no-ansi
+            python -m pipx run poetry run pytest
 
 workflows:
   pr-checks:

@@ -49,12 +49,9 @@ jobs:
 
     steps:
       - checkout
-      - python/install-packages:
-          pkg-manager: "poetry"
-          args: "--no-ansi"
-      - run:
-          name: Run tests
-          command: poetry run pytest
+      - python/test:
+          pkg-manager: poetry
+          test-tool: pytest
 
   test-windows:
     executor:
@@ -64,15 +61,14 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Install Poetry
+          name: Run tests
           command: |
             python -m pip install --upgrade pip
             python -m pip install --user pipx
-      - run:
-          name: Run tests
-          command: |
             python -m pipx run poetry install --no-ansi
-            python -m pipx run poetry run pytest
+            python -m pipx run poetry run pytest --junit-xml=test-report/report.xml
+      - store_test_results:
+          path: test-report
 
 workflows:
   pr-checks:

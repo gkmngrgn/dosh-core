@@ -21,20 +21,18 @@ jobs:
       - python/install-packages:
           pkg-manager: "poetry"
           args: "--no-ansi"
-      - python/install-packages:
-          pkg-manager: "pip"
-          pip-dependency-file: ""
-          args: "pre-commit"
       - run:
           name: Create a temporary file for getting a cache key
           command: |
             cp .pre-commit-config.yaml /tmp/checksum.txt
-            poetry run python --version >> /tmp/checksum.txt
+            python --version >> /tmp/checksum.txt
       - restore_cache:
           key: pre-commit-{{ checksum "/tmp/checksum.txt" }}
       - run:
           name: Run pre-commit
-          command: pre-commit run --all-files
+          command: |
+            poetry add pre-commit
+            poetry run pre-commit run --all-files
       - save_cache:
           key: pre-commit-{{ checksum "/tmp/checksum.txt" }}
           paths:
@@ -66,12 +64,14 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Install Poetry
+          name: Install Pipx
           command: |
             python -m pip install --upgrade pip
             python -m pip install --user pipx
             python -m pipx ensurepath
-            pipx install poetry
+      - run:
+          name: Install Poetry
+          command: pipx install poetry
       - run:
           name: Run tests
           command: poetry run pytest

@@ -41,7 +41,6 @@ jobs:
   test-windows:
     executor:
       name: windows/default
-      shell: bash.exe
 
     steps:
       - checkout

@@ -45,16 +45,16 @@ def test_copy(tmp_path):
 
 def test_run(caplog):
     set_verbosity(3)
-    result = cmd.run("echo 'Hello, World!'")
+    result = cmd.run("echo Hello!")
     assert result == 0
-    assert caplog.records[0].message == "[RUN] echo 'Hello, World!'"
-    assert caplog.records[1].message == "Hello, World!"
+    assert caplog.records[0].message == "[RUN] echo Hello!"
+    assert caplog.records[1].message == "Hello!"
 
 
 def test_run_url(httpserver, caplog):
     set_verbosity(3)
 
-    sh_content = "echo 'Hello, World!'"
+    sh_content = "echo Hello!"
     httpserver.expect_request("/hello.sh").respond_with_data(
         sh_content, content_type="text/plain"
     )
@@ -71,7 +71,7 @@ def test_run_url(httpserver, caplog):
         caplog.records[2].message
         == f"[RUN_URL] http://{httpserver.host}:{httpserver.port}/hello.sh"
     )
-    assert caplog.records[3].message == "Hello, World!"
+    assert caplog.records[3].message == "Hello!"
 
 
 def test_exists(tmp_path):

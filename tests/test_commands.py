@@ -1,5 +1,5 @@
-import os
 import pathlib
+import platform
 import urllib.request
 from pathlib import Path
 
@@ -45,16 +45,16 @@ def test_copy(tmp_path):
 
 def test_run(caplog):
     set_verbosity(3)
-    result = cmd.run("echo Hello, World!")
-    assert result == os.EX_OK
-    assert caplog.records[0].message == "[RUN] echo Hello, World!"
-    assert caplog.records[1].message == "Hello, World!"
+    result = cmd.run("echo Hello!")
+    assert result == 0
+    assert caplog.records[0].message == "[RUN] echo Hello!"
+    assert caplog.records[1].message == "Hello!"
 
 
 def test_run_url(httpserver, caplog):
     set_verbosity(3)
 
-    sh_content = 'echo "Hello, World!"'
+    sh_content = "echo Hello!"
     httpserver.expect_request("/hello.sh").respond_with_data(
         sh_content, content_type="text/plain"
     )
@@ -66,12 +66,12 @@ def test_run_url(httpserver, caplog):
     assert content.decode("utf-8") == sh_content
 
     result = cmd.run_url(url)
-    assert result == os.EX_OK
+    assert result == 0
     assert (
         caplog.records[2].message
         == f"[RUN_URL] http://{httpserver.host}:{httpserver.port}/hello.sh"
     )
-    assert caplog.records[3].message == "Hello, World!"
+    assert caplog.records[3].message == "Hello!"
 
 
 def test_exists(tmp_path):
@@ -88,38 +88,45 @@ def test_exists(tmp_path):
 
 
 def test_exists_command():
-    assert cmd.exists_command("bash")
-    assert not cmd.exists_command("hsab")
+    if platform.system() == "Windows":
+        assert cmd.exists_command("cmd.exe")
+        assert cmd.exists_command("where.exe")
+        assert not cmd.exists_command("dmc.exe")
+    else:
+        assert cmd.exists_command("bash")
+        assert cmd.exists_command("which")
+        assert not cmd.exists_command("hsab")
 
 
 def test_normalize_path(monkeypatch):
-    monkeypatch.setenv("HOME", "/home/dosh")
+    if platform.system() == "Windows":
+        monkeypatch.setenv("USERPROFILE", "C:/Users/dosh")
+        assert normalize_path("~/.config") == Path("C:/Users/dosh/.config")
 
-    assert normalize_path("~/.config") == Path("/home/dosh/.config")
+    else:
+        monkeypatch.setenv("HOME", "/home/dosh")  # for posix
+        assert normalize_path("~/.config") == Path("/home/dosh/.config")
+
     assert normalize_path("/foo/bar/baz") == Path("/foo/bar/baz")
     assert normalize_path("current_dir") == Path.cwd() / "current_dir"
 
 
-def test_scan_directory():
-    cwd = pathlib.Path.cwd()
+def test_scan_directory(monkeypatch):
+    base_dir = pathlib.Path(__file__).parent.parent.resolve()
+    monkeypatch.chdir(base_dir)
 
     # test current working directory
     result = cmd.scan_directory()
     assert result is not None
-    assert str(cwd / "README.md") in list(result.values())
+    assert str(base_dir / "README.md") in list(result.values())
 
     # test examples directory
     result = cmd.scan_directory("./tests")
     assert result is not None
-    assert list(result.values()) == [
-        str(cwd / "tests" / file_name)
-        for file_name in [
-            "__pycache__",
-            "test_commands.py",
-            "test_logger.py",
-            "test_task.py",
-        ]
-    ]
+
+    files = list(result.values())
+    for file_name in ["test_commands.py", "test_logger.py", "test_task.py"]:
+        assert str(base_dir / "tests" / file_name) in files
 
     # test invalid directory
     with pytest.raises(CommandException) as excinfo:

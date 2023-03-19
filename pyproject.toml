@@ -42,8 +42,8 @@ positional = true
 default = "test"
 help = "Filter tests by $name"
 
-[tool.pytest.ini_options]
-addopts = "--cov=dosh_core --cov-report term-missing --cov-report html:./tests/cov_html"
+#[tool.pytest.ini_options]
+#addopts = "--cov=dosh_core --cov-report term-missing --cov-report html:./cov_html"
 
 [build-system]
 requires = ["poetry-core"]

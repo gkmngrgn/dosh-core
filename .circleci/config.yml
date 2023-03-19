@@ -2,68 +2,67 @@ version: 2.1
 
 orbs:
   python: circleci/python@2
+  windows: circleci/windows@5
 
-filters-development: &filters-development
-  branches:
-    ignore: main
+aliases:
+  - python-tag: &python-tag "3.9"
+  - filters-dev: &filters-dev
+      branches:
+        ignore: main
 
 jobs:
   lint:
     executor:
       name: "python/default"
-      tag: "3.9"
+      tag: *python-tag
 
     steps:
       - checkout
-
       - python/install-packages:
           pkg-manager: "poetry"
           args: "--no-ansi"
-
-      - run: poetry run pip install pre-commit
-
       - run:
-          name: "Create a temporary file for getting a cache key"
+          name: Create a temporary file for getting a cache key
           command: |
             cp .pre-commit-config.yaml /tmp/checksum.txt
-            poetry run python --version >> /tmp/checksum.txt
-
+            python --version >> /tmp/checksum.txt
       - restore_cache:
           key: pre-commit-{{ checksum "/tmp/checksum.txt" }}
-
-      - run: poetry run pre-commit run --all-files
-
+      - run:
+          name: Run pre-commit
+          command: |
+            poetry add pre-commit --no-ansi
+            poetry run pre-commit run --all-files
       - save_cache:
           key: pre-commit-{{ checksum "/tmp/checksum.txt" }}
           paths:
             - ~/.cache/pre-commit
 
-  test:
-    parameters:
-      version:
-        type: string
-
+  test-windows:
     executor:
-      name: "python/default"
-      tag: << parameters.version >>
+      name: windows/default
 
     steps:
       - checkout
-
-      - python/install-packages:
-          pkg-manager: "poetry"
-          args: "--no-ansi"
-
-      - run: poetry run pytest
+      - run:
+          name: Run tests
+          command: |
+            python -m pip install --upgrade pip
+            python -m pip install --user pipx
+            python -m pipx run poetry install --no-ansi
+            python -m pipx run poetry run pytest --junit-xml=test-report/report.xml
+      - store_test_results:
+          path: test-report
 
 workflows:
   pr-checks:
     jobs:
       - lint:
-          filters: *filters-development
-
-      - test:
+          filters: *filters-dev
+      - python/test:
           matrix:
             parameters:
               version: ["3.8", "3.9", "3.10", "3.11"]
-          filters: *filters-development
+          filters: *filters-dev
+      - test-windows:
+          filters: *filters-dev

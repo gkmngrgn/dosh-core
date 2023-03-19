@@ -56,9 +56,10 @@ def winget_install(packages: List[str]) -> None:
 
 def copy(src: str, dst: str) -> None:
     """Copy files from source to destination. It works like `cp` command."""
+    src_path = normalize_path(src)
     dst_path = normalize_path(dst)
     glob_index = -1
-    src_splitted = src.split("/")
+    src_splitted = src_path.as_posix().split("/")
 
     for index, value in enumerate(src_splitted):
         if "*" in value:
@@ -70,8 +71,7 @@ def copy(src: str, dst: str) -> None:
         for path in src_path.glob("/".join(src_splitted[glob_index:])):
             copy_tree(path, dst_path / path.name)
     else:
-        path = normalize_path(src)
-        copy_tree(path, dst_path / path.name if dst_path.exists() else dst_path)
+        copy_tree(src_path, dst_path / src_path.name if dst_path.exists() else dst_path)
 
 
 @check_command("git")
@@ -163,7 +163,7 @@ def run_url(url: str) -> int:
         raise CommandException(f"URL is not valid: {url}")
 
     with urllib.request.urlopen(url) as response:
-        content = response.read()
+        content = response.read().decode("utf-8")
 
     logger.info("[RUN_URL] %s", url)
     return __run_command_and_log_output(content)

@@ -95,12 +95,9 @@ def is_url_valid(url: str) -> bool:
 
 def normalize_path(file_path: str) -> Path:
     """Convert file paths to absolute paths."""
-    if file_path.startswith("/"):
-        path = Path(file_path)
-    elif file_path.startswith("~"):
-        path = Path(file_path).expanduser()
-    else:
-        path = DoshInitializer().base_directory.joinpath(*file_path.split("/"))
+    path = Path(file_path).expanduser()
+    if path.anchor == "":
+        path = DoshInitializer().base_directory / path
     return path
 
 

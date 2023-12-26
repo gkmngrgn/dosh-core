@@ -70,11 +70,13 @@ def generate_help(
 
             line_first, *line_list = textwrap.wrap(desc_first, line_len - max_len)
             lines.append(f"{command_init}   {line_first}")
-            lines.extend(map(lambda l: f"{' ' * (max_len + 7)}{l}", line_list))
+            lines.extend(map(lambda line: f"{' ' * (max_len + 7)}{line}", line_list))
 
             for desc in desc_list:
                 line_list = textwrap.wrap(desc, line_len - max_len)
-                lines.extend(map(lambda l: f"{' ' * (max_len + 7)}{l}", line_list))
+                lines.extend(
+                    map(lambda line: f"{' ' * (max_len + 7)}{line}", line_list)
+                )
     else:
         lines.extend(
             [

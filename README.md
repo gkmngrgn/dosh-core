@@ -15,7 +15,6 @@ Install these development dependencies manually:
 
 - [poetry](https://python-poetry.org/)
 - [poethepoet](https://github.com/nat-n/poethepoet)
-- [poetry-dynamic-versioning](https://github.com/mtkennerly/poetry-dynamic-versioning)
 - [pre-commit](https://pre-commit.com/)
 
 ```shell

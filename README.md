@@ -4,7 +4,7 @@
 
 **DOSH-CORE** is a common library for parsing `dosh.lua` script file. The official CLI is [here](https://github.com/gkmngrgn/dosh-cli).
 
-<img src="https://media.githubusercontent.com/media/gkmngrgn/dosh-core/main/dosh-logo.svg"
+<img src="https://raw.githubusercontent.com/gkmngrgn/dosh-core/main/dosh-logo.svg"
      width="200"
      alt="DOSH logo" />
 

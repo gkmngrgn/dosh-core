@@ -1,10 +1,8 @@
 """Available commands for `dosh.star`."""
 from __future__ import annotations
 
-import logging
 import os
 import shutil
-import subprocess
 import urllib.request
 from pathlib import Path
 from typing import List, Optional
@@ -15,6 +13,7 @@ from dosh_core.commands.base import (
     copy_tree,
     is_url_valid,
     normalize_path,
+    run_command_and_return_result,
 )
 from dosh_core.logger import get_logger
 from dosh_core.lua_runtime import LuaTable, lua_runtime
@@ -130,31 +129,11 @@ def scan_directory(parent_dir: str = ".", opts: Optional[LuaTable] = None) -> Lu
     return response
 
 
-def __run_command_and_log_output(content: str) -> int:
-    with subprocess.Popen(
-        content,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        shell=True,
-    ) as proc:
-        for out, level in [(proc.stdout, logging.DEBUG), (proc.stderr, logging.ERROR)]:
-            if out is None:
-                continue
-
-            while True:
-                line = out.readline()
-                if not line:
-                    break
-
-                logger.log(level, line.decode().rstrip())
-
-    return proc.wait()
-
-
 def run(command: str) -> int:
     """Run a shell command using subprocess."""
-    logger.info("[RUN] %s", command)
-    return __run_command_and_log_output(command)
+    log_prefix = "[RUN]"
+    logger.info("%s %s", log_prefix, command)
+    return run_command_and_return_result(command, log_prefix)
 
 
 def run_url(url: str) -> int:
@@ -165,8 +144,9 @@ def run_url(url: str) -> int:
     with urllib.request.urlopen(url) as response:
         content = response.read().decode("utf-8")
 
-    logger.info("[RUN_URL] %s", url)
-    return __run_command_and_log_output(content)
+    log_prefix = "[RUN_URL]"
+    logger.info("%s %s", log_prefix, url)
+    return run_command_and_return_result(content, log_prefix)
 
 
 def exists(path: str) -> bool:

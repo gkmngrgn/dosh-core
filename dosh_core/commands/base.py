@@ -4,6 +4,7 @@ from __future__ import annotations
 import functools
 import platform
 import shutil
+import subprocess
 from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
@@ -109,3 +110,11 @@ def copy_tree(src: Path, dst: Path) -> None:
     else:
         logger.info("COPY FILE: %s -> %s", src, dst)
         shutil.copy(src, dst)
+
+
+def run_command_and_return_result(content: str, log_prefix: str = "") -> int:
+    """Run external command and return result with the captured output."""
+    result = subprocess.run(content, shell=True)
+    return_code = result.returncode
+    logger.debug("%s Return code: %s".strip(), log_prefix, return_code)
+    return return_code

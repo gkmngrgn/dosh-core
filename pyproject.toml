@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "dosh-core"
-version = "0.3.1"
+version = "0.3.2"
 description = "Shell-independent task management library."
 authors = ["Gökmen Görgen <gkmngrgn@gmail.com>"]
 readme = "README.md"

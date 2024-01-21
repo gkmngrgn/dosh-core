@@ -48,7 +48,7 @@ def test_run(caplog):
     result = cmd.run("echo Hello!")
     assert result == 0
     assert caplog.records[0].message == "[RUN] echo Hello!"
-    assert caplog.records[1].message == "Hello!"
+    assert caplog.records[1].message == "[RUN] Return code: 0"
 
 
 def test_run_url(httpserver, caplog):
@@ -71,7 +71,7 @@ def test_run_url(httpserver, caplog):
         caplog.records[2].message
         == f"[RUN_URL] http://{httpserver.host}:{httpserver.port}/hello.sh"
     )
-    assert caplog.records[3].message == "Hello!"
+    assert caplog.records[3].message == "[RUN_URL] Return code: 0"
 
 
 def test_exists(tmp_path):

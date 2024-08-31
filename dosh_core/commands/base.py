@@ -1,4 +1,5 @@
 """Common helper functions and classes for commands submodule."""
+
 from __future__ import annotations
 
 import functools

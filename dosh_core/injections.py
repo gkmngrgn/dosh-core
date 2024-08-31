@@ -1,4 +1,5 @@
 """Dosh script injections."""
+
 import json
 from inspect import isfunction
 from typing import Any, Dict

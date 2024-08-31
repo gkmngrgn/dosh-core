@@ -1,4 +1,5 @@
 """DOSH module."""
+
 import importlib.metadata
 from dataclasses import dataclass, field
 from pathlib import Path

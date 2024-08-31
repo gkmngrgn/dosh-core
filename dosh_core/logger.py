@@ -1,4 +1,5 @@
 """Logging support."""
+
 from logging import DEBUG, ERROR, INFO, WARNING, Logger
 from typing import Optional
 

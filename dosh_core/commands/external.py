@@ -1,4 +1,5 @@
 """Available commands for `dosh.star`."""
+
 from __future__ import annotations
 
 import os

@@ -1,6 +1,8 @@
-# DOSH-CORE - shell-independent task manager
+# DOSH - shell-independent task manager (CORE)
 
-[![CircleCI](https://dl.circleci.com/status-badge/img/gh/gkmngrgn/dosh-core/tree/main.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/gkmngrgn/dosh-core/tree/main)
+**STATUS: Archived.** I started to rewrite this project in Go. You can find the new project [here](https://github.com/gkmngrgn/dosh).
+
+---
 
 **DOSH-CORE** is a common library for parsing `dosh.lua` script file. The official CLI is [here](https://github.com/gkmngrgn/dosh-cli).
 
